@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="inhert_view_order_form" model="ir.ui.view">
+            <field name="name">sale.order.form</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_order_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//header" position="inside">
+                    <button name="show_map" type="object" string="Show In Map" class="oe_highlight" invisible="not id"/>
+                </xpath>
+                <xpath expr="//form" position="attributes">
+                    <attribute name="js_class">add_lat_long_sale_order_view_form</attribute>
+                </xpath>
+                <xpath expr="//field[@name='partner_id']" position="after">
+                    <!-- <field name="partner_latitude" widget="custom_map_widget" string="Map"/> -->
+                    <field name="partner_latitude"  readonly="1"/>
+                    <field name="partner_longitude" readonly="1"/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>
