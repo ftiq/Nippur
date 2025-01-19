@@ -1,10 +1,6 @@
-from odoo import models, fields # type: ignore
+from odoo import models, fields
 
-class AccountMove(models.Model):
-    _inherit = 'account.move'
+class SaleOrderLine(models.Model):
+    _inherit = "sale.order.line"
 
-    representative_id = fields.Many2one(
-        'res.users',
-        string='Sales Representative',
-        help='Sales representative responsible for this invoice.',
-    )
+    gift_quantity = fields.Float(string="Gift Quantity", default=0.0)
