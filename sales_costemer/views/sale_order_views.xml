@@ -1,5 +1,5 @@
 <odoo>
-    <record id="view_order_form_inherit" model="ir.ui.view">
+    <record id="view_order_form_inherit_representative" model="ir.ui.view">
         <field name="name">sale.order.form.inherit.representative</field>
         <field name="model">sale.order</field>
         <field name="inherit_id" ref="sale.view_order_form"/>
@@ -10,10 +10,11 @@
                 </group>
                 <notebook>
                     <page string="Gifts">
-                        <field name="gift_line_ids">
+                        <field name="order_line">
                             <tree editable="bottom">
                                 <field name="product_id"/>
-                                <field name="quantity"/>
+                                <field name="product_uom_qty" string="Quantity"/>
+                                <field name="gift_quantity" string="Gift Quantity"/>
                             </tree>
                         </field>
                     </page>
