@@ -1,8 +1,8 @@
 {
     'name': 'Sales Representative Integration',
     'version': '1.0',
-    'summary': 'Add Sales Representative and Gifts directly in Sales and Invoices',
-    'description': 'Integrates custom fields for sales representatives and gifts into Sales and Invoices.',
+    'summary': 'Add Sales Representative and Gifts to Sales Orders and Invoices',
+    'description': 'Integrates custom fields for sales representatives and gifts into Sales Orders and Invoices.',
     'author': 'Your Name',
     'depends': ['sale', 'account'],
     'data': [
