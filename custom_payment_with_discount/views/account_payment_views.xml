@@ -1,0 +1,15 @@
+<odoo>
+    <record id="view_account_payment_form_discount" model="ir.ui.view">
+        <field name="name">account.payment.form.discount</field>
+        <field name="model">account.payment</field>
+        <field name="inherit_id" ref="account.view_account_payment_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//sheet/group" position="after">
+                <group string="Cash Discount">
+                    <field name="cash_discount"/>
+                    <field name="discount_account_id"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+</odoo>
