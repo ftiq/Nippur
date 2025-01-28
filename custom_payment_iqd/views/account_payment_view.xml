@@ -5,10 +5,10 @@
         <field name="model">account.payment</field>
         <field name="inherit_id" ref="account.view_account_payment_tree" />
         <field name="arch" type="xml">
-            <field name="partner_id" position="after">
-                <field name="sum_iqd"/>
-                <field name="sum_usd"/>
-            </field>
+            <xpath expr="//field[@name='partner_id']" position="after">
+                <field name="sum_iqd" string="IQD Balance"/>
+                <field name="sum_usd" string="USD Balance"/>
+            </xpath>
         </field>
     </record>
 
@@ -17,10 +17,10 @@
         <field name="model">account.payment</field>
         <field name="inherit_id" ref="account.view_account_payment_form" />
         <field name="arch" type="xml">
-            <field name="partner_id" position="after">
-                <field name="sum_iqd"/>
-                <field name="sum_usd"/>
-            </field>
+            <xpath expr="//field[@name='partner_id']" position="after">
+                <field name="sum_iqd" string="IQD Balance"/>
+                <field name="sum_usd" string="USD Balance"/>
+            </xpath>
         </field>
     </record>
 
@@ -30,10 +30,10 @@
         <field name="model">sale.order</field>
         <field name="inherit_id" ref="sale.view_quotation_tree" />
         <field name="arch" type="xml">
-            <field name="partner_id" position="after">
-                <field name="sum_iqd"/>
-                <field name="sum_usd"/>
-            </field>
+            <xpath expr="//field[@name='partner_id']" position="after">
+                <field name="sum_iqd" string="IQD Balance"/>
+                <field name="sum_usd" string="USD Balance"/>
+            </xpath>
         </field>
     </record>
 
@@ -42,10 +42,10 @@
         <field name="model">sale.order</field>
         <field name="inherit_id" ref="sale.view_order_form" />
         <field name="arch" type="xml">
-            <field name="partner_id" position="after">
-                <field name="sum_iqd"/>
-                <field name="sum_usd"/>
-            </field>
+            <xpath expr="//field[@name='partner_id']" position="after">
+                <field name="sum_iqd" string="IQD Balance"/>
+                <field name="sum_usd" string="USD Balance"/>
+            </xpath>
         </field>
     </record>
 </odoo>
