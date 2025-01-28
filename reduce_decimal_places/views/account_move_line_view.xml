@@ -4,10 +4,8 @@
         <field name="model">account.move.line</field>
         <field name="inherit_id" ref="account.view_move_line_tree"/>
         <field name="arch" type="xml">
-            <xpath expr="//tree" position="inside">
-                <!-- إضافة الحقول مع التنسيق -->
-                <field name="debit" string="Debit" options="{'format': '%.0f'}" readonly="1"/>
-                <field name="credit" string="Credit" options="{'format': '%.0f'}" readonly="1"/>
+            <!-- تعديل الـ xpath لاستهداف عنصر موجود -->
+            <xpath expr="//field[@name='debit']" position="after">
                 <field name="amount_currency" string="Amount in Currency" options="{'format': '%.2f'}" readonly="1"/>
             </xpath>
         </field>
