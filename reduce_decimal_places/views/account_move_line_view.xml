@@ -1,14 +1,14 @@
 <odoo>
-    <record id="view_account_move_line_form_inherit" model="ir.ui.view">
-        <field name="name">account.move.line.form.inherit</field>
+    <record id="view_account_move_line_tree_inherit" model="ir.ui.view">
+        <field name="name">account.move.line.tree.inherit</field>
         <field name="model">account.move.line</field>
-        <field name="inherit_id" ref="account.view_move_line_form" />
+        <field name="inherit_id" ref="account.view_move_line_tree"/>
         <field name="arch" type="xml">
-            <xpath expr="//form/header" position="inside">
-                <button name="reduce_decimal_places_by_currency"
-                        string="Adjust Decimals by Currency"
-                        type="object"
-                        class="btn-primary"/>
+            <xpath expr="//tree" position="inside">
+                <!-- إضافة الحقول مع التعديلات -->
+                <field name="debit" string="Debit" options="{'format': '%.0f'}" readonly="1"/>
+                <field name="credit" string="Credit" options="{'format': '%.0f'}" readonly="1"/>
+                <field name="amount_currency" string="In Currency" options="{'format': '%.2f'}" readonly="1"/>
             </xpath>
         </field>
     </record>
