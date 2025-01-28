@@ -5,7 +5,7 @@
     'depends': ['account', 'sale'],  # Add 'sale' as a dependency
     'data': [
         'views/account_payment_view.xml',
-        'views/sale_order_view.xml',  # Ensure you include the sale order view file
+  
     ],
     'installable': True,
     'application': False,
