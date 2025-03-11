@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<templates>
-    <template t-name="mj_customer_invoice_location.MapWidget">
-        <div t-ref="map" style="height: 400px; width: 100%;"></div>
-    </template>
-</templates>
