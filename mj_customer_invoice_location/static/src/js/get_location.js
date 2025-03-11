@@ -8,13 +8,10 @@ import { formView } from "@web/views/form/form_view";
 export class PartnerFormController extends FormController {
   async setup() {
     super.setup();
-    alert("start@@");
     if (!this.props.resId) {
       let latitude = 0;
       let longitude = 0;
-      alert("start");
       if (navigator.geolocation) {
-        alert(1);
         const position = await new Promise((resolve, reject) => {
           navigator.geolocation.getCurrentPosition(resolve, reject);
         }).catch((error) => {
@@ -22,12 +19,10 @@ export class PartnerFormController extends FormController {
         });
 
         if (position) {
-          alert(2);
 
           latitude = position.coords.latitude;
           longitude = position.coords.longitude;
-          alert(longitude);
-          alert(latitude);
+         
           this.model.config.context["partner_longitude"] = longitude;
           this.model.config.context["partner_latitude"] = latitude;
         }
@@ -41,12 +36,10 @@ export class PartnerFormController extends FormController {
 export class SaleOrderFormController extends FormController {
   async setup() {
     super.setup();
-    alert(1);
     if (!this.props.resId) {
       let latitude = 0;
       let longitude = 0;
       if (navigator.geolocation) {
-        alert(2);
 
         const position = await new Promise((resolve, reject) => {
           navigator.geolocation.getCurrentPosition(resolve, reject);
@@ -55,12 +48,10 @@ export class SaleOrderFormController extends FormController {
         });
 
         if (position) {
-          alert(3);
 
           latitude = position.coords.latitude;
           longitude = position.coords.longitude;
-          alert(longitude);
-          alert(latitude);
+       
 
           this.model.config.context["partner_longitude"] = longitude;
           this.model.config.context["partner_latitude"] = latitude;
