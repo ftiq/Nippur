@@ -13,15 +13,15 @@ class AccountMoveLine(models.Model):
     @api.depends('move_id.line_ids.amount_residual')
     def _compute_remaining_due(self):
         for line in self:
-            # فقط على خطوط المبيعات
             if line.account_id.account_type == 'income' and line.move_id:
                 move = line.move_id
 
-                # سطر الزبون
+                # سطر الزبون، باستثناء الحساب 7
                 customer_line = move.line_ids.filtered(
-                    lambda l: l.account_id.account_type == 'asset_receivable'
+                    lambda l: l.account_id.account_type == 'asset_receivable' and l.account_id.id != 7
                 )
-                # كل خطوط المبيعات
+
+                # جميع خطوط المبيعات
                 sales_lines = move.line_ids.filtered(
                     lambda l: l.account_id.account_type == 'income'
                 )
