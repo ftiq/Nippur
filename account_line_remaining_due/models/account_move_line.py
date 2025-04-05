@@ -14,7 +14,7 @@ class AccountMoveLine(models.Model):
     def _compute_remaining_due(self):
         moves = self.mapped('move_id')
         for move in moves:
-            # فقط الأسطر اللي كودها 333 أو 400000
+            # استخرج السطور المستهدفة فقط (كود الحساب 333 أو 400000)
             target_lines = move.line_ids.filtered(
                 lambda l: str(l.account_id.code) in ('333', '400000')
             )
@@ -24,15 +24,15 @@ class AccountMoveLine(models.Model):
                     line.remaining_due = 0.0
                 continue
 
-            # نحاول نأخذ أي residual من أي سطر (بدلاً من حصره بـ 121)
-            residual = sum(line.amount_residual for line in move.line_ids)
-            total_amount = sum(abs(l.balance) for l in target_lines)
+            # مجموع الدائن لجميع الأسطر المستهدفة
+            total_sales = sum(l.credit for l in target_lines)
+            # مجموع المتبقي من القيد كله
+            total_due = sum(l.amount_residual for l in move.line_ids)
 
             for line in move.line_ids:
                 if str(line.account_id.code) in ('333', '400000'):
                     line.remaining_due = (
-                        (abs(line.balance) / total_amount) * residual
-                        if total_amount else 0.0
+                        (line.credit / total_sales) * total_due if total_sales else 0.0
                     )
                 else:
                     line.remaining_due = 0.0
