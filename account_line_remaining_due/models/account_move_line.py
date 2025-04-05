@@ -1,4 +1,4 @@
-from odoo import api, fields, models
+from odoo import models, fields, api
 
 class AccountMoveLine(models.Model):
     _inherit = 'account.move.line'
@@ -13,26 +13,21 @@ class AccountMoveLine(models.Model):
     @api.depends('move_id.line_ids.amount_residual')
     def _compute_remaining_due(self):
         for line in self:
-            move = line.move_id
-            if not move:
-                line.remaining_due = 0.0
-                continue
+            if line.move_id:
+                move = line.move_id
 
-            # نحدد سطر حساب الزبون فقط (رقم الحساب = 121)
-            customer_line = move.line_ids.filtered(lambda l: l.account_id.code == '121')
-            if not customer_line:
-                line.remaining_due = 0.0
-                continue
+                # تحديد السطر الذي يحمل حساب الزبون فقط (account_id = 121)
+                customer_line = move.line_ids.filtered(lambda l: l.account_id.id == 121)
 
-            # ما نحسب شيء في سطر الزبون نفسه
-            if line.account_id.code == '121':
-                line.remaining_due = 0.0
-                continue
+                # كل الأسطر باستثناء حساب الزبون
+                other_lines = move.line_ids.filtered(lambda l: l.account_id.id != 121)
 
-            # نوزّع على كل السطور ما عدا الزبون
-            target_lines = move.line_ids.filtered(lambda l: l.account_id.code != '121')
-            total_amount = sum(abs(l.balance) for l in target_lines)
-
-            # نوزّع المتبقي (residual) من حساب الزبون على الباقين
-            residual = customer_line[0].amount_residual
-            line.remaining_due = (abs(line.balance) / total_amount) * residual if total_amount else 0.0
+                if customer_line and other_lines:
+                    residual = customer_line[0].amount_residual
+                    total_credit = sum(l.credit for l in other_lines)
+                    if total_credit:
+                        line.remaining_due = (line.credit / total_credit) * residual if line in other_lines else 0.0
+                    else:
+                        line.remaining_due = 0.0
+                else:
+                    line.remaining_due = 0.0
