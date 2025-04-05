@@ -1,38 +1,37 @@
-from odoo import api, fields, models
+from odoo import models, fields, api
 
 class AccountMoveLine(models.Model):
     _inherit = 'account.move.line'
 
     remaining_due = fields.Monetary(
-        string='Remaining Due',
+        string="Remaining Due",
+        compute="_compute_remaining_due",
+        store=True,
         currency_field='currency_id',
-        compute='_compute_remaining_due',
-        store=True
     )
 
     @api.depends('move_id.line_ids.amount_residual')
     def _compute_remaining_due(self):
-        moves = self.mapped('move_id')
-        for move in moves:
-            # استخرج السطور المستهدفة فقط (كود الحساب 333 أو 400000)
-            target_lines = move.line_ids.filtered(
-                lambda l: str(l.account_id.code) in ('333', '400000')
-            )
+        for line in self:
+            # ✅ إذا الحساب income أو كوده 333
+            if (line.account_id.account_type == 'income' or str(line.account_id.code) == '333') and line.move_id:
+                # نبحث عن سطور الزبون (ذمم مدينة)
+                receivable_lines = line.move_id.line_ids.filtered(
+                    lambda l: l.account_id.account_type == 'asset_receivable'
+                )
 
-            if not target_lines:
-                for line in move.line_ids:
-                    line.remaining_due = 0.0
-                continue
+                if receivable_lines:
+                    total_due = sum(l.amount_residual for l in receivable_lines)
 
-            # مجموع الدائن لجميع الأسطر المستهدفة
-            total_sales = sum(l.credit for l in target_lines)
-            # مجموع المتبقي من القيد كله
-            total_due = sum(l.amount_residual for l in move.line_ids)
-
-            for line in move.line_ids:
-                if str(line.account_id.code) in ('333', '400000'):
-                    line.remaining_due = (
-                        (line.credit / total_sales) * total_due if total_sales else 0.0
+                    # ✅ نحسب فقط الأسطر income أو كودها 333
+                    total_sales = sum(
+                        l.credit for l in line.move_id.line_ids.filtered(
+                            lambda l: l.account_id.account_type == 'income' or str(l.account_id.code) == '333'
+                        )
                     )
+
+                    line.remaining_due = (line.credit / total_sales) * total_due if total_sales else 0.0
                 else:
                     line.remaining_due = 0.0
+            else:
+                line.remaining_due = 0.0
