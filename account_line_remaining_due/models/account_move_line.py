@@ -18,23 +18,21 @@ class AccountMoveLine(models.Model):
                 line.remaining_due = 0.0
                 continue
 
-            # سطر الزبون (حساب 121 فقط)
+            # نحدد سطر الزبون (حساب رقم 121)
             customer_line = move.line_ids.filtered(lambda l: l.account_id.code == '121')
             if not customer_line:
                 line.remaining_due = 0.0
                 continue
 
-            # تجاهل السطر إذا هو نفسه سطر الزبون
+            # نتجاهل سطر الزبون نفسه
             if line.account_id.code == '121':
                 line.remaining_due = 0.0
                 continue
 
-            # باقي الأسطر (اللي مش 121)
-            lines_to_distribute = move.line_ids.filtered(lambda l: l.account_id.code != '121')
-            total_credit = sum(l.credit for l in lines_to_distribute)
+            # نجيب فقط السطور اللي حسابها مو 121
+            target_lines = move.line_ids.filtered(lambda l: l.account_id.code != '121')
+            total_amount = sum(abs(l.balance) for l in target_lines)
 
-            # المتبقي في سطر الزبون
+            # التوزيع من الزبون
             residual = customer_line[0].amount_residual
-
-            # توزيع المتبقي على حسب نسبة الائتمان
-            line.remaining_due = (line.credit / total_credit) * residual if total_credit else 0.0
+            line.remaining_due = (abs(line.balance) / total_amount) * residual if total_amount else 0.0
