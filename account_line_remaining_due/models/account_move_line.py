@@ -14,9 +14,12 @@ class AccountMoveLine(models.Model):
     def _compute_remaining_due(self):
         moves = self.mapped('move_id')
         for move in moves:
+            # نحدد سطر الزبون (121)
             customer_lines = move.line_ids.filtered(lambda l: l.account_id.code == '121')
+
+            # فقط السطور التي كود حسابها 333 أو 400000
             target_lines = move.line_ids.filtered(
-                lambda l: (l.account_id.code.startswith('400') or l.name == 'رصيد أفتتاحي')
+                lambda l: l.account_id.code in ('333', '400000')
             )
 
             if not customer_lines or not target_lines:
@@ -30,10 +33,7 @@ class AccountMoveLine(models.Model):
             for line in move.line_ids:
                 if line.account_id.code == '121':
                     line.remaining_due = 0.0
-                elif line.name == 'رصيد أفتتاحي':
-                    line.remaining_due = 0.0
-                    line.credit = residual
-                elif line.account_id.code.startswith('400'):
+                elif line.account_id.code in ('333', '400000'):
                     line.remaining_due = (
                         (abs(line.balance) / total_amount) * residual
                         if total_amount else 0.0
