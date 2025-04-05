@@ -16,12 +16,11 @@ class AccountMoveLine(models.Model):
             if line.account_id.account_type == 'income' and line.move_id:
                 move = line.move_id
 
-                # سطر الزبون، باستثناء الحساب 7
+                # سطر الزبون (المدين)، ولكن لا نريد الحساب رقم 7
                 customer_line = move.line_ids.filtered(
                     lambda l: l.account_id.account_type == 'asset_receivable' and l.account_id.id != 7
                 )
 
-                # جميع خطوط المبيعات
                 sales_lines = move.line_ids.filtered(
                     lambda l: l.account_id.account_type == 'income'
                 )
