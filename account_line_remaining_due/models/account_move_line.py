@@ -1,3 +1,4 @@
+from odoo import api, fields, models  # ← هذا كان ناقص
 @api.depends('move_id.line_ids.amount_residual')
 def _compute_remaining_due(self):
     moves = self.mapped('move_id')
