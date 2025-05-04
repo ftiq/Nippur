@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+  <record id="view_tree_academy_player" model="ir.ui.view">
+    <field name="name">academy.player.tree</field>
+    <field name="model">academy.player</field>
+    <field name="arch" type="xml">
+      <tree string="قائمة اللاعبين">
+        <field name="full_name"/>
+        <field name="subscription_end_date"/>
+        <field name="subscription_status"/>
+      </tree>
+    </field>
+  </record>
+
+  <record id="view_form_academy_player" model="ir.ui.view">
+    <field name="name">academy.player.form</field>
+    <field name="model">academy.player</field>
+    <field name="arch" type="xml">
+      <form string="استمارة تسجيل اللاعب">
+        <sheet>
+          <group>
+            <field name="full_name"/>
+            <field name="surname"/>
+            <field name="mother_name"/>
+            <field name="birth_date"/>
+            <field name="address"/>
+            <field name="phone"/>
+            <field name="weight"/>
+            <field name="height"/>
+            <field name="visible_marks"/>
+            <field name="pledge_text" widget="text"/>
+            <field name="guardian_name"/>
+            <field name="signed_date"/>
+            <field name="player_image" widget="image" class="oe_avatar"/>
+            <field name="fingerprint_template" widget="binary"/>
+          </group>
+          <group>
+            <field name="subscription_ids"/>
+            <field name="subscription_end_date" readonly="1"/>
+            <field name="subscription_status" readonly="1"/>
+          </group>
+        </sheet>
+      </form>
+    </field>
+  </record>
+
+  <record id="action_academy_player" model="ir.actions.act_window">
+    <field name="name">تسجيل الطلاب</field>
+    <field name="res_model">academy.player</field>
+    <field name="view_mode">tree,form</field>
+  </record>
+
+  <menuitem id="menu_academy_root" name="الأكاديمية" sequence="10"/>
+  <menuitem id="menu_academy_player" name="تسجيل الطلاب" parent="menu_academy_root" action="action_academy_player"/>
+</odoo>

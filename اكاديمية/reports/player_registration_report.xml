@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+  <template id="report_player_form">
+    <t t-call="web.html_container">
+      <div class="page">
+        <div style="text-align: center;">
+          <h3>استمارة تسجيل</h3>
+          <h4>أكاديمية نادي إسبانيول</h4>
+          <br/>
+        </div>
+        <table style="width:100%; border:none;">
+          <tr><td><strong>الاسم الثلاثي:</strong></td><td><t t-out="doc.full_name or ''"/></td></tr>
+          <tr><td><strong>اللقب:</strong></td><td><t t-out="doc.surname or ''"/></td></tr>
+          <tr><td><strong>اسم الأم:</strong></td><td><t t-out="doc.mother_name or ''"/></td></tr>
+          <tr><td><strong>تاريخ الميلاد:</strong></td><td><t t-out="doc.birth_date or ''"/></td></tr>
+          <tr><td><strong>العنوان:</strong></td><td><t t-out="doc.address or ''"/></td></tr>
+          <tr><td><strong>رقم الهاتف:</strong></td><td><t t-out="doc.phone or ''"/></td></tr>
+          <tr><td><strong>الوزن:</strong></td><td><t t-out="doc.weight or ''"/></td></tr>
+          <tr><td><strong>الطول:</strong></td><td><t t-out="doc.height or ''"/></td></tr>
+          <tr><td><strong>العلامات الظاهرة:</strong></td><td colspan="2"><t t-out="doc.visible_marks or ''"/></td></tr>
+        </table>
+        <hr/>
+        <h4 style="text-align: center;">تعهد خطي</h4>
+        <p><t t-out="doc.pledge_text or ''"/></p>
+        <p><strong>ولي الأمر:</strong> <t t-out="doc.guardian_name or ''"/></p>
+        <p><strong>التوقيع:</strong> ____________________ <strong>التاريخ:</strong> <t t-out="doc.signed_date or ''"/></p>
+        <hr/>
+        <div style="text-align: center;">
+          <strong>بيانات الاشتراك والبصمة</strong>
+        </div>
+        <table style="width:100%; border:none; margin-top:10px;">
+          <tr><td><strong>تاريخ الانتهاء:</strong></td><td><t t-out="doc.subscription_end_date or ''"/></td></tr>
+          <tr><td><strong>حالة الاشتراك:</strong></td><td><t t-esc="doc.subscription_status=='active' and 'نشط' or 'منتهي'"/></td></tr>
+          <tr><td><strong>البصمة:</strong></td><td><t t-if="doc.fingerprint_template">✔️</t t-if><t t-if="not doc.fingerprint_template">❌</t t-if></td></tr>
+        </table>
+      </div>
+    </t>
+  </template>
+  <report id="action_report_player_form"
+          string="استمارة تسجيل اللاعب"
+          model="academy.player"
+          report_type="qweb-pdf"
+          name="espaniole_academy_registration.report_player_form"
+          file="espaniole_academy_registration.report_player_form"
+          print_report_name="'استمارة تسجيل - لاعب'"/>
+</odoo>
