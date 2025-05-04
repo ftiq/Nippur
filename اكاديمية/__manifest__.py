@@ -6,7 +6,7 @@
     'category': 'Custom',
     'author': 'Your Company',
     'license': 'LGPL-3',
-    'depends': ['base', 'sale_subscription', 'web', 'report'],
+    'depends': ['base', 'sale_subscription', 'web'],  # تم حذف 'report'
     'data': [
         'security/ir.model.access.csv',
         'views/player_registration_view.xml',
