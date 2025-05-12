@@ -1,6 +1,6 @@
 {
     'name': 'Location Tracker User',
-    'version': '17.0.1.0',
+    'version': '18.0.1.0',
     'summary': 'Track user location information',
     'description': """
         This module allows tracking and storing user location information.
