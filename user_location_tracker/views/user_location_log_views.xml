@@ -3,10 +3,9 @@
     <record id="view_user_location_log_tree" model="ir.ui.view">
         <field name="name">user.location.log.tree</field>
         <field name="model">user.location.log</field>
-        <field name="type">tree</field> <!-- ✅ Required -->
+        <field name="type">tree</field>
         <field name="arch" type="xml">
             <tree>
-                <field name="user_id" string="User Name"/>
                 <field name="user_id" string="Login" widget="badge"/>
                 <field name="country_name"/>
                 <field name="latitude"/>
@@ -21,7 +20,7 @@
     <record id="view_user_location_log_form" model="ir.ui.view">
         <field name="name">user.location.log.form</field>
         <field name="model">user.location.log</field>
-        <field name="type">form</field> <!-- ✅ Required -->
+        <field name="type">form</field>
         <field name="arch" type="xml">
             <form>
                 <sheet>
@@ -42,21 +41,22 @@
         </field>
     </record>
 
-    <!-- Action -->
+    <!-- Action Window -->
     <record id="action_user_location_log" model="ir.actions.act_window">
         <field name="name">User Location Logs</field>
         <field name="res_model">user.location.log</field>
         <field name="view_mode">tree,form</field>
     </record>
 
-    <!-- Menu -->
-    <menuitem id="menu_user_location_log_root" name="Location Tracking" 
-              parent="base.menu_administration" 
-              sequence="100"/>
-              
-    <menuitem id="menu_user_location_log" 
+    <!-- Menu Items -->
+    <menuitem id="menu_user_location_log_root"
+              name="Location Tracking"
+              parent="base.menu_administration"
+              sequence="100" />
+
+    <menuitem id="menu_user_location_log"
               name="User Location Logs"
               parent="menu_user_location_log_root"
               action="action_user_location_log"
-              sequence="10"/>
+              sequence="10" />
 </odoo>
