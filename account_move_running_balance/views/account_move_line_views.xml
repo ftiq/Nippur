@@ -1,54 +1,30 @@
-from psycopg2 import sql
-from odoo import api, fields, models
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!-- تعديل Tree View -->
+    <record id="view_move_line_tree_running_balance" model="ir.ui.view">
+        <field name="name">account.move.line.tree.running.balance</field>
+        <field name="model">account.move.line</field>
+        <field name="inherit_id" ref="account.view_move_line_tree"/>
+        <field name="arch" type="xml">
+            <field name="balance" position="after">
+                <field name="running_balance"/>
+                <field name="running_balance_currency"/>
+            </field>
+        </field>
+    </record>
 
-
-class AccountMoveLine(models.Model):
-    _inherit = "account.move.line"
-
-    running_balance = fields.Monetary(
-        string="Running Balance",
-        store=False,
-        compute="_compute_running_balance",
-        currency_field="company_currency_id",
-        help="Running balance in company currency.",
-    )
-    running_balance_currency = fields.Monetary(
-        string="Running Balance in Currency",
-        store=False,
-        compute="_compute_running_balance",
-        currency_field="currency_id",
-        help="Running balance in transaction currency.",
-    )
-
-    @api.depends("debit", "credit", "amount_currency")
-    def _compute_running_balance(self):
-        for record in self:
-            query = """
-                SELECT SUM(debit - credit), SUM(amount_currency)
-                FROM account_move_line
-                WHERE account_id = %s
-                  AND company_id = %s
-                  AND (date < %s OR (date = %s AND id <= %s))
-            """
-            args = [
-                record.account_id.id,
-                record.company_id.id,
-                record.date,
-                record.date,
-                record.id,
-            ]
-
-            # إذا الحساب من نوع Receivable/Payable نضيف شرط الشريك
-            if record.account_id.account_type in ("asset_receivable", "liability_payable"):
-                query += " AND partner_id = %s"
-                args.append(record.partner_id.id or None)
-
-            # لو في عملة نضيف شرطها
-            if record.currency_id:
-                query += " AND currency_id = %s"
-                args.append(record.currency_id.id)
-
-            self.env.cr.execute(query, tuple(args))
-            result = self.env.cr.fetchone()
-            record.running_balance = result[0] or 0.0
-            record.running_balance_currency = result[1] or 0.0
+    <!-- تعديل Form View -->
+    <record id="view_move_line_form_running_balance" model="ir.ui.view">
+        <field name="name">account.move.line.form.running.balance</field>
+        <field name="model">account.move.line</field>
+        <field name="inherit_id" ref="account.view_move_line_form"/>
+        <field name="arch" type="xml">
+            <group name="amount" position="after">
+                <group>
+                    <field name="running_balance" readonly="1"/>
+                    <field name="running_balance_currency" readonly="1"/>
+                </group>
+            </group>
+        </field>
+    </record>
+</odoo>
