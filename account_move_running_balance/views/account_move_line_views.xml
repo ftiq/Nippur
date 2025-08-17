@@ -1,27 +1,49 @@
-<odoo>
-    <!-- Extend the Tree View for account.move.line -->
-    <record model="ir.ui.view" id="account_move_line_running_balance_tree">
-        <field name="name">account.move.line.running.balance.tree</field>
-        <field name="model">account.move.line</field>
-        <field name="inherit_id" ref="account.view_move_line_tree" />
-        <field name="arch" type="xml">
-            <field name="balance" position="after">
-                <field name="running_balance" sum="Total Running Balance" optional="show" />
-                <field name="running_balance_currency" sum="Total Running Balance in Currency" optional="show" />
-            </field>
-        </field>
-    </record>
+@api.depends_context("domain_running_balance")
+def _compute_running_balance(self):
+    query_base = """
+        SELECT SUM(balance), SUM(amount_currency)
+        FROM account_move_line
+        WHERE {}
+            AND account_id = %s
+            AND company_id = %s
+            AND (date < %s OR (date = %s AND id <= %s))
+    """
 
-    <!-- Extend the Form View for account.move.line -->
-    <record model="ir.ui.view" id="account_move_line_running_balance_form">
-        <field name="name">account.move.line.running.balance.form</field>
-        <field name="model">account.move.line</field>
-        <field name="inherit_id" ref="account.view_move_line_form" />
-        <field name="arch" type="xml">
-            <field name="balance" position="after">
-                <field name="running_balance" />
-                <field name="running_balance_currency" />
-            </field>
-        </field>
-    </record>
-</odoo>
+    receivable_payable_filter = """
+        AND account_id IN (
+            SELECT id FROM account_account
+            WHERE account_type IN ('asset_receivable', 'liability_payable')
+        )
+    """
+
+    for record in self:
+        record.running_balance = 0.0
+        record.running_balance_currency = 0.0
+
+        query = self._where_calc(self.env.context.get("domain_running_balance", []))
+        where_clause, where_params = query.where_clause, query.where_params
+
+        query_full = sql.SQL(query_base).format(sql.SQL(where_clause or "TRUE"))
+        query_args = where_params + [
+            record.account_id.id,
+            record.company_id.id,
+            record.date,
+            record.date,
+            record.id,
+        ]
+
+        if record.account_id.account_type in ("asset_receivable", "liability_payable"):
+            query_full += sql.SQL(receivable_payable_filter)
+            if record.partner_id:
+                query_full += sql.SQL(" AND partner_id = %s")
+                query_args.append(record.partner_id.id)
+
+        if record.currency_id:
+            query_full += sql.SQL(" AND currency_id = %s")
+            query_args.append(record.currency_id.id)
+
+        self.env.cr.execute(query_full, tuple(query_args))
+        result = self.env.cr.fetchone()
+        if result:
+            record.running_balance = result[0] or 0.0
+            record.running_balance_currency = result[1] or 0.0
