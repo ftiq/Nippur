@@ -19,12 +19,11 @@
         <field name="model">account.move.line</field>
         <field name="inherit_id" ref="account.view_move_line_form"/>
         <field name="arch" type="xml">
-            <group name="amount" position="after">
-                <group>
-                    <field name="running_balance" readonly="1"/>
-                    <field name="running_balance_currency" readonly="1"/>
-                </group>
-            </group>
+            <!-- نضيف الحقول بعد balance -->
+            <field name="balance" position="after">
+                <field name="running_balance" readonly="1"/>
+                <field name="running_balance_currency" readonly="1"/>
+            </field>
         </field>
     </record>
 </odoo>
