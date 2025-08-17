@@ -9,14 +9,14 @@ class AccountMoveLine(models.Model):
         string="Running Balance",
         store=False,
         compute="_compute_running_balance",
-        currency_field="currency_id",  # Change to use `currency_id`
+        currency_field="currency_id",
         help="Running balance based on account, partner, and currency.",
     )
     running_balance_currency = fields.Monetary(
         string="Running Balance in Currency",
         store=False,
         compute="_compute_running_balance",
-        currency_field="currency_id",  # Change to use `currency_id`
+        currency_field="currency_id",
         help="Running balance in currency for the selected account, partner, and currency.",
     )
 
@@ -28,7 +28,7 @@ class AccountMoveLine(models.Model):
         - `account_id`, `currency_id`, and `partner_id` for "Receivable" or "Payable" accounts.
         """
         query_base = """
-            SELECT SUM(custom_amount), SUM(amount_currency)
+            SELECT SUM(balance), SUM(amount_currency)
             FROM account_move_line
             WHERE {}
                 AND account_id = %s
