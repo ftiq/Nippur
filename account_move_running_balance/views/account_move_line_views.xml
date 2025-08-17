@@ -5,7 +5,7 @@
         <field name="model">account.move.line</field>
         <field name="inherit_id" ref="account.view_move_line_tree" />
         <field name="arch" type="xml">
-            <field name="custom_amount" position="after">
+            <field name="balance" position="after">
                 <field name="running_balance" sum="Total Running Balance" optional="show" />
                 <field name="running_balance_currency" sum="Total Running Balance in Currency" optional="show" />
             </field>
@@ -18,7 +18,7 @@
         <field name="model">account.move.line</field>
         <field name="inherit_id" ref="account.view_move_line_form" />
         <field name="arch" type="xml">
-            <field name="custom_amount" position="after">
+            <field name="balance" position="after">
                 <field name="running_balance" />
                 <field name="running_balance_currency" />
             </field>
