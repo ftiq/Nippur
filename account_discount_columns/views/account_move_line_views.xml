@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="view_move_line_tree_inherit" model="ir.ui.view">
+            <field name="name">account.move.line.list.inherit</field>
+            <field name="model">account.move.line</field>
+            <field name="inherit_id" ref="account.view_move_line_tree"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='name']" position="after">
+                    <field name="discount_amount" string="Discount Amount" optional="show" sum="Total Discount"/>
+                </xpath>
+                
+                <xpath expr="//field[@name='discount_amount']" position="after">
+                    <field name="gross_total" string="Gross Total" optional="show" sum="Total Gross"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="view_move_line_form_inherit" model="ir.ui.view">
+            <field name="name">account.move.line.form.inherit</field>
+            <field name="model">account.move.line</field>
+            <field name="inherit_id" ref="account.view_move_line_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//page[@name='information']/group/group[1]" position="inside">
+                    <field name="discount_amount" readonly="1"/>
+                    <field name="gross_total" readonly="1"/>
+                </xpath>
+            </field>
+        </record>
+
+    </data>
+</odoo>
