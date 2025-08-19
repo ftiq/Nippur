@@ -2,11 +2,9 @@
     'name': 'Account Discount Columns',
     'version': '18.0.1.0.0',
     'category': 'Accounting',
-    'summary': 'Add discount and total columns to journal items',
+    'summary': '',
     'description': """
-        This module adds two columns to account move lines:
-        - Discount Amount: Shows the discount amount 
-        - Gross Total: Shows net amount + discount (original amount before discount)
+
     """,
     'author': "Engineer/Saleh Alhjany",
     'website': "https://www.facebook.com/salh.alhjany/?rdid=plWVCqF0AkDERe3g",
