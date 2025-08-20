@@ -1,22 +1,19 @@
-from odoo import api, fields, models
+from odoo import fields, models, api
 
-class AccountMove(models.Model):
-    _inherit = 'account.move'
+class AccountMoveLine(models.Model):
+    _inherit = "account.move.line"
 
-    total_discount = fields.Monetary(
-        string="إجمالي الخصم",
-        compute="_compute_total_discount",
+    discount_amount = fields.Monetary(
+        string="Discount Amount",
+        currency_field='currency_id',
+        compute="_compute_discount_amount",
         store=True,
-        currency_field="currency_id"
     )
 
-    @api.depends('invoice_line_ids.product_id', 'invoice_line_ids.price_subtotal')
-    def _compute_total_discount(self):
-        DISCOUNT_PRODUCT_ID = 9   # رقم المنتج الخاص بالخصم
-
-        for move in self:
-            discount_total = 0.0
-            for line in move.invoice_line_ids:
-                if line.product_id and line.product_id.id == DISCOUNT_PRODUCT_ID:
-                    discount_total += abs(line.price_subtotal)
-            move.total_discount = discount_total
+    @api.depends('price_unit', 'quantity', 'discount')
+    def _compute_discount_amount(self):
+        for line in self:
+            if line.discount:
+                line.discount_amount = (line.price_unit * line.quantity * line.discount) / 100
+            else:
+                line.discount_amount = 0.0
