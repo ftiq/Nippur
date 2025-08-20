@@ -17,26 +17,27 @@ class AccountMoveLine(models.Model):
         currency_field='currency_id',
     )
 
-    @api.depends('price_unit', 'quantity', 'discount', 'currency_id', 'balance')
+    @api.depends('price_unit', 'quantity', 'discount', 'currency_id')
     def _compute_discount_amounts(self):
         for line in self:
             currency = line.currency_id
+
             # تجاهل أسطر الملاحظات/العناوين
             if line.display_type:
                 line.discount_amount = 0.0
                 line.gross_total = 0.0
                 continue
 
-            # المبلغ المحسوب فعليًا (Odoo يعبّيه من السعر * الكمية)
+            # المبلغ الخام
             raw_amount = line.price_unit * line.quantity if line.price_unit and line.quantity else 0.0
 
-            # إذا السطر خصم (قيمة سالبة)
-            if raw_amount < 0:
+            if line.price_unit < 0:  
+                # هذا سطر خصم (سعر بالسالب)
                 disc = abs(raw_amount)
                 line.discount_amount = currency.round(disc) if currency else disc
                 line.gross_total = 0.0
             else:
-                # سطر عادي: احسب الخصم من النسبة
+                # سطر عادي: خصم بالنسبة (لو موجود)
                 disc = raw_amount * (line.discount / 100.0) if line.discount else 0.0
                 gross = raw_amount + disc
                 line.discount_amount = currency.round(disc) if currency else disc
