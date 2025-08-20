@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from odoo import api, fields, models
 
 class AccountMoveLine(models.Model):
@@ -9,7 +8,6 @@ class AccountMoveLine(models.Model):
         compute='_compute_discount_amounts',
         store=True,
         currency_field='currency_id',
-        help="The total discount amount for this line"
     )
 
     gross_total = fields.Monetary(
@@ -17,36 +15,28 @@ class AccountMoveLine(models.Model):
         compute='_compute_discount_amounts',
         store=True,
         currency_field='currency_id',
-        help="Total amount before discount (Net + Discount)"
     )
 
-    @api.depends('price_unit', 'quantity', 'discount', 'currency_id', 'display_type')
+    @api.depends('price_unit', 'quantity', 'discount', 'currency_id', 'balance')
     def _compute_discount_amounts(self):
         for line in self:
-            # تجاهل أسطر العناوين/الملاحظات
+            currency = line.currency_id
+            # تجاهل أسطر الملاحظات/العناوين
             if line.display_type:
                 line.discount_amount = 0.0
                 line.gross_total = 0.0
                 continue
 
-            # إذا لا توجد قيم أرقام كافية
-            if not line.price_unit or not line.quantity:
-                line.discount_amount = 0.0
-                line.gross_total = 0.0
-                continue
+            # المبلغ المحسوب فعليًا (Odoo يعبّيه من السعر * الكمية)
+            raw_amount = line.price_unit * line.quantity if line.price_unit and line.quantity else 0.0
 
-            # المبلغ الخام قبل أي خصم
-            raw_amount = line.price_unit * line.quantity
-            currency = line.currency_id
-
-            # 1) سطر خصم (قيمة سالبة): اعتبر القيمة المطلقة هي مبلغ الخصم
+            # إذا السطر خصم (قيمة سالبة)
             if raw_amount < 0:
                 disc = abs(raw_amount)
                 line.discount_amount = currency.round(disc) if currency else disc
-                # هذا سطر خصم، لا يوجد إجمالي خام لهذا السطر
                 line.gross_total = 0.0
             else:
-                # 2) سطر عادي: احسب خصم النسبة إن وُجد
+                # سطر عادي: احسب الخصم من النسبة
                 disc = raw_amount * (line.discount / 100.0) if line.discount else 0.0
                 gross = raw_amount + disc
                 line.discount_amount = currency.round(disc) if currency else disc
