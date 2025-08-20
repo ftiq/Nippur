@@ -1,19 +1,23 @@
-from odoo import fields, models, api
+<odoo>
+    <record id="view_move_line_tree_inherit" model="ir.ui.view">
+        <field name="name">account.move.line.list.inherit</field>
+        <field name="model">account.move.line</field>
+        <field name="inherit_id" ref="account.view_move_line_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='debit']" position="before">
+                <field name="discount_amount" optional="show"/>
+            </xpath>
+        </field>
+    </record>
 
-class AccountMoveLine(models.Model):
-    _inherit = "account.move.line"
-
-    discount_amount = fields.Monetary(
-        string="Discount Amount",
-        currency_field='currency_id',
-        compute="_compute_discount_amount",
-        store=True,
-    )
-
-    @api.depends('price_unit', 'quantity', 'discount')
-    def _compute_discount_amount(self):
-        for line in self:
-            if line.discount:
-                line.discount_amount = (line.price_unit * line.quantity * line.discount) / 100
-            else:
-                line.discount_amount = 0.0
+    <record id="view_move_line_form_inherit" model="ir.ui.view">
+        <field name="name">account.move.line.form.inherit</field>
+        <field name="model">account.move.line</field>
+        <field name="inherit_id" ref="account.view_move_line_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='price_unit']" position="after">
+                <field name="discount_amount" readonly="1"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>
