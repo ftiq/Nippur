@@ -8,11 +8,11 @@
             <field name="inherit_id" ref="account.view_move_line_tree"/>
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='name']" position="after">
-                    <field name="discount_amount" string="Discount Amount" optional="show" sum="Total Discount"/>
+                    <field name="discount_amount" string="مبلغ الخصم" optional="show" sum="إجمالي الخصم"/>
                 </xpath>
                 
                 <xpath expr="//field[@name='discount_amount']" position="after">
-                    <field name="gross_total" string="Gross Total" optional="show" sum="Total Gross"/>
+                    <field name="gross_total" string="الإجمالي قبل الخصم" optional="show" sum="إجمالي المبلغ"/>
                 </xpath>
             </field>
         </record>
@@ -23,8 +23,8 @@
             <field name="inherit_id" ref="account.view_move_line_form"/>
             <field name="arch" type="xml">
                 <xpath expr="//page[@name='information']/group/group[1]" position="inside">
-                    <field name="discount_amount" readonly="1"/>
-                    <field name="gross_total" readonly="1"/>
+                    <field name="discount_amount" readonly="1" string="مبلغ الخصم"/>
+                    <field name="gross_total" readonly="1" string="الإجمالي قبل الخصم"/>
                 </xpath>
             </field>
         </record>
