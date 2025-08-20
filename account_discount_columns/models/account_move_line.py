@@ -17,14 +17,15 @@ class AccountMoveLine(models.Model):
         store=True
     )
 
-    @api.depends("discount", "price_unit", "quantity")
+    @api.depends("debit", "credit", "product_id")
     def _compute_discount_amount(self):
         for line in self:
-            # حساب مبلغ الخصم = (السعر * الكمية * نسبة الخصم)
-            line.discount_amount = (line.price_unit * line.quantity * line.discount) / 100.0
+            if line.product_id and line.product_id.id == 9:  # منتج الخصم
+                line.discount_amount = line.debit
+            else:
+                line.discount_amount = 0.0
 
     @api.depends("price_unit", "quantity")
     def _compute_gross_total(self):
         for line in self:
-            # الإجمالي قبل الخصم = السعر * الكمية
             line.gross_total = line.price_unit * line.quantity
