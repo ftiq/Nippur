@@ -1,20 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
-    <!-- Inherit list view of account.move.line to add Print button -->
+    <!-- Inherit search view to add action button in the action menu -->
     <record id="view_move_line_tree_inherit_report_button" model="ir.ui.view">
-        <field name="name">account.move.line.tree.inherit.report.button</field>
+        <field name="name">account.move.line.list.inherit.report.button</field>
         <field name="model">account.move.line</field>
         <field name="inherit_id" ref="account.view_move_line_tree"/>
         <field name="arch" type="xml">
-            <xpath expr="//tree" position="before">
-                <header>
-                    <button name="%(action_report_journal_items)d"
-                            string="طباعة كشف الحساب"
-                            type="action"
-                            class="btn-primary"
-                            context="{'active_ids': active_ids}"/>
-                </header>
+            <xpath expr="//tree" position="attributes">
+                <attribute name="create">false</attribute>
             </xpath>
         </field>
+    </record>
+
+    <!-- Add server action for printing report from action menu -->
+    <record id="action_report_journal_items_menu" model="ir.actions.server">
+        <field name="name">طباعة كشف الحساب</field>
+        <field name="model_id" ref="account.model_account_move_line"/>
+        <field name="state">report</field>
+        <field name="report_name">journal_items_report.report_journal_items</field>
+        <field name="binding_model_id" ref="account.model_account_move_line"/>
+        <field name="binding_type">action</field>
     </record>
 </odoo>
