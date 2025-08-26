@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <template id="report_journal_items">
+        <t t-call="web.html_container">
+            <t t-call="web.basic_layout">
+                <div class="page">
+                    <h2>طباعة كشف حساب</h2>
+                    <table class="table table-condensed" style="width: 100%;">
+                        <thead>
+                            <tr>
+                                <th style="width: 15%;">التاريخ</th>
+                                <th style="width: 15%;">الدليل</th>
+                                <th style="width: 25%;">الوصف</th>
+                                <th style="width: 15%;">الرقم</th>
+                                <th style="width: 15%;">المبلغ بالعملة</th>
+                                <th style="width: 15%;">الرصيد المتراكم</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Iterate through docs without adding a new page -->
+                            <tr t-foreach="docs" t-as="doc">
+                                <td><t t-esc="doc.date"/></td>
+                                <td><t t-esc="doc.journal_id.display_name"/></td>
+                                <td><t t-esc="doc.name"/></td>
+                                <td><t t-esc="doc.move_name"/></td>
+                                <td><t t-esc="'{:,}'.format(round(doc.amount_currency, 2))"/></td>
+                                <td><t t-esc="'{:,}'.format(round(doc.running_balance, 2))"/></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </t>
+        </t>
+    </template>
+</odoo>
