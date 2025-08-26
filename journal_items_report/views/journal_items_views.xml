@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
-    <!-- Server action to print the Journal Items Report -->
-    <record id="action_report_journal_items_menu" model="ir.actions.server">
+    <!-- Bind existing report to show in Action Menu -->
+    <record id="action_report_journal_items_binding" model="ir.actions.report">
         <field name="name">طباعة كشف الحساب</field>
-        <field name="model_id" ref="account.model_account_move_line"/>
+        <field name="model">account.move.line</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">journal_items_report.report_journal_items</field>
         <field name="binding_model_id" ref="account.model_account_move_line"/>
         <field name="binding_type">action</field>
-        <field name="state">report</field>
-        <field name="report_name">journal_items_report.report_journal_items</field>
-        <field name="context">{'active_ids': active_ids}</field>
     </record>
 </odoo>
