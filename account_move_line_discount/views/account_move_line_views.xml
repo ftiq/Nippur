@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_move_line_tree_inherit_discount" model="ir.ui.view">
+        <field name="name">account.move.line.tree.inherit.discount</field>
+        <field name="model">account.move.line</field>
+        <field name="inherit_id" ref="account.view_move_line_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='debit']" position="after">
+                <field name="discount_amount" sum="إجمالي الخصم"/>
+                <field name="net_amount" sum="إجمالي الصافي"/>
+            </xpath>
+        </field>
+    </record>
+
+
+    <record id="view_account_move_line_filter_inherit_discount" model="ir.ui.view">
+        <field name="name">account.move.line.search.inherit.discount</field>
+        <field name="model">account.move.line</field>
+        <field name="inherit_id" ref="account.view_account_move_line_filter"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='account_id']" position="after">
+                <field name="discount_amount"/>
+            </xpath>
+            <xpath expr="//filter[@name='unreconciled']" position="after">
+                <separator/>
+                <filter string="With Discount" name="with_discount" domain="[('discount_amount', '>', 0)]"/>
+            </xpath>
+            <xpath expr="//group[@expand='0']" position="inside">
+                <filter string="الخصم" name="group_by_discount_amount" domain="[]" context="{'group_by': 'discount_amount'}"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_move_line_form_inherit_discount" model="ir.ui.view">
+        <field name="name">account.move.line.form.inherit.discount</field>
+        <field name="model">account.move.line</field>
+        <field name="inherit_id" ref="account.view_move_line_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='debit']" position="after">
+                <field name="discount_amount" readonly="1"/>
+                <field name="net_amount" readonly="1"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_account_move_line_pivot_inherit_discount" model="ir.ui.view">
+        <field name="name">account.move.line.pivot.inherit.discount</field>
+        <field name="model">account.move.line</field>
+        <field name="inherit_id" ref="account.view_move_line_pivot"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='balance']" position="after">
+                <field name="discount_amount" type="measure"/>
+                <field name="net_amount" type="measure"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_account_move_line_graph_inherit_discount" model="ir.ui.view">
+        <field name="name">account.move.line.graph.inherit.discount</field>
+        <field name="model">account.move.line</field>
+        <field name="inherit_id" ref="account.account_move_line_graph_date"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='balance']" position="after">
+                <field name="discount_amount" type="measure"/>
+                <field name="net_amount" type="measure"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

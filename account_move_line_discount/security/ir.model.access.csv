@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_account_move_line_discount_user,account.move.line discount user,account.model_account_move_line,base.group_user,1,0,0,0
+access_account_move_line_discount_accountant,account.move.line discount accountant,account.model_account_move_line,account.group_account_user,1,1,1,0
+access_account_move_line_discount_manager,account.move.line discount manager,account.model_account_move_line,account.group_account_manager,1,1,1,1
