@@ -5,7 +5,6 @@
         <record id="view_telegram_bot_form" model="ir.ui.view">
             <field name="name">telegram.bot.form</field>
             <field name="model">telegram.bot</field>
-            <field name="type">form</field>
             <field name="arch" type="xml">
                 <form>
                     <sheet>
@@ -30,7 +29,6 @@
         <record id="view_telegram_bot_tree" model="ir.ui.view">
             <field name="name">telegram.bot.tree</field>
             <field name="model">telegram.bot</field>
-            <field name="type">tree</field>
             <field name="arch" type="xml">
                 <tree>
                     <field name="name"/>
@@ -44,6 +42,7 @@
             <field name="name">Telegram Bots</field>
             <field name="res_model">telegram.bot</field>
             <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="view_telegram_bot_tree"/>
         </record>
 
         <!-- Action for Telegram Chat -->
@@ -57,7 +56,6 @@
         <record id="view_telegram_chat_tree" model="ir.ui.view">
             <field name="name">telegram.chat.tree</field>
             <field name="model">telegram.chat</field>
-            <field name="type">tree</field>
             <field name="arch" type="xml">
                 <tree>
                     <field name="chat_id"/>
@@ -74,7 +72,6 @@
         <record id="view_telegram_chat_form" model="ir.ui.view">
             <field name="name">telegram.chat.form</field>
             <field name="model">telegram.chat</field>
-            <field name="type">form</field>
             <field name="arch" type="xml">
                 <form>
                     <sheet>
