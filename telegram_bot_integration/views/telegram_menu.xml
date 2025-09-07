@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<odoo>
-    <data>
-        <!-- Menu item for Telegram Bot -->
-        <menuitem id="menu_telegram_main" name="Telegram" sequence="10"/>
-        <menuitem id="menu_telegram_bots" name="Bots" parent="menu_telegram_main" action="action_telegram_bot" sequence="10"/>
-        <menuitem id="menu_telegram_chats" name="Chats" parent="menu_telegram_main" action="action_telegram_chat" sequence="20"/>
-    </data>
-</odoo>
