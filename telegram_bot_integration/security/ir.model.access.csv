@@ -1,3 +1,0 @@
-id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_telegram_bot,telegram.bot,model_telegram_bot,,1,1,1,1
-access_telegram_chat,telegram.chat,model_telegram_chat,,1,1,1,1
