@@ -9,6 +9,8 @@
         - Receive messages from Telegram to Odoo
         - Manage multiple bots
         - Webhook configuration
+        - Invoice and statement queries
+        - Account linking
     """,
     'category': 'Tools',
     'author': 'Your Name',
@@ -17,7 +19,6 @@
     'data': [
         'security/ir.model.access.csv',
         'views/telegram_bot_views.xml',
-        'views/telegram_menu.xml',
     ],
     'demo': [],
     'installable': True,
