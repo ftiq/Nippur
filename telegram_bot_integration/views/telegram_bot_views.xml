@@ -1,24 +1,100 @@
-<record id="view_telegram_chat_form" model="ir.ui.view">
-    <field name="name">telegram.chat.form</field>
-    <field name="model">telegram.chat</field>
-    <field name="arch" type="xml">
-        <form>
-            <sheet>
-                <group>
-                    <group>
-                        <field name="chat_id"/>
-                        <field name="username"/>
-                        <field name="first_name"/>
-                        <field name="last_name"/>
-                    </group>
-                    <group>
-                        <field name="bot_id"/>
-                        <field name="partner_id"/>
-                        <field name="user_id"/>
-                        <field name="active"/>
-                    </group>
-                </group>
-            </sheet>
-        </form>
-    </field>
-</record>
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- List view for Telegram Bot -->
+        <record id="view_telegram_bot_list" model="ir.ui.view">
+            <field name="name">telegram.bot.list</field>
+            <field name="model">telegram.bot</field>
+            <field name="arch" type="xml">
+                <list>
+                    <field name="name"/>
+                    <field name="active"/>
+                </list>
+            </field>
+        </record>
+
+        <!-- Form view for Telegram Bot -->
+        <record id="view_telegram_bot_form" model="ir.ui.view">
+            <field name="name">telegram.bot.form</field>
+            <field name="model">telegram.bot</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="name"/>
+                                <field name="token" password="True"/>
+                                <field name="active"/>
+                            </group>
+                            <group>
+                                <field name="webhook_url" readonly="1"/>
+                                <button name="set_webhook" string="Set Webhook" type="object" class="btn-primary"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- Action for Telegram Bot -->
+        <record id="action_telegram_bot" model="ir.actions.act_window">
+            <field name="name">Telegram Bots</field>
+            <field name="res_model">telegram.bot</field>
+            <field name="view_mode">list,form</field>
+        </record>
+
+        <!-- List view for Telegram Chat -->
+        <record id="view_telegram_chat_list" model="ir.ui.view">
+            <field name="name">telegram.chat.list</field>
+            <field name="model">telegram.chat</field>
+            <field name="arch" type="xml">
+                <list>
+                    <field name="chat_id"/>
+                    <field name="username"/>
+                    <field name="first_name"/>
+                    <field name="last_name"/>
+                    <field name="bot_id"/>
+                    <field name="active"/>
+                </list>
+            </field>
+        </record>
+
+        <!-- Form view for Telegram Chat -->
+        <record id="view_telegram_chat_form" model="ir.ui.view">
+            <field name="name">telegram.chat.form</field>
+            <field name="model">telegram.chat</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="chat_id"/>
+                                <field name="username"/>
+                                <field name="first_name"/>
+                                <field name="last_name"/>
+                            </group>
+                            <group>
+                                <field name="bot_id"/>
+                                <field name="partner_id"/>
+                                <field name="user_id"/>
+                                <field name="active"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- Action for Telegram Chat -->
+        <record id="action_telegram_chat" model="ir.actions.act_window">
+            <field name="name">Telegram Chats</field>
+            <field name="res_model">telegram.chat</field>
+            <field name="view_mode">list,form</field>
+        </record>
+
+        <!-- Menu item for Telegram Bot -->
+        <menuitem id="menu_telegram_main" name="Telegram" sequence="10"/>
+        <menuitem id="menu_telegram_bots" name="Bots" parent="menu_telegram_main" action="action_telegram_bot" sequence="10"/>
+        <menuitem id="menu_telegram_chats" name="Chats" parent="menu_telegram_main" action="action_telegram_chat" sequence="20"/>
+    </data>
+</odoo>
