@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Showcase</title>
+</head>
+
+<body style="margin:0; font-family:Arial, Helvetica, sans-serif; ">
+
+<!-- DIVIDER -->
+<div style="width:100%; height:4px; margin:50px 0; border-radius:4px;"></div>
+
+<!-- HERO SECTION -->
+<div style="padding:90px 40px; color:white; text-align:center; ">
+    <h1 style="font-size:44px; font-weight:700; margin:0 0 12px 0; color: black">
+        Lot/Serial Number Selection in Sale Order Line
+    </h1>
+    <p style="font-size:18px; max-width:740px; margin:auto; color: grey">
+        A clear walkthrough of your serial number flow, picking logic, and advanced Odoo behavior.
+    </p>
+</div>
+
+<div style="width:100%; max-width:1180px; margin:auto; border:1px solid #e1e1e1; border-radius:10px; overflow:hidden; ">
+    <!-- INTRO 2-COLUMN SECTION -->
+    <div style="padding:30px 25px; display:flex; align-items:center; justify-content:space-between; gap:30px;">
+        <div style="width:50%;">
+            <h2 style="font-size:26px; color:#1e214d; margin-bottom:12px;">Key Features</h2>
+            <ul style="font-size:17px; line-height:1.6; padding-left:20px; color:#222;">
+                <li>Choose serial/lot numbers directly on the sale order line</li>
+                <li>Auto-transfer chosen serials into pickings and delivery orders</li>
+                <li>Update quantities and add new serials even after confirmation</li>
+                <li>Supports single-step, two-step, and multi-step delivery flows</li>
+                <li>No duplicate pickings: clean merging and automatic tracking</li>
+            </ul>
+        </div>
+        <div style="width:50%; text-align:center;">
+            <img src="banner.png"
+                 style="width:100%; border-radius:10px; box-shadow:0 4px 16px rgba(0,0,0,0.15);">
+        </div>
+    </div>
+</div>
+
+<!-- MAIN CONTAINER -->
+<div style="width:92%; max-width:1300px; margin:60px auto;">
+
+    <!-- SECTION 1 -->
+    <div style="display:flex; align-items:center; justify-content:space-between; margin:70px 0;">
+        <img src="assets/src/img/screen1.png"
+             style="width:46%; border-radius:14px; box-shadow:0 8px 24px rgba(0,0,0,0.15);">
+
+        <div style="width:46%; background:white; padding:32px; border-radius:14px; box-shadow:0 8px 24px rgba(0,0,0,0.08); font-size:17px; line-height:1.7;">
+            <h2 style="font-size:26px; font-weight:700; margin-bottom:14px; color:#1e214d;">
+                Screen 1
+            </h2>
+            Two serial numbers are selected on the sale order line.
+        </div>
+    </div>
+
+    <!-- SECTION 2 -->
+    <div style="display:flex; align-items:center; justify-content:space-between; margin:70px 0; flex-direction:row-reverse;">
+        <img src="assets/src/img/screen2.png"
+             style="width:46%; border-radius:14px; box-shadow:0 8px 24px rgba(0,0,0,0.15);">
+
+        <div style="width:46%; background:white; padding:32px; border-radius:14px; box-shadow:0 8px 24px rgba(0,0,0,0.08); font-size:17px; line-height:1.7;">
+            <h2 style="font-size:26px; font-weight:700; margin-bottom:14px; color:#1e214d;">
+                Screen 2
+            </h2>
+            For multi-step routing, the picking automatically receives the same serial numbers selected on the sale order. They appear in the Source Document.
+        </div>
+    </div>
+
+    <!-- SECTION 3 -->
+    <div style="display:flex; align-items:center; justify-content:space-between; margin:70px 0;">
+        <img src="assets/src/img/screen3.png"
+             style="width:46%; border-radius:14px; box-shadow:0 8px 24px rgba(0,0,0,0.15);">
+
+        <div style="width:46%; background:white; padding:32px; border-radius:14px; box-shadow:0 8px 24px rgba(0,0,0,0.08); font-size:17px; line-height:1.7;">
+            <h2 style="font-size:26px; font-weight:700; margin-bottom:14px; color:#1e214d;">
+                Screen 3
+            </h2>
+            Advanced: If the customer wants one more unit after the sale order is confirmed, a new serial number can be added to the same line. This follows Odoo’s default behavior.
+        </div>
+    </div>
+
+    <!-- SECTION 4 -->
+    <div style="display:flex; align-items:center; justify-content:space-between; margin:70px 0; flex-direction:row-reverse;">
+        <img src="assets/src/img/screen4.png"
+             style="width:46%; border-radius:14px; box-shadow:0 8px 24px rgba(0,0,0,0.15);">
+
+        <div style="width:46%; background:white; padding:32px; border-radius:14px; box-shadow:0 8px 24px rgba(0,0,0,0.08); font-size:17px; line-height:1.7;">
+            <h2 style="font-size:26px; font-weight:700; margin-bottom:14px; color:#1e214d;">
+                Screen 4
+            </h2>
+            The existing picking updates automatically and now includes all three selected serial numbers.
+        </div>
+    </div>
+
+    <!-- SECTION 5 -->
+    <div style="display:flex; align-items:center; justify-content:space-between; margin:70px 0;">
+        <img src="assets/src/img/screen5.png"
+             style="width:46%; border-radius:14px; box-shadow:0 8px 24px rgba(0,0,0,0.15);">
+
+        <div style="width:46%; background:white; padding:32px; border-radius:14px; box-shadow:0 8px 24px rgba(0,0,0,0.08); font-size:17px; line-height:1.7;">
+            <h2 style="font-size:26px; font-weight:700; margin-bottom:14px; color:#1e214d;">
+                Screen 5
+            </h2>
+            The same serials move into the next picking steps, following Odoo’s multi-step routing logic.
+        </div>
+    </div>
+
+    <!-- SECTION 6 -->
+    <div style="display:flex; align-items:center; justify-content:space-between; margin:70px 0; flex-direction:row-reverse;">
+        <img src="assets/src/img/screen6.png"
+             style="width:46%; border-radius:14px; box-shadow:0 8px 24px rgba(0,0,0,0.15);">
+
+        <div style="width:46%; background:white; padding:32px; border-radius:14px; box-shadow:0 8px 24px rgba(0,0,0,0.08); font-size:17px; line-height:1.7;">
+            <h2 style="font-size:26px; font-weight:700; margin-bottom:14px; color:#1e214d;">
+                Screen 6
+            </h2>
+            Advanced: After validating the delivery, if the customer wants another serial, it can be added as a new line or added to the same line. Odoo creates a new picking for the extra quantity.
+        </div>
+    </div>
+
+    <!-- SECTION 7 -->
+    <div style="display:flex; align-items:center; justify-content:space-between; margin:70px 0;">
+        <img src="assets/src/img/screen7.png"
+             style="width:46%; border-radius:14px; box-shadow:0 8px 24px rgba(0,0,0,0.15);">
+
+        <div style="width:46%; background:white; padding:32px; border-radius:14px; box-shadow:0 8px 24px rgba(0,0,0,0.08); font-size:17px; line-height:1.7;">
+            <h2 style="font-size:26px; font-weight:700; margin-bottom:14px; color:#1e214d;">
+                Screen 7
+            </h2>
+            Shows the serial numbers, delivered quantities, and the remaining quantities still pending for the sale order.
+        </div>
+    </div>
+
+</div>
+
+<!-- FOOTER -->
+<div style="margin-top:90px; padding:40px 20px; text-align:center; color: grey">
+    <h2 >Contact Info</h2>
+    <h3 >Email: vashmitha@rightangle.dev</h3>
+</div>
+
+
+</body>
+</html>
