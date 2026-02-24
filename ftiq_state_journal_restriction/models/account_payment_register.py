@@ -1,5 +1,4 @@
 from odoo import api, models, Command, fields, _
-from odoo.exceptions import UserError
 
 
 class AccountPaymentRegister(models.TransientModel):
@@ -23,10 +22,18 @@ class AccountPaymentRegister(models.TransientModel):
     def _compute_available_journal_ids(self):
         super()._compute_available_journal_ids()
         for wizard in self:
-            journals = wizard._ftiq_get_partner_state_journals()
-            if not journals:
+            company = wizard.company_id or wizard.env.company
+            if not company.ftiq_use_state_journal_restriction:
                 continue
-            restricted = wizard.available_journal_ids & journals
+            state = wizard.partner_id.state_id
+            if not state:
+                wizard.available_journal_ids = [Command.set([])]
+                continue
+            state_journals = state.ftiq_journal_ids
+            if not state_journals:
+                wizard.available_journal_ids = [Command.set([])]
+                continue
+            restricted = wizard.available_journal_ids & state_journals
             wizard.available_journal_ids = [Command.set(restricted.ids)]
 
     @api.depends('payment_type', 'company_id', 'can_edit_wizard', 'partner_id', 'partner_id.state_id')
@@ -37,11 +44,18 @@ class AccountPaymentRegister(models.TransientModel):
                 available_journals |= wizard._get_batch_available_journals(batch)
 
             company = wizard.company_id or wizard.env.company
-            state = wizard.partner_id.state_id
-            if company.ftiq_use_state_journal_restriction and state and state.ftiq_journal_ids:
-                wizard.ftiq_allowed_journal_ids = available_journals & state.ftiq_journal_ids
-            else:
+            if not company.ftiq_use_state_journal_restriction:
                 wizard.ftiq_allowed_journal_ids = available_journals
+                continue
+            state = wizard.partner_id.state_id
+            if not state:
+                wizard.ftiq_allowed_journal_ids = wizard.env['account.journal']
+                continue
+            state_journals = state.ftiq_journal_ids
+            if not state_journals:
+                wizard.ftiq_allowed_journal_ids = wizard.env['account.journal']
+                continue
+            wizard.ftiq_allowed_journal_ids = available_journals & state_journals
 
     @api.depends('available_journal_ids')
     def _compute_journal_id(self):
@@ -58,9 +72,4 @@ class AccountPaymentRegister(models.TransientModel):
                 wizard.journal_id = False
 
     def action_create_payments(self):
-        self.ensure_one()
-        company = self.company_id or self.env.company
-        if company.ftiq_use_state_journal_restriction and self.partner_id.state_id and self.partner_id.state_id.ftiq_journal_ids:
-            if not self.ftiq_allowed_journal_ids:
-                raise UserError(_('No journals are available for this partner state.'))
         return super().action_create_payments()

@@ -54,7 +54,5 @@ class AccountPayment(models.Model):
             if not company.ftiq_use_state_journal_restriction or not state or not state.ftiq_journal_ids:
                 continue
             restricted = pay._ftiq_get_restricted_available_journals()
-            if not restricted:
-                raise ValidationError(_('No journals are available for this partner state.'))
-            if pay.journal_id not in restricted:
+            if pay.journal_id and restricted and pay.journal_id not in restricted:
                 raise ValidationError(_('The selected journal is not allowed for this partner state.'))
