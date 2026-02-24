@@ -12,6 +12,7 @@
     'data': [
         'views/res_country_state_views.xml',
         'views/res_config_settings_views.xml',
+        'views/account_payment_register_views.xml',
     ],
     'installable': True,
     'application': False,

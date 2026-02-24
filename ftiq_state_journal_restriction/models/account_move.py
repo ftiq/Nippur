@@ -29,6 +29,10 @@ class AccountMove(models.Model):
     def _compute_journal_id(self):
         super()._compute_journal_id()
         for move in self:
+            company = move.company_id or self.env.company
+            state = move.partner_id.state_id
+            if not company.ftiq_use_state_journal_restriction or not state or not state.ftiq_journal_ids:
+                continue
             restricted = move._ftiq_get_restricted_suitable_journals()
             if not restricted:
                 continue
@@ -50,12 +54,17 @@ class AccountMove(models.Model):
             if not journals:
                 continue
             restricted = move.suitable_journal_ids & journals
-            if restricted:
-                move.suitable_journal_ids = restricted
+            move.suitable_journal_ids = restricted
 
     @api.constrains('journal_id', 'partner_id')
     def _check_ftiq_state_journal(self):
         for move in self:
+            company = move.company_id or self.env.company
+            state = move.partner_id.state_id
+            if not company.ftiq_use_state_journal_restriction or not state or not state.ftiq_journal_ids:
+                continue
             restricted = move._ftiq_get_restricted_suitable_journals()
-            if restricted and move.journal_id not in restricted:
+            if not restricted:
+                raise ValidationError(_('No journals are available for this partner state.'))
+            if move.journal_id not in restricted:
                 raise ValidationError(_('The selected journal is not allowed for this partner state.'))
