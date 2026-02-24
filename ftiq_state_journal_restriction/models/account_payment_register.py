@@ -20,4 +20,6 @@ class AccountPaymentRegister(models.TransientModel):
             journals = wizard._ftiq_get_partner_state_journals()
             if not journals:
                 continue
-            wizard.available_journal_ids = [Command.set((wizard.available_journal_ids & journals).ids)]
+            restricted = wizard.available_journal_ids & journals
+            if restricted:
+                wizard.available_journal_ids = [Command.set(restricted.ids)]

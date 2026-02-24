@@ -5,6 +5,7 @@
     'summary': 'Restrict available journals based on partner state',
     'author': "Salah Alhjany",
     'website': "https://wa.me/967711778764",
+    'license': 'LGPL-3',
     'depends': [
         'account',
     ],
