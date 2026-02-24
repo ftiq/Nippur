@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="ftiq_view_account_payment_register_form" model="ir.ui.view">
+            <field name="name">account.payment.register.form.ftiq.state.journals</field>
+            <field name="model">account.payment.register</field>
+            <field name="inherit_id" ref="account.view_account_payment_register_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='available_journal_ids']" position="after">
+                    <field name="ftiq_allowed_journal_ids" invisible="1"/>
+                </xpath>
+                <xpath expr="//field[@name='journal_id']" position="attributes">
+                    <attribute name="domain">[('id', 'in', ftiq_allowed_journal_ids)]</attribute>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

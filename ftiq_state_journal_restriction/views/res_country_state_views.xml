@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="ftiq_view_country_state_form" model="ir.ui.view">
+            <field name="name">res.country.state.form.ftiq.journals</field>
+            <field name="model">res.country.state</field>
+            <field name="inherit_id" ref="base.view_country_state_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//form/sheet/group" position="inside">
+                    <field name="ftiq_journal_ids" widget="many2many_tags" options="{'no_create': True}"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="ftiq_view_country_state_tree" model="ir.ui.view">
+            <field name="name">res.country.state.list.ftiq.journals</field>
+            <field name="model">res.country.state</field>
+            <field name="inherit_id" ref="base.view_country_state_tree"/>
+            <field name="arch" type="xml">
+                <xpath expr="//list" position="replace">
+                    <list string="State">
+                        <field name="name"/>
+                        <field name="code"/>
+                        <field name="country_id" options="{'no_create': True, 'no_open': True}"/>
+                        <field name="ftiq_journal_ids" widget="many2many_tags" options="{'no_create': True}"/>
+                    </list>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>
