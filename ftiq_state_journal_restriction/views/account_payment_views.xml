@@ -8,9 +8,6 @@
             <field name="journal_id" position="before">
                 <field name="ftiq_allowed_journal_ids" invisible="1"/>
             </field>
-            <field name="journal_id" position="attributes">
-                <attribute name="domain">[('id', 'in', ftiq_allowed_journal_ids)]</attribute>
-            </field>
         </field>
     </record>
 </odoo>
