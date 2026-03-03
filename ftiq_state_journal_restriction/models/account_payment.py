@@ -1,9 +1,31 @@
-from odoo import api, models, _
+from odoo import api, models, fields, _
 from odoo.exceptions import ValidationError
 
 
 class AccountPayment(models.Model):
     _inherit = 'account.payment'
+
+    ftiq_allowed_journal_ids = fields.Many2many(
+        comodel_name='account.journal',
+        compute='_compute_ftiq_allowed_journal_ids',
+    )
+
+    @api.depends('payment_type', 'partner_id', 'partner_id.state_id', 'company_id')
+    def _compute_ftiq_allowed_journal_ids(self):
+        for pay in self:
+            company = pay.company_id or pay.env.company
+            if not company.ftiq_use_state_journal_restriction:
+                pay.ftiq_allowed_journal_ids = pay.available_journal_ids
+                continue
+            state = pay.partner_id.state_id
+            if not state:
+                pay.ftiq_allowed_journal_ids = pay.env['account.journal']
+                continue
+            state_journals = state.ftiq_journal_ids
+            if not state_journals:
+                pay.ftiq_allowed_journal_ids = pay.env['account.journal']
+                continue
+            pay.ftiq_allowed_journal_ids = pay.available_journal_ids & state_journals
 
     def _ftiq_get_restricted_available_journals(self):
         self.ensure_one()
