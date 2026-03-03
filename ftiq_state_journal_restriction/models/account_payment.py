@@ -10,14 +10,14 @@ class AccountPayment(models.Model):
         compute='_compute_ftiq_allowed_journal_ids',
     )
 
-    @api.depends('payment_type', 'partner_id', 'partner_id.state_id', 'company_id')
+    @api.depends('payment_type', 'partner_id', 'partner_id.commercial_partner_id.state_id', 'company_id', 'available_journal_ids')
     def _compute_ftiq_allowed_journal_ids(self):
         for pay in self:
             company = pay.company_id or pay.env.company
             if not company.ftiq_use_state_journal_restriction:
                 pay.ftiq_allowed_journal_ids = pay.available_journal_ids
                 continue
-            state = pay.partner_id.state_id
+            state = pay.partner_id.commercial_partner_id.state_id
             if not state:
                 pay.ftiq_allowed_journal_ids = pay.env['account.journal']
                 continue
@@ -32,19 +32,19 @@ class AccountPayment(models.Model):
         company = self.company_id or self.env.company
         if not company.ftiq_use_state_journal_restriction:
             return self.env['account.journal']
-        state = self.partner_id.state_id
+        state = self.partner_id.commercial_partner_id.state_id
         if not state or not state.ftiq_journal_ids:
             return self.env['account.journal']
         return self.available_journal_ids & state.ftiq_journal_ids
 
-    @api.depends('payment_type', 'partner_id', 'partner_id.state_id', 'company_id')
+    @api.depends('payment_type', 'partner_id', 'partner_id.commercial_partner_id.state_id', 'company_id')
     def _compute_available_journal_ids(self):
         super()._compute_available_journal_ids()
         for pay in self:
             company = pay.company_id or self.env.company
             if not company.ftiq_use_state_journal_restriction:
                 continue
-            state = pay.partner_id.state_id
+            state = pay.partner_id.commercial_partner_id.state_id
             if not state:
                 continue
             journals = state.ftiq_journal_ids
@@ -53,14 +53,14 @@ class AccountPayment(models.Model):
             restricted = pay.available_journal_ids & journals
             pay.available_journal_ids = restricted
 
-    @api.depends('company_id', 'partner_id', 'partner_id.state_id', 'payment_type', 'ftiq_allowed_journal_ids')
+    @api.depends('company_id', 'partner_id', 'partner_id.commercial_partner_id.state_id', 'payment_type', 'ftiq_allowed_journal_ids')
     def _compute_journal_id(self):
         super()._compute_journal_id()
         for pay in self:
             company = pay.company_id or pay.env.company
             if not company.ftiq_use_state_journal_restriction:
                 continue
-            state = pay.partner_id.state_id
+            state = pay.partner_id.commercial_partner_id.state_id
 
             if not state or not state.ftiq_journal_ids:
                 pay.journal_id = False
@@ -80,7 +80,7 @@ class AccountPayment(models.Model):
     def _check_ftiq_state_journal(self):
         for pay in self:
             company = pay.company_id or self.env.company
-            state = pay.partner_id.state_id
+            state = pay.partner_id.commercial_partner_id.state_id
             if not company.ftiq_use_state_journal_restriction or not state or not state.ftiq_journal_ids:
                 continue
             restricted = pay._ftiq_get_restricted_available_journals()
