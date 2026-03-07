@@ -1,0 +1,283 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+<t t-name="ftiq_pharma_sfa.Dashboard">
+    <div t-att-class="isDarkMode ? 'ftiq_dashboard ftiq_dashboard_dark' : 'ftiq_dashboard'">
+        <div t-if="state.loading" class="ftiq_dashboard_loader">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+
+        <div t-if="!state.loading and state.data" class="ftiq_dash_shell">
+            <t t-set="dashboardData" t-value="state.data"/>
+            <t t-set="dashboardKpis" t-value="dashboardData.kpis"/>
+
+            <section class="ftiq_hero">
+                <div class="ftiq_hero_text">
+                    <span class="ftiq_eyebrow">Field Force Control Center</span>
+                    <h1>Dashboard</h1>
+                    <p>
+                        <span t-esc="getRoleLabel(dashboardData.role)"/>
+                        <span class="ftiq_dot"/>
+                        <span t-esc="dashboardData.user_name"/>
+                        <span class="ftiq_dot"/>
+                        <span t-esc="dashboardData.period_label"/>
+                    </p>
+                </div>
+                <div class="ftiq_hero_side">
+                    <div class="ftiq_progress_box">
+                        <div class="ftiq_progress_label">
+                            <span>Month Progress</span>
+                            <strong t-esc="formatPercent(dashboardData.month_progress)"/>
+                        </div>
+                        <div class="progress">
+                            <div class="progress-bar" role="progressbar"
+                                 t-att-style="'width:' + Math.min(dashboardData.month_progress, 100) + '%'"/>
+                        </div>
+                    </div>
+                    <button class="btn ftiq_btn_primary btn-sm ftiq_refresh" t-on-click="onRefresh">
+                        <i class="fa fa-refresh me-1"/>Refresh
+                    </button>
+                </div>
+            </section>
+
+            <section class="ftiq_metric_grid">
+                <button class="ftiq_metric_card" t-on-click="() => this.openVisits([['visit_date', '=', dashboardData.date_label]])">
+                    <span class="ftiq_metric_label">Visits Today</span>
+                    <strong t-esc="formatNumber(dashboardKpis.visits_today)"/>
+                    <small>Live executed visits</small>
+                </button>
+                <button class="ftiq_metric_card" t-on-click="openPlanCompliance">
+                    <span class="ftiq_metric_label">Plan Compliance</span>
+                    <strong t-esc="formatPercent(dashboardKpis.plan_compliance)"/>
+                    <small><t t-esc="formatNumber(dashboardKpis.completed_month)"/> / <t t-esc="formatNumber(dashboardKpis.planned_month)"/> completed</small>
+                </button>
+                <button class="ftiq_metric_card" t-on-click="() => this.openOrders([['date_order', '&gt;=', dashboardData.month_start], ['date_order', '&lt;', dashboardData.next_month_start]])">
+                    <span class="ftiq_metric_label">Orders</span>
+                    <strong t-esc="formatCurrency(dashboardKpis.orders_amount)"/>
+                    <small><t t-esc="formatNumber(dashboardKpis.orders_count)"/> confirmed orders</small>
+                </button>
+                <button class="ftiq_metric_card" t-on-click="() => this.openCollections([['date', '&gt;=', dashboardData.month_start], ['date', '&lt;=', dashboardData.month_end]])">
+                    <span class="ftiq_metric_label">Collections</span>
+                    <strong t-esc="formatCurrency(dashboardKpis.collections_amount)"/>
+                    <small><t t-esc="formatNumber(dashboardKpis.collections_count)"/> posted collections</small>
+                </button>
+                <button class="ftiq_metric_card" t-on-click="() => this.openInvoices([['state', '=', 'posted'], ['amount_residual', '&gt;', 0]])">
+                    <span class="ftiq_metric_label">Outstanding Due</span>
+                    <strong t-esc="formatCurrency(dashboardKpis.open_invoice_amount)"/>
+                    <small><t t-esc="formatNumber(dashboardKpis.open_invoice_count)"/> open invoices</small>
+                </button>
+                <button class="ftiq_metric_card" t-on-click="() => this.openVisits([['visit_date', '&gt;=', dashboardData.month_start], ['visit_date', '&lt;=', dashboardData.month_end]])">
+                    <span class="ftiq_metric_label">Active Clients</span>
+                    <strong t-esc="formatNumber(dashboardKpis.active_clients)"/>
+                    <small><t t-esc="formatNumber(dashboardKpis.new_clients)"/> new this month</small>
+                </button>
+                <button class="ftiq_metric_card" t-on-click="openOverdueTasks">
+                    <span class="ftiq_metric_label">Overdue Tasks</span>
+                    <strong t-esc="formatNumber(dashboardKpis.overdue_tasks)"/>
+                    <small>Needs immediate action</small>
+                </button>
+                <button class="ftiq_metric_card" t-on-click="openAttendance">
+                    <span class="ftiq_metric_label">Checked In Now</span>
+                    <strong t-esc="formatNumber(dashboardKpis.checked_in_now)"/>
+                    <small><t t-esc="formatNumber(dashboardKpis.team_size)"/> users in scope</small>
+                </button>
+            </section>
+
+            <section class="ftiq_panel_grid">
+                <div class="ftiq_panel">
+                    <div class="ftiq_panel_head">
+                        <div>
+                            <span class="ftiq_panel_tag">Operations</span>
+                            <h3>Status Board</h3>
+                        </div>
+                    </div>
+                    <div class="ftiq_status_grid">
+                        <t t-foreach="dashboardData.status_board" t-as="item" t-key="item.label">
+                            <div class="ftiq_status_card" t-att-class="getToneClass(item.tone)">
+                                <span t-esc="item.label"/>
+                                <strong t-esc="item.is_currency ? formatCurrency(item.value) : formatNumber(item.value)"/>
+                                <small>
+                                    <t t-esc="item.is_currency ? formatCurrency(item.secondary) : formatNumber(item.secondary)"/>
+                                    <span class="ms-1" t-esc="item.secondary_label"/>
+                                </small>
+                            </div>
+                        </t>
+                    </div>
+                    <div class="ftiq_alert_list">
+                        <t t-foreach="dashboardData.alerts" t-as="alert" t-key="alert.label">
+                            <button class="ftiq_alert_item" t-att-class="getToneClass(alert.tone)"
+                                    t-on-click="() => this.openAlert(alert.action_key)">
+                                <span t-esc="alert.label"/>
+                                <strong t-esc="formatNumber(alert.value)"/>
+                            </button>
+                        </t>
+                    </div>
+                </div>
+
+                <div class="ftiq_panel">
+                    <div class="ftiq_panel_head">
+                        <div>
+                            <span class="ftiq_panel_tag">Targets</span>
+                            <h3>Active Target Progress</h3>
+                        </div>
+                        <button class="btn ftiq_btn_secondary btn-sm" t-on-click="() => this.openTargets([['state', '=', 'active']])">View All</button>
+                    </div>
+                    <div t-if="!dashboardData.targets.length" class="ftiq_empty_state">No active targets in this scope.</div>
+                    <div t-else="" class="ftiq_target_stack">
+                        <t t-foreach="dashboardData.targets" t-as="target" t-key="target.id">
+                            <button class="ftiq_target_item" t-on-click="() => this.openTarget(target.id)">
+                                <div class="ftiq_target_top">
+                                    <div>
+                                        <strong t-esc="target.name"/>
+                                        <small><t t-esc="target.user_name"/> - <t t-esc="getTargetTypeLabel(target.target_type)"/></small>
+                                    </div>
+                                    <span class="ftiq_target_rate" t-esc="formatPercent(target.achievement_rate)"/>
+                                </div>
+                                <div class="progress">
+                                    <div class="progress-bar" role="progressbar"
+                                         t-att-style="'width:' + Math.min(target.achievement_rate, 100) + '%'"/>
+                                </div>
+                                <div class="ftiq_target_values">
+                                    <span t-esc="target.target_type === 'orders' || target.target_type === 'collections' ? formatCurrency(target.achieved_value) : formatNumber(target.achieved_value)"/>
+                                    <span>of</span>
+                                    <span t-esc="target.target_type === 'orders' || target.target_type === 'collections' ? formatCurrency(target.target_value) : formatNumber(target.target_value)"/>
+                                </div>
+                            </button>
+                        </t>
+                    </div>
+                </div>
+            </section>
+
+            <section class="ftiq_panel_grid ftiq_panel_grid_wide">
+                <div class="ftiq_panel">
+                    <div class="ftiq_panel_head">
+                        <div>
+                            <span class="ftiq_panel_tag">Regions</span>
+                            <h3>Area Performance</h3>
+                        </div>
+                    </div>
+                    <div t-if="!dashboardData.area_rows.length" class="ftiq_empty_state">No area data for the selected period.</div>
+                    <div t-else="" class="table-responsive">
+                        <table class="table table-borderless align-middle ftiq_table">
+                            <thead>
+                                <tr>
+                                    <th>Area</th>
+                                    <th>Plan</th>
+                                    <th>Compliance</th>
+                                    <th>Orders</th>
+                                    <th>Collections</th>
+                                    <th>Outstanding</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr t-foreach="dashboardData.area_rows" t-as="row" t-key="row.area_id" t-on-click="() => this.openAreaVisits(row.area_id)">
+                                    <td>
+                                        <strong t-esc="row.name"/>
+                                        <small class="d-block text-muted"><t t-esc="formatNumber(row.visits)"/> approved visits</small>
+                                    </td>
+                                    <td>
+                                        <span t-esc="formatNumber(row.completed)"/> / <t t-esc="formatNumber(row.planned)"/>
+                                    </td>
+                                    <td t-esc="formatPercent(row.compliance)"/>
+                                    <td t-esc="formatCurrency(row.orders_amount)"/>
+                                    <td t-esc="formatCurrency(row.collections_amount)"/>
+                                    <td t-esc="formatCurrency(row.outstanding_amount)"/>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="ftiq_panel">
+                    <div class="ftiq_panel_head">
+                        <div>
+                            <span class="ftiq_panel_tag">Team</span>
+                            <h3>Representative Leaderboard</h3>
+                        </div>
+                    </div>
+                    <div t-if="!dashboardData.team_rows.length" class="ftiq_empty_state">No team rows found for this scope.</div>
+                    <div t-else="" class="ftiq_team_stack">
+                        <button class="ftiq_team_item" t-foreach="dashboardData.team_rows" t-as="row" t-key="row.user_id"
+                                t-on-click="() => this.openUserVisits(row.user_id)">
+                            <div class="ftiq_team_identity">
+                                <strong t-esc="row.name"/>
+                                <small t-esc="getAreaName(row.area_name)"/>
+                            </div>
+                            <div class="ftiq_team_metrics">
+                                <span><b t-esc="formatPercent(row.compliance)"/> compliance</span>
+                                <span><b t-esc="formatCurrency(row.orders_amount)"/> orders</span>
+                                <span><b t-esc="formatCurrency(row.collections_amount)"/> collections</span>
+                                <span><b t-esc="formatNumber(row.overdue_tasks)"/> overdue</span>
+                            </div>
+                            <span class="badge" t-att-class="row.checked_in ? 'text-bg-success' : 'text-bg-secondary'">
+                                <t t-esc="getPresenceLabel(row.checked_in)"/>
+                            </span>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <section class="ftiq_panel_grid">
+                <div class="ftiq_panel">
+                    <div class="ftiq_panel_head">
+                        <div>
+                            <span class="ftiq_panel_tag">Today</span>
+                            <h3>Scheduled Tasks</h3>
+                        </div>
+                        <button class="btn ftiq_btn_secondary btn-sm" t-on-click="openTasks">Open Tasks</button>
+                    </div>
+                    <div t-if="!dashboardData.today_tasks.length" class="ftiq_empty_state">No scheduled tasks for today.</div>
+                    <div t-else="" class="ftiq_feed">
+                        <div class="ftiq_feed_item" t-foreach="dashboardData.today_tasks" t-as="task" t-key="task.id">
+                            <div>
+                                <strong t-esc="task.name"/>
+                                <small class="d-block"><t t-esc="task.partner_name"/> - <t t-esc="getTaskTypeLabel(task.task_type)"/></small>
+                            </div>
+                            <div class="text-end">
+                                <span class="badge" t-att-class="getStateBadgeClass(task.state)" t-esc="getStateLabel(task.state)"/>
+                                <small class="d-block mt-1" t-esc="task.scheduled_date"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="ftiq_panel">
+                    <div class="ftiq_panel_head">
+                        <div>
+                            <span class="ftiq_panel_tag">Activity</span>
+                            <h3>Recent Visits</h3>
+                        </div>
+                        <button class="btn ftiq_btn_secondary btn-sm" t-on-click="openVisits">Open Visits</button>
+                    </div>
+                    <div t-if="!dashboardData.recent_visits.length" class="ftiq_empty_state">No recent visits found.</div>
+                    <div t-else="" class="ftiq_feed">
+                        <button class="ftiq_feed_item ftiq_feed_item_button" t-foreach="dashboardData.recent_visits" t-as="visit" t-key="visit.id"
+                                t-on-click="() => this.openVisit(visit.id)">
+                            <div>
+                                <strong t-esc="visit.name"/>
+                                <small class="d-block"><t t-esc="visit.partner_name"/> - <t t-esc="visit.area_name"/></small>
+                            </div>
+                            <div class="text-end">
+                                <span class="badge" t-att-class="getStateBadgeClass(visit.state)" t-esc="getStateLabel(visit.state)"/>
+                                <small class="d-block mt-1"><t t-esc="visit.user_name"/> - <t t-esc="visit.date"/></small>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <section class="ftiq_quick_actions">
+                <button class="btn ftiq_btn_primary" t-on-click="openAttendance"><i class="fa fa-map-marker me-1"/>Attendance</button>
+                <button class="btn ftiq_btn_primary" t-on-click="openVisits"><i class="fa fa-clipboard me-1"/>Visits</button>
+                <button class="btn ftiq_btn_primary" t-on-click="openOrders"><i class="fa fa-shopping-cart me-1"/>Orders</button>
+                <button class="btn ftiq_btn_primary" t-on-click="openCollections"><i class="fa fa-money me-1"/>Collections</button>
+                <button class="btn ftiq_btn_primary" t-on-click="openStockChecks"><i class="fa fa-cubes me-1"/>Stock Checks</button>
+                <button class="btn ftiq_btn_primary" t-on-click="openTargets"><i class="fa fa-bullseye me-1"/>Targets</button>
+            </section>
+        </div>
+    </div>
+</t>
+
+</templates>

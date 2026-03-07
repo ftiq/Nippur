@@ -1,6 +1,21 @@
 from odoo import models, fields
 
 
+class FtiqClientCategory(models.Model):
+    _name = 'ftiq.client.category'
+    _description = 'Client Category'
+    _order = 'sequence, name'
+
+    name = fields.Char(required=True, translate=True)
+    code = fields.Char(required=True)
+    sequence = fields.Integer(default=10)
+    active = fields.Boolean(default=True)
+
+    _sql_constraints = [
+        ('ftiq_client_category_code_unique', 'unique(code)', 'Client category code must be unique.'),
+    ]
+
+
 class FtiqSpecialty(models.Model):
     _name = 'ftiq.specialty'
     _description = 'Medical Specialty'

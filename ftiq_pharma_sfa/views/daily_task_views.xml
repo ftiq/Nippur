@@ -27,6 +27,7 @@
                             <field name="task_type"/>
                             <field name="partner_id"/>
                             <field name="associated_partner_id"/>
+                            <field name="team_id" readonly="1"/>
                             <field name="user_id"/>
                             <field name="supervisor_id"/>
                         </group>
@@ -118,6 +119,7 @@
                 <field name="name"/>
                 <field name="task_type"/>
                 <field name="partner_id"/>
+                <field name="team_id" optional="show"/>
                 <field name="user_id"/>
                 <field name="project_id" optional="show"/>
                 <field name="scheduled_date"/>
@@ -139,6 +141,7 @@
                 <field name="name"/>
                 <field name="task_type"/>
                 <field name="partner_id"/>
+                <field name="team_id"/>
                 <field name="user_id"/>
                 <field name="scheduled_date"/>
                 <field name="priority"/>
@@ -159,6 +162,7 @@
                                     <span class="badge text-bg-secondary"><field name="task_type"/></span>
                                 </div>
                                 <div><strong><field name="partner_id"/></strong></div>
+                                <div><i class="fa fa-users me-1"/><field name="team_id"/></div>
                                 <div><i class="fa fa-user me-1"/><field name="user_id"/></div>
                                 <div><i class="fa fa-calendar me-1"/><field name="scheduled_date"/></div>
                                 <div class="mt-1">
@@ -200,6 +204,7 @@
             <search>
                 <field name="name"/>
                 <field name="partner_id"/>
+                <field name="team_id"/>
                 <field name="user_id"/>
                 <field name="project_id"/>
                 <filter name="today" string="Today" domain="[('scheduled_date', '&gt;=', context_today().strftime('%Y-%m-%d')), ('scheduled_date', '&lt;', (context_today() + datetime.timedelta(days=1)).strftime('%Y-%m-%d'))]"/>
@@ -216,6 +221,7 @@
                 <separator/>
                 <group expand="0" string="Group By">
                     <filter name="group_user" string="Representative" context="{'group_by': 'user_id'}"/>
+                    <filter name="group_team" string="Sales Team" context="{'group_by': 'team_id'}"/>
                     <filter name="group_type" string="Task Type" context="{'group_by': 'task_type'}"/>
                     <filter name="group_partner" string="Client" context="{'group_by': 'partner_id'}"/>
                     <filter name="group_project" string="Project" context="{'group_by': 'project_id'}"/>

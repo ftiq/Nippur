@@ -1,4 +1,4 @@
-from odoo import models, fields, api, _
+﻿from odoo import models, fields, api, _
 
 
 class ResPartner(models.Model):
@@ -7,6 +7,7 @@ class ResPartner(models.Model):
     is_ftiq_doctor = fields.Boolean(default=False)
     is_ftiq_center = fields.Boolean(default=False)
     is_ftiq_pharmacy = fields.Boolean(default=False)
+    ftiq_client_category_id = fields.Many2one('ftiq.client.category', string='Client Category')
 
     ftiq_specialty_id = fields.Many2one('ftiq.specialty')
     ftiq_subspecialty_id = fields.Many2one('ftiq.subspecialty')
@@ -45,6 +46,21 @@ class ResPartner(models.Model):
     ftiq_collection_count = fields.Integer(compute='_compute_ftiq_collection_count', string='Collections')
     ftiq_invoice_count = fields.Integer(compute='_compute_ftiq_invoice_count', string='Invoices')
 
+    @api.onchange('country_id')
+    def _onchange_ftiq_country_id(self):
+        for rec in self:
+            if rec.ftiq_city_id and rec.ftiq_city_id.country_id and rec.ftiq_city_id.country_id != rec.country_id:
+                rec.ftiq_city_id = False
+                rec.ftiq_area_id = False
+
+    @api.onchange('ftiq_city_id')
+    def _onchange_ftiq_city_id(self):
+        for rec in self:
+            if rec.ftiq_city_id and rec.ftiq_city_id.country_id and rec.country_id != rec.ftiq_city_id.country_id:
+                rec.country_id = rec.ftiq_city_id.country_id
+            if rec.ftiq_area_id and rec.ftiq_area_id.city_id != rec.ftiq_city_id:
+                rec.ftiq_area_id = False
+
     @api.depends('ftiq_visit_ids', 'ftiq_visit_ids.visit_date', 'ftiq_visit_ids.state')
     def _compute_ftiq_visit_stats(self):
         for rec in self:
@@ -69,6 +85,7 @@ class ResPartner(models.Model):
             rec.ftiq_collection_count = payment_obj.search_count([
                 ('partner_id', '=', rec.id),
                 ('is_field_collection', '=', True),
+                ('state', 'in', ('in_process', 'paid')),
             ])
 
     def _compute_ftiq_invoice_count(self):
@@ -109,7 +126,11 @@ class ResPartner(models.Model):
             'res_model': 'account.payment',
             'view_mode': 'list,form',
             'domain': [('partner_id', '=', self.id), ('is_field_collection', '=', True)],
-            'context': {'default_partner_id': self.id, 'default_is_field_collection': True},
+            'context': {
+                'default_partner_id': self.id,
+                'default_is_field_collection': True,
+                'default_ftiq_user_id': self.env.uid,
+            },
         }
 
     def action_open_ftiq_invoices(self):

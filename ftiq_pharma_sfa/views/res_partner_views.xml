@@ -9,22 +9,22 @@
             <xpath expr="//div[@name='button_box']" position="inside">
                 <button name="action_open_ftiq_visits" type="object"
                         class="oe_stat_button" icon="fa-stethoscope"
-                        invisible="not is_ftiq_doctor and not is_ftiq_center and not is_ftiq_pharmacy">
+                        invisible="not is_ftiq_doctor and not is_ftiq_center and not is_ftiq_pharmacy and not ftiq_client_category_id">
                     <field name="ftiq_total_visits" widget="statinfo" string="Visits"/>
                 </button>
                 <button name="action_open_ftiq_orders" type="object"
                         class="oe_stat_button" icon="fa-shopping-cart"
-                        invisible="not is_ftiq_doctor and not is_ftiq_center and not is_ftiq_pharmacy">
+                        invisible="not is_ftiq_doctor and not is_ftiq_center and not is_ftiq_pharmacy and not ftiq_client_category_id">
                     <field name="ftiq_order_count" widget="statinfo" string="Orders"/>
                 </button>
                 <button name="action_open_ftiq_collections" type="object"
                         class="oe_stat_button" icon="fa-money"
-                        invisible="not is_ftiq_doctor and not is_ftiq_center and not is_ftiq_pharmacy">
+                        invisible="not is_ftiq_doctor and not is_ftiq_center and not is_ftiq_pharmacy and not ftiq_client_category_id">
                     <field name="ftiq_collection_count" widget="statinfo" string="Collections"/>
                 </button>
                 <button name="action_open_ftiq_invoices" type="object"
                         class="oe_stat_button" icon="fa-file-text-o"
-                        invisible="not is_ftiq_doctor and not is_ftiq_center and not is_ftiq_pharmacy">
+                        invisible="not is_ftiq_doctor and not is_ftiq_center and not is_ftiq_pharmacy and not ftiq_client_category_id">
                     <field name="ftiq_invoice_count" widget="statinfo" string="Invoices"/>
                 </button>
                 <button name="action_open_whatsapp" type="object"
@@ -39,11 +39,12 @@
                         <field name="is_ftiq_doctor"/>
                         <field name="is_ftiq_center"/>
                         <field name="is_ftiq_pharmacy"/>
+                        <field name="ftiq_client_category_id"/>
                     </group>
                 </group>
             </xpath>
             <xpath expr="//notebook" position="inside">
-                <page string="SFA - General" invisible="not is_ftiq_doctor and not is_ftiq_center">
+                <page string="SFA - General" invisible="not is_ftiq_doctor and not is_ftiq_center and not is_ftiq_pharmacy and not ftiq_client_category_id">
                     <group>
                         <group>
                             <field name="ftiq_specialty_id"/>
@@ -64,7 +65,7 @@
                         <field name="ftiq_general_note" placeholder="General notes..."/>
                     </group>
                 </page>
-                <page string="SFA - Personal" invisible="not is_ftiq_doctor and not is_ftiq_center">
+                <page string="SFA - Personal" invisible="not is_ftiq_doctor and not is_ftiq_center and not is_ftiq_pharmacy and not ftiq_client_category_id">
                     <group>
                         <group>
                             <field name="ftiq_nickname"/>
@@ -90,11 +91,14 @@
                         </group>
                     </group>
                 </page>
-                <page string="SFA - Location" invisible="not is_ftiq_doctor and not is_ftiq_center">
+                <page string="SFA - Location" invisible="not is_ftiq_doctor and not is_ftiq_center and not is_ftiq_pharmacy and not ftiq_client_category_id">
                     <group>
                         <group>
+                            <field name="country_id"/>
                             <field name="ftiq_city_id"/>
                             <field name="ftiq_area_id" domain="[('city_id', '=', ftiq_city_id)]"/>
+                            <field name="partner_latitude"/>
+                            <field name="partner_longitude"/>
                         </group>
                         <group>
                             <field name="ftiq_geo_confirmed"/>
@@ -103,7 +107,7 @@
                         </group>
                     </group>
                 </page>
-                <page string="SFA - Questionnaire" invisible="not is_ftiq_doctor and not is_ftiq_center">
+                <page string="SFA - Questionnaire" invisible="not is_ftiq_doctor and not is_ftiq_center and not is_ftiq_pharmacy and not ftiq_client_category_id">
                     <field name="ftiq_answer_ids">
                         <list editable="bottom">
                             <field name="question_id"/>
@@ -116,7 +120,7 @@
                         </list>
                     </field>
                 </page>
-                <page string="SFA - Visits" invisible="not is_ftiq_doctor and not is_ftiq_center">
+                <page string="SFA - Visits" invisible="not is_ftiq_doctor and not is_ftiq_center and not is_ftiq_pharmacy and not ftiq_client_category_id">
                     <field name="ftiq_visit_ids" readonly="1">
                         <list>
                             <field name="name"/>
@@ -140,6 +144,7 @@
         <field name="inherit_id" ref="base.view_partner_tree"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='email']" position="after">
+                <field name="ftiq_client_category_id" optional="hide"/>
                 <field name="ftiq_specialty_id" optional="hide"/>
                 <field name="ftiq_classification_id" optional="hide"/>
                 <field name="ftiq_area_id" optional="hide"/>

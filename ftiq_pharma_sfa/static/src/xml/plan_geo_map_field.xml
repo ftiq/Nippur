@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="ftiq_pharma_sfa.PlanGeoMapField">
+        <div class="ftiq_geo_map_widget">
+            <div class="ftiq_geo_map_header">
+                <div>
+                    <span class="ftiq_eyebrow">Map Selection</span>
+                    <h3>Select area on map</h3>
+                    <p>Showing <t t-esc="formatCounter(state.markerCount)"/> geo-enabled clients.</p>
+                </div>
+                <div class="ftiq_geo_map_actions">
+                    <button type="button"
+                            t-attf-class="btn ftiq_btn_primary #{state.activeTool === 'draw' ? 'ftiq_geo_map_action_active' : ''}"
+                            t-on-click="startDraw">
+                        <i class="fa fa-pencil me-1"/>Draw
+                    </button>
+                    <button type="button"
+                            t-attf-class="btn ftiq_btn_secondary #{state.activeTool === 'edit' ? 'ftiq_geo_map_action_active' : ''}"
+                            t-on-click="startEdit">
+                        <i class="fa fa-hand-paper-o me-1"/>Edit
+                    </button>
+                    <button type="button" class="btn ftiq_btn_secondary" t-if="state.activeTool === 'edit'" t-on-click="saveEdit">
+                        <i class="fa fa-check me-1"/>Save
+                    </button>
+                    <button type="button" class="btn ftiq_btn_secondary" t-if="state.activeTool === 'edit'" t-on-click="cancelEdit">
+                        <i class="fa fa-times me-1"/>Cancel Edit
+                    </button>
+                    <button type="button" class="btn ftiq_btn_secondary" t-on-click="clearPolygon">
+                        <i class="fa fa-eraser me-1"/>Clear
+                    </button>
+                    <button type="button" class="btn ftiq_btn_secondary" t-on-click="locateMe">
+                        <i class="fa fa-crosshairs me-1"/>My Location
+                    </button>
+                </div>
+            </div>
+            <div class="ftiq_geo_map_toolbar">
+                <div class="ftiq_geo_map_search">
+                    <input t-ref="search"
+                           type="text"
+                           class="form-control"
+                           placeholder="Search place or address"
+                           t-on-keydown="onSearchKeydown"/>
+                    <button type="button" class="btn ftiq_btn_secondary" t-on-click="searchLocation">
+                        <i class="fa fa-search me-1"/>Search
+                    </button>
+                </div>
+                <div class="ftiq_geo_map_badges">
+                    <span class="ftiq_geo_map_badge">Clients: <t t-esc="formatCounter(state.markerCount)"/></span>
+                    <span class="ftiq_geo_map_badge ftiq_geo_map_badge_emphasis">Inside Area: <t t-esc="formatCounter(state.matchedCount)"/></span>
+                </div>
+            </div>
+            <div class="ftiq_geo_map_canvas_wrap">
+                <div t-ref="map" class="ftiq_geo_map_canvas"/>
+                <div class="ftiq_geo_map_overlay" t-if="state.loading">
+                    <span>Loading map...</span>
+                </div>
+                <div class="ftiq_geo_map_overlay" t-if="!state.loading &amp;&amp; !hasMarkers">
+                    <span>No geo-enabled clients available.</span>
+                </div>
+            </div>
+            <div class="ftiq_geo_map_footer">
+                <span t-esc="getFooterText()"/>
+            </div>
+        </div>
+    </t>
+</templates>

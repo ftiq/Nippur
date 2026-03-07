@@ -1,4 +1,5 @@
 from odoo import _, api, fields, models
+from odoo.exceptions import UserError
 
 
 class FtiqDailyTask(models.Model):
@@ -19,7 +20,8 @@ class FtiqDailyTask(models.Model):
     ], string='Task Type', required=True, default='visit', tracking=True)
     partner_id = fields.Many2one('res.partner', string='Client', required=True, tracking=True)
     user_id = fields.Many2one('res.users', string='Representative', default=lambda self: self.env.uid, tracking=True)
-    supervisor_id = fields.Many2one('res.users', string='Supervisor', related='user_id.ftiq_supervisor_id', store=True)
+    team_id = fields.Many2one('crm.team', string='Sales Team', compute='_compute_team_id', store=True, readonly=True)
+    supervisor_id = fields.Many2one('res.users', string='Supervisor', related='team_id.user_id', store=True)
     scheduled_date = fields.Datetime(string='Scheduled Date', required=True, tracking=True)
     completed_date = fields.Datetime(string='Completed Date')
     priority = fields.Selection([
@@ -51,6 +53,11 @@ class FtiqDailyTask(models.Model):
     tag_ids = fields.Many2many('ftiq.task.type', string='Tags')
     associated_partner_id = fields.Many2one('res.partner', string='Associated Client')
 
+    @api.depends('plan_line_id.team_id', 'plan_id.team_id', 'user_id.sale_team_id')
+    def _compute_team_id(self):
+        for rec in self:
+            rec.team_id = rec.plan_line_id.team_id or rec.plan_id.team_id or rec.user_id.sale_team_id
+
     @api.model_create_multi
     def create(self, vals_list):
         for vals in vals_list:
@@ -60,20 +67,22 @@ class FtiqDailyTask(models.Model):
                 task = self.env['project.task'].browse(vals['project_task_id'])
                 vals['project_id'] = task.project_id.id
         records = super().create(vals_list)
-        records._notify_assignment()
-        records._sync_project_task(create_missing=True)
+        if not self.env.context.get('skip_assignment_notification'):
+            records._notify_assignment()
+        if not self.env.context.get('skip_project_task_sync'):
+            records._sync_project_task(create_missing=True)
         return records
 
     def write(self, vals):
         old_user = {rec.id: rec.user_id.id for rec in self}
         result = super().write(vals)
-        if 'user_id' in vals:
+        if 'user_id' in vals and not self.env.context.get('skip_assignment_notification'):
             changed = self.filtered(lambda rec: old_user.get(rec.id) != rec.user_id.id)
             changed._notify_assignment(reassigned=True)
         if any(k in vals for k in (
             'name', 'task_type', 'partner_id', 'user_id', 'scheduled_date',
             'description', 'project_id', 'project_task_id', 'plan_id', 'plan_line_id',
-        )):
+        )) and not self.env.context.get('skip_project_task_sync'):
             self._sync_project_task(create_missing=False)
         return result
 
@@ -81,6 +90,8 @@ class FtiqDailyTask(models.Model):
         self.write({'state': 'in_progress'})
 
     def action_complete(self):
+        for rec in self:
+            rec._validate_completion_dependencies()
         self.write({
             'state': 'completed',
             'completed_date': fields.Datetime.now(),
@@ -94,12 +105,26 @@ class FtiqDailyTask(models.Model):
 
     def action_create_visit(self):
         self.ensure_one()
+        if self.visit_id:
+            return {
+                'type': 'ir.actions.act_window',
+                'name': _('Visit'),
+                'res_model': 'ftiq.visit',
+                'res_id': self.visit_id.id,
+                'view_mode': 'form',
+            }
+        attendance = self._find_attendance_for(self.user_id.id)
         visit = self.env['ftiq.visit'].create({
             'partner_id': self.partner_id.id,
             'user_id': self.user_id.id,
-            'visit_date': fields.Date.context_today(self),
+            'visit_date': fields.Datetime.to_datetime(self.scheduled_date).date() if self.scheduled_date else fields.Date.context_today(self),
+            'plan_line_id': self.plan_line_id.id,
+            'attendance_id': attendance.id if attendance else False,
         })
-        self.visit_id = visit.id
+        vals = {'visit_id': visit.id}
+        if self.state == 'pending':
+            vals['state'] = 'in_progress'
+        self.write(vals)
         return {
             'type': 'ir.actions.act_window',
             'name': _('Visit'),
@@ -110,10 +135,24 @@ class FtiqDailyTask(models.Model):
 
     def action_create_order(self):
         self.ensure_one()
+        if self.sale_order_id:
+            return {
+                'type': 'ir.actions.act_window',
+                'name': _('Sale Order'),
+                'res_model': 'sale.order',
+                'res_id': self.sale_order_id.id,
+                'view_mode': 'form',
+            }
+        attendance = self.visit_id.attendance_id or self._find_attendance_for(self.user_id.id)
         order = self.env['sale.order'].create({
             'partner_id': self.partner_id.id,
             'user_id': self.user_id.id,
             'is_field_order': True,
+            'ftiq_visit_id': self.visit_id.id if self.visit_id else False,
+            'ftiq_attendance_id': attendance.id if attendance else False,
+            'ftiq_latitude': self.visit_id.start_latitude or self.latitude,
+            'ftiq_longitude': self.visit_id.start_longitude or self.longitude,
+            'ftiq_daily_task_id': self.id,
         })
         self.sale_order_id = order.id
         return {
@@ -126,11 +165,26 @@ class FtiqDailyTask(models.Model):
 
     def action_create_collection(self):
         self.ensure_one()
+        if self.payment_id:
+            return {
+                'type': 'ir.actions.act_window',
+                'name': _('Payment'),
+                'res_model': 'account.payment',
+                'res_id': self.payment_id.id,
+                'view_mode': 'form',
+            }
+        attendance = self.visit_id.attendance_id or self._find_attendance_for(self.user_id.id)
         payment = self.env['account.payment'].create({
             'partner_id': self.partner_id.id,
             'payment_type': 'inbound',
             'partner_type': 'customer',
             'is_field_collection': True,
+            'ftiq_user_id': self.user_id.id,
+            'ftiq_visit_id': self.visit_id.id if self.visit_id else False,
+            'ftiq_attendance_id': attendance.id if attendance else False,
+            'ftiq_latitude': self.visit_id.start_latitude or self.latitude,
+            'ftiq_longitude': self.visit_id.start_longitude or self.longitude,
+            'ftiq_daily_task_id': self.id,
         })
         self.payment_id = payment.id
         return {
@@ -143,9 +197,23 @@ class FtiqDailyTask(models.Model):
 
     def action_create_stock_check(self):
         self.ensure_one()
+        if self.stock_check_id:
+            return {
+                'type': 'ir.actions.act_window',
+                'name': _('Stock Check'),
+                'res_model': 'ftiq.stock.check',
+                'res_id': self.stock_check_id.id,
+                'view_mode': 'form',
+            }
+        attendance = self.visit_id.attendance_id or self._find_attendance_for(self.user_id.id)
         check = self.env['ftiq.stock.check'].create({
             'partner_id': self.partner_id.id,
             'user_id': self.user_id.id,
+            'visit_id': self.visit_id.id if self.visit_id else False,
+            'attendance_id': attendance.id if attendance else False,
+            'latitude': self.visit_id.end_latitude or self.visit_id.start_latitude or self.latitude,
+            'longitude': self.visit_id.end_longitude or self.visit_id.start_longitude or self.longitude,
+            'ftiq_daily_task_id': self.id,
         })
         self.stock_check_id = check.id
         return {
@@ -234,3 +302,28 @@ class FtiqDailyTask(models.Model):
         if not dt:
             return False
         return fields.Datetime.to_string(dt.replace(hour=23, minute=59, second=59, microsecond=0))
+
+    @api.model
+    def _find_attendance_for(self, user_id):
+        if not user_id:
+            return self.env['ftiq.field.attendance']
+        return self.env['ftiq.field.attendance'].search([
+            ('user_id', '=', user_id),
+            ('date', '=', fields.Date.context_today(self)),
+            ('state', '=', 'checked_in'),
+        ], limit=1)
+
+    def _validate_completion_dependencies(self):
+        self.ensure_one()
+        if self.task_type == 'visit':
+            if not self.visit_id or self.visit_id.state != 'approved':
+                raise UserError(_('Visit tasks can only be completed after the linked visit is approved.'))
+        elif self.task_type == 'order':
+            if not self.sale_order_id or self.sale_order_id.state not in ('sale', 'done'):
+                raise UserError(_('Order tasks can only be completed after the linked order is confirmed.'))
+        elif self.task_type == 'collection':
+            if not self.payment_id or self.payment_id.state not in ('in_process', 'paid'):
+                raise UserError(_('Collection tasks can only be completed after the linked collection is posted.'))
+        elif self.task_type == 'stock':
+            if not self.stock_check_id or self.stock_check_id.state != 'reviewed':
+                raise UserError(_('Stock tasks can only be completed after the stock check is reviewed.'))

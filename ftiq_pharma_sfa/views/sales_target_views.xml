@@ -17,9 +17,32 @@
                     <field name="state" widget="statusbar" statusbar_visible="draft,active,closed"/>
                 </header>
                 <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_linked_visits" type="object"
+                                class="oe_stat_button" icon="fa-clipboard"
+                                invisible="target_type != 'visits'">
+                            <field name="linked_visit_count" widget="statinfo" string="Visits"/>
+                        </button>
+                        <button name="action_view_linked_orders" type="object"
+                                class="oe_stat_button" icon="fa-shopping-cart"
+                                invisible="target_type != 'orders'">
+                            <field name="linked_order_count" widget="statinfo" string="Orders"/>
+                        </button>
+                        <button name="action_view_linked_payments" type="object"
+                                class="oe_stat_button" icon="fa-money"
+                                invisible="target_type != 'collections'">
+                            <field name="linked_payment_count" widget="statinfo" string="Collections"/>
+                        </button>
+                        <button name="action_view_linked_clients" type="object"
+                                class="oe_stat_button" icon="fa-user-plus"
+                                invisible="target_type != 'new_clients'">
+                            <field name="linked_client_count" widget="statinfo" string="New Clients"/>
+                        </button>
+                    </div>
                     <group>
                         <group>
                             <field name="name"/>
+                            <field name="team_id" readonly="1"/>
                             <field name="user_id"/>
                             <field name="supervisor_id"/>
                             <field name="target_type"/>
@@ -47,7 +70,7 @@
                             </field>
                         </page>
                         <page string="Notes">
-                            <field name="notes"/>
+                            <field name="notes" placeholder="Internal notes..."/>
                         </page>
                     </notebook>
                 </sheet>
@@ -64,6 +87,7 @@
                   decoration-warning="achievement_rate >= 50 and achievement_rate &lt; 100"
                   decoration-danger="achievement_rate &lt; 50 and state == 'active'">
                 <field name="name"/>
+                <field name="team_id" optional="show"/>
                 <field name="user_id"/>
                 <field name="target_type"/>
                 <field name="date_from"/>
@@ -84,6 +108,7 @@
         <field name="arch" type="xml">
             <kanban default_group_by="state">
                 <field name="name"/>
+                <field name="team_id"/>
                 <field name="user_id"/>
                 <field name="target_type"/>
                 <field name="target_value"/>
@@ -97,6 +122,7 @@
                                 <strong><field name="name"/></strong>
                             </div>
                             <div class="o_kanban_record_body">
+                                <div><i class="fa fa-users me-1"/><field name="team_id"/></div>
                                 <div><i class="fa fa-user me-1"/><field name="user_id"/></div>
                                 <div><i class="fa fa-bullseye me-1"/><field name="target_type"/></div>
                                 <div class="mt-1">
@@ -119,10 +145,12 @@
         <field name="arch" type="xml">
             <search>
                 <field name="name"/>
+                <field name="team_id"/>
                 <field name="user_id"/>
                 <filter name="active_targets" string="Active" domain="[('state', '=', 'active')]"/>
                 <separator/>
                 <group expand="0" string="Group By">
+                    <filter name="group_team" string="Sales Team" context="{'group_by': 'team_id'}"/>
                     <filter name="group_user" string="Representative" context="{'group_by': 'user_id'}"/>
                     <filter name="group_type" string="Target Type" context="{'group_by': 'target_type'}"/>
                     <filter name="group_state" string="Status" context="{'group_by': 'state'}"/>

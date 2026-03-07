@@ -12,7 +12,7 @@
                     <button name="action_end" type="object" string="End Visit"
                             class="btn-warning" invisible="state != 'in_progress'"/>
                     <button name="action_submit" type="object" string="Submit"
-                            class="btn-primary" invisible="state not in ('draft', 'in_progress', 'returned')"/>
+                            class="btn-primary" invisible="state not in ('in_progress', 'returned')"/>
                     <button name="action_approve" type="object" string="Approve"
                             class="btn-success" invisible="state != 'submitted'"
                             groups="ftiq_pharma_sfa.group_ftiq_supervisor"/>
@@ -85,11 +85,15 @@
                                     <field name="start_time"/>
                                     <field name="start_latitude"/>
                                     <field name="start_longitude"/>
+                                    <field name="start_accuracy"
+                                           groups="ftiq_pharma_sfa.group_ftiq_supervisor"/>
                                 </group>
                                 <group string="End Location">
                                     <field name="end_time"/>
                                     <field name="end_latitude"/>
                                     <field name="end_longitude"/>
+                                    <field name="end_accuracy"
+                                           groups="ftiq_pharma_sfa.group_ftiq_supervisor"/>
                                 </group>
                             </group>
                             <div>
@@ -100,7 +104,7 @@
                         <page string="Feedback">
                             <field name="general_feedback" placeholder="General visit feedback..."/>
                         </page>
-                        <page string="Actions" invisible="state not in ('in_progress', 'draft')">
+                        <page string="Actions" invisible="state != 'in_progress'">
                             <group>
                                 <button name="action_create_sale_order" type="object" string="Create Field Order" class="btn-primary" icon="fa-shopping-cart"/>
                                 <button name="action_create_payment" type="object" string="Create Cash Collection" class="btn-success" icon="fa-money"/>

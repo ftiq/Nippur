@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="ftiq_client_category_pharmacy" model="ftiq.client.category">
+            <field name="name">صيدلية</field>
+            <field name="code">pharmacy</field>
+            <field name="sequence">10</field>
+        </record>
+        <record id="ftiq_client_category_doctor" model="ftiq.client.category">
+            <field name="name">دكتور</field>
+            <field name="code">doctor</field>
+            <field name="sequence">20</field>
+        </record>
+        <record id="ftiq_client_category_clinic_center" model="ftiq.client.category">
+            <field name="name">عيادة / مركز تجميل</field>
+            <field name="code">clinic_center</field>
+            <field name="sequence">30</field>
+        </record>
+        <record id="ftiq_client_category_hospital_center" model="ftiq.client.category">
+            <field name="name">مستشفى / مركز صحي</field>
+            <field name="code">hospital_center</field>
+            <field name="sequence">40</field>
+        </record>
+        <record id="ftiq_client_category_course" model="ftiq.client.category">
+            <field name="name">كورسات</field>
+            <field name="code">course</field>
+            <field name="sequence">50</field>
+        </record>
+        <record id="ftiq_client_category_market_equipment" model="ftiq.client.category">
+            <field name="name">ماركت / تجهيزات</field>
+            <field name="code">market_equipment</field>
+            <field name="sequence">60</field>
+        </record>
+        <record id="ftiq_client_category_store" model="ftiq.client.category">
+            <field name="name">متجر</field>
+            <field name="code">store</field>
+            <field name="sequence">70</field>
+        </record>
+        <record id="ftiq_client_category_scientific_office" model="ftiq.client.category">
+            <field name="name">مكتب علمي</field>
+            <field name="code">scientific_office</field>
+            <field name="sequence">80</field>
+        </record>
+        <record id="ftiq_client_category_medical_delegate" model="ftiq.client.category">
+            <field name="name">معاون طبي</field>
+            <field name="code">medical_delegate</field>
+            <field name="sequence">90</field>
+        </record>
+        <record id="ftiq_client_category_company" model="ftiq.client.category">
+            <field name="name">شركة</field>
+            <field name="code">company</field>
+            <field name="sequence">100</field>
+        </record>
+        <record id="ftiq_client_category_application_promotion" model="ftiq.client.category">
+            <field name="name">تطبيق / ببح</field>
+            <field name="code">application_promotion</field>
+            <field name="sequence">110</field>
+        </record>
+        <record id="ftiq_client_category_apparel_personal" model="ftiq.client.category">
+            <field name="name">ملبوس / شخصي</field>
+            <field name="code">apparel_personal</field>
+            <field name="sequence">120</field>
+        </record>
+        <record id="ftiq_client_category_lab" model="ftiq.client.category">
+            <field name="name">مختبر</field>
+            <field name="code">lab</field>
+            <field name="sequence">130</field>
+        </record>
+        <record id="ftiq_client_category_real_estate_office" model="ftiq.client.category">
+            <field name="name">مكتب عقار</field>
+            <field name="code">real_estate_office</field>
+            <field name="sequence">140</field>
+        </record>
+    </data>
+</odoo>

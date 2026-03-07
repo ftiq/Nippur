@@ -26,11 +26,13 @@
                             <field name="user_id"/>
                             <field name="check_date"/>
                             <field name="visit_id"/>
+                            <field name="attendance_id"/>
                         </group>
                         <group>
                             <field name="total_items"/>
                             <field name="total_qty"/>
                             <field name="photo" widget="image" options="{'size': [200, 200]}"/>
+                            <field name="ftiq_daily_task_id"/>
                         </group>
                     </group>
                     <notebook>

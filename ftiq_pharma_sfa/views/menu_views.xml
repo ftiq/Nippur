@@ -6,6 +6,12 @@
               web_icon="ftiq_pharma_sfa,static/description/logo.png"
               sequence="45"/>
 
+    <menuitem id="menu_ftiq_dashboard"
+              name="Dashboard"
+              parent="menu_ftiq_pharma_sfa_root"
+              action="action_ftiq_dashboard"
+              sequence="5"/>
+
     <menuitem id="menu_ftiq_my_activities"
               name="My Activities"
               parent="menu_ftiq_pharma_sfa_root"
@@ -200,6 +206,11 @@
               parent="menu_ftiq_config"
               action="action_ftiq_specialty"
               sequence="10"/>
+    <menuitem id="menu_ftiq_config_client_categories"
+              name="Client Categories"
+              parent="menu_ftiq_config"
+              action="action_ftiq_client_category"
+              sequence="15"/>
     <menuitem id="menu_ftiq_config_classifications"
               name="Classifications"
               parent="menu_ftiq_config"
@@ -265,5 +276,9 @@
               parent="menu_ftiq_config"
               action="action_ftiq_color_code"
               sequence="100"/>
+
+    <record id="menu_ftiq_attendance" model="ir.ui.menu">
+        <field name="active" eval="False"/>
+    </record>
 
 </odoo>

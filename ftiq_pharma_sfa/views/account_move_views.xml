@@ -8,6 +8,7 @@
         <field name="arch" type="xml">
             <xpath expr="//field[@name='invoice_date']" position="after">
                 <field name="ftiq_visit_id" optional="hide"/>
+                <field name="ftiq_field_notes" optional="hide"/>
             </xpath>
         </field>
     </record>

@@ -5,19 +5,27 @@
         <field name="name">ftiq.field.attendance.form</field>
         <field name="model">ftiq.field.attendance</field>
         <field name="arch" type="xml">
-            <form>
+            <form create="0" edit="0" delete="0">
                 <header>
-                    <button name="action_check_in" type="object" string="Check In"
-                            class="btn-primary" invisible="state != 'draft'"/>
                     <button name="action_check_out" type="object" string="Check Out"
                             class="btn-primary" invisible="state != 'checked_in'"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,checked_in,checked_out"/>
                 </header>
                 <sheet>
+                    <div class="alert alert-info mb-3" role="alert">
+                        Attendance starts automatically from a visit, field order, collection, or stock check.
+                    </div>
                     <div class="oe_button_box" name="button_box">
                         <button name="action_open_visits" type="object"
                                 class="oe_stat_button" icon="fa-clipboard">
                             <field name="visit_count" widget="statinfo" string="Visits"/>
+                        </button>
+                        <button name="action_open_entry_document" type="object"
+                                class="oe_stat_button" icon="fa-link"
+                                invisible="not entry_reference">
+                            <div class="o_form_field o_stat_info">
+                                <span class="o_stat_text">Entry Document</span>
+                            </div>
                         </button>
                     </div>
                     <group>
@@ -25,6 +33,7 @@
                             <field name="name"/>
                             <field name="user_id"/>
                             <field name="date"/>
+                            <field name="entry_reference"/>
                             <field name="working_hours" widget="float_time"/>
                         </group>
                     </group>
@@ -37,6 +46,12 @@
                                     <field name="check_in_longitude"/>
                                     <field name="check_in_address"/>
                                 </group>
+                                <group>
+                                    <field name="check_in_accuracy"/>
+                                    <field name="check_in_is_mock" widget="boolean"
+                                           decoration-danger="check_in_is_mock"
+                                           groups="ftiq_pharma_sfa.group_ftiq_supervisor"/>
+                                </group>
                             </group>
                         </page>
                         <page string="Check Out">
@@ -46,6 +61,12 @@
                                     <field name="check_out_latitude"/>
                                     <field name="check_out_longitude"/>
                                     <field name="check_out_address"/>
+                                </group>
+                                <group>
+                                    <field name="check_out_accuracy"/>
+                                    <field name="check_out_is_mock" widget="boolean"
+                                           decoration-danger="check_out_is_mock"
+                                           groups="ftiq_pharma_sfa.group_ftiq_supervisor"/>
                                 </group>
                             </group>
                         </page>
@@ -60,10 +81,11 @@
         <field name="name">ftiq.field.attendance.list</field>
         <field name="model">ftiq.field.attendance</field>
         <field name="arch" type="xml">
-            <list>
+            <list create="0" delete="0">
                 <field name="name"/>
                 <field name="user_id"/>
                 <field name="date"/>
+                <field name="entry_reference" optional="show"/>
                 <field name="check_in_time" optional="show"/>
                 <field name="check_out_time" optional="show"/>
                 <field name="working_hours" widget="float_time" optional="show"/>
@@ -80,10 +102,11 @@
         <field name="name">ftiq.field.attendance.kanban</field>
         <field name="model">ftiq.field.attendance</field>
         <field name="arch" type="xml">
-            <kanban default_group_by="state" class="o_kanban_small_column">
+            <kanban default_group_by="state" class="o_kanban_small_column" create="0" group_create="0">
                 <field name="name"/>
                 <field name="user_id"/>
                 <field name="date"/>
+                <field name="entry_reference"/>
                 <field name="check_in_time"/>
                 <field name="check_out_time"/>
                 <field name="working_hours"/>
@@ -106,6 +129,9 @@
                                 </div>
                                 <div>
                                     <i class="fa fa-calendar me-1"/><field name="date"/>
+                                </div>
+                                <div t-if="record.entry_reference.raw_value">
+                                    <i class="fa fa-link me-1"/><field name="entry_reference"/>
                                 </div>
                                 <div t-if="record.check_in_time.raw_value">
                                     <i class="fa fa-sign-in me-1 text-success"/><field name="check_in_time"/>

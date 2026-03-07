@@ -1,4 +1,4 @@
-from odoo import models, fields, api, _
+from odoo import _, api, fields, models
 from odoo.exceptions import UserError
 
 
@@ -10,6 +10,7 @@ class FtiqVisit(models.Model):
 
     name = fields.Char(readonly=True, default='New', copy=False)
     user_id = fields.Many2one('res.users', default=lambda self: self.env.uid, required=True, tracking=True)
+    team_id = fields.Many2one('crm.team', compute='_compute_team_id', store=True, readonly=True)
     partner_id = fields.Many2one('res.partner', required=True, tracking=True)
     attendance_id = fields.Many2one('ftiq.field.attendance')
     plan_line_id = fields.Many2one('ftiq.weekly.plan.line')
@@ -23,8 +24,10 @@ class FtiqVisit(models.Model):
 
     start_latitude = fields.Float(digits=(10, 7))
     start_longitude = fields.Float(digits=(10, 7))
+    start_accuracy = fields.Float(string='Start Accuracy (m)')
     end_latitude = fields.Float(digits=(10, 7))
     end_longitude = fields.Float(digits=(10, 7))
+    end_accuracy = fields.Float(string='End Accuracy (m)')
 
     outcome = fields.Selection([
         ('interested', 'Interested'),
@@ -63,6 +66,11 @@ class FtiqVisit(models.Model):
     payment_count = fields.Integer(compute='_compute_related_counts')
     stock_check_count = fields.Integer(compute='_compute_related_counts')
 
+    @api.depends('plan_line_id.team_id', 'user_id.sale_team_id')
+    def _compute_team_id(self):
+        for rec in self:
+            rec.team_id = rec.plan_line_id.team_id or rec.user_id.sale_team_id
+
     def _compute_related_counts(self):
         sale_order_obj = self.env['sale.order'].sudo()
         payment_obj = self.env['account.payment'].sudo()
@@ -97,10 +105,20 @@ class FtiqVisit(models.Model):
         for vals in vals_list:
             if vals.get('name', 'New') == 'New':
                 vals['name'] = self.env['ir.sequence'].next_by_code('ftiq.visit') or 'New'
+            plan_line = self.env['ftiq.weekly.plan.line'].browse(vals.get('plan_line_id'))
+            if plan_line:
+                vals.setdefault('user_id', plan_line.user_id.id)
+                vals.setdefault('partner_id', plan_line.partner_id.id)
+                vals.setdefault('visit_date', plan_line.scheduled_date or fields.Date.context_today(self))
+            if not vals.get('attendance_id') and vals.get('user_id'):
+                attendance = self._find_active_attendance(
+                    vals['user_id'],
+                    vals.get('visit_date') or fields.Date.context_today(self),
+                )
+                if attendance:
+                    vals['attendance_id'] = attendance.id
         records = super().create(vals_list)
-        for rec in records:
-            if rec.plan_line_id and rec.plan_line_id.state == 'pending':
-                rec.plan_line_id.write({'visit_id': rec.id, 'state': 'completed'})
+        records._sync_plan_line_progress()
         return records
 
     def copy(self, default=None):
@@ -149,49 +167,84 @@ class FtiqVisit(models.Model):
         self.ensure_one()
         if self.state != 'draft':
             raise UserError(_('Visit can only be started from draft state.'))
-        vals = {'state': 'in_progress', 'start_time': fields.Datetime.now()}
         ctx = self.env.context
-        if ctx.get('ftiq_latitude'):
-            vals['start_latitude'] = ctx['ftiq_latitude']
-        if ctx.get('ftiq_longitude'):
-            vals['start_longitude'] = ctx['ftiq_longitude']
+        lat = ctx.get('ftiq_latitude', 0)
+        lng = ctx.get('ftiq_longitude', 0)
+        if not lat or not lng:
+            raise UserError(_('Location is required to start a visit. Enable location services and try again.'))
+        if ctx.get('ftiq_is_mock'):
+            raise UserError(_('Mock location detected. Fake GPS applications are not allowed.'))
+        attendance = self.attendance_id
+        if not attendance or attendance.state != 'checked_in':
+            attendance = self._find_active_attendance(self.user_id.id, self.visit_date or fields.Date.context_today(self))
+        if not attendance:
+            attendance = self.env['ftiq.field.attendance'].ensure_operation_attendance(
+                self.user_id.id,
+                attendance_date=self.visit_date or fields.Date.context_today(self),
+                latitude=lat,
+                longitude=lng,
+                accuracy=ctx.get('ftiq_accuracy', 0),
+                is_mock=ctx.get('ftiq_is_mock', False),
+                entry_reference=f'{self._name},{self.id}',
+            )
+        vals = {
+            'state': 'in_progress',
+            'attendance_id': attendance.id,
+            'start_time': fields.Datetime.now(),
+            'start_latitude': lat,
+            'start_longitude': lng,
+            'start_accuracy': ctx.get('ftiq_accuracy', 0),
+        }
         self.write(vals)
+        self._sync_plan_line_progress()
 
     def action_end(self):
         self.ensure_one()
         if self.state != 'in_progress':
             raise UserError(_('Visit must be in progress to end it.'))
-        vals = {'end_time': fields.Datetime.now()}
         ctx = self.env.context
-        if ctx.get('ftiq_latitude'):
-            vals['end_latitude'] = ctx['ftiq_latitude']
-        if ctx.get('ftiq_longitude'):
-            vals['end_longitude'] = ctx['ftiq_longitude']
+        lat = ctx.get('ftiq_latitude', 0)
+        lng = ctx.get('ftiq_longitude', 0)
+        if not lat or not lng:
+            raise UserError(_('GPS location is required to end a visit. Please enable location services.'))
+        if ctx.get('ftiq_is_mock'):
+            raise UserError(_('Mock location detected. Fake GPS applications are not allowed.'))
+        vals = {
+            'end_time': fields.Datetime.now(),
+            'end_latitude': lat,
+            'end_longitude': lng,
+            'end_accuracy': ctx.get('ftiq_accuracy', 0),
+        }
         self.write(vals)
 
     def action_submit(self):
         self.ensure_one()
-        if self.state not in ('draft', 'in_progress', 'returned'):
+        if self.state not in ('in_progress', 'returned'):
             raise UserError(_('Cannot submit from current state.'))
+        self._validate_submission()
         self.write({'state': 'submitted'})
+        self._sync_plan_line_progress()
 
     def action_approve(self):
         self.ensure_one()
         if self.state != 'submitted':
             raise UserError(_('Only submitted visits can be approved.'))
         self.write({'state': 'approved'})
+        self._sync_plan_line_progress()
 
     def action_return(self):
         self.ensure_one()
         if self.state != 'submitted':
             raise UserError(_('Only submitted visits can be returned.'))
         self.write({'state': 'returned'})
+        self._sync_plan_line_progress()
 
     def action_reset_draft(self):
         self.ensure_one()
         if self.state not in ('returned',):
             raise UserError(_('Can only reset returned visits to draft.'))
         self.write({'state': 'draft'})
+        self._sync_plan_line_progress()
 
     def action_show_on_map(self):
         self.ensure_one()
@@ -208,6 +261,7 @@ class FtiqVisit(models.Model):
 
     def action_create_sale_order(self):
         self.ensure_one()
+        self._ensure_execution_started()
         order = self.env['sale.order'].create({
             'partner_id': self.partner_id.id,
             'user_id': self.user_id.id,
@@ -228,11 +282,13 @@ class FtiqVisit(models.Model):
 
     def action_create_payment(self):
         self.ensure_one()
+        self._ensure_execution_started()
         payment = self.env['account.payment'].create({
             'partner_id': self.partner_id.id,
             'payment_type': 'inbound',
             'partner_type': 'customer',
             'is_field_collection': True,
+            'ftiq_user_id': self.user_id.id,
             'ftiq_visit_id': self.id,
             'ftiq_attendance_id': self.attendance_id.id if self.attendance_id else False,
             'ftiq_latitude': self.start_latitude,
@@ -249,10 +305,14 @@ class FtiqVisit(models.Model):
 
     def action_create_stock_check(self):
         self.ensure_one()
+        self._ensure_execution_started()
         check = self.env['ftiq.stock.check'].create({
             'partner_id': self.partner_id.id,
             'user_id': self.user_id.id,
             'visit_id': self.id,
+            'attendance_id': self.attendance_id.id if self.attendance_id else False,
+            'latitude': self.end_latitude or self.start_latitude,
+            'longitude': self.end_longitude or self.start_longitude,
         })
         return {
             'type': 'ir.actions.act_window',
@@ -295,6 +355,91 @@ class FtiqVisit(models.Model):
             'domain': [('visit_id', '=', self.id)],
             'context': {'default_visit_id': self.id, 'default_partner_id': self.partner_id.id},
         }
+
+    @api.model
+    def _find_active_attendance(self, user_id, visit_date):
+        if not user_id or not visit_date:
+            return self.env['ftiq.field.attendance']
+        visit_date = fields.Date.to_date(visit_date)
+        return self.env['ftiq.field.attendance'].search([
+            ('user_id', '=', user_id),
+            ('date', '=', visit_date),
+            ('state', '=', 'checked_in'),
+        ], limit=1)
+
+    def _ensure_execution_started(self):
+        self.ensure_one()
+        if self.state != 'in_progress':
+            raise UserError(_('The visit must be in progress before creating linked field operations.'))
+
+    def _validate_submission(self):
+        self.ensure_one()
+        if not self.start_time:
+            raise UserError(_('Start the visit before submitting it.'))
+        if not self.end_time:
+            raise UserError(_('End the visit before submitting it.'))
+        if self.end_time < self.start_time:
+            raise UserError(_('Visit end time cannot be earlier than the start time.'))
+        if not self.duration:
+            raise UserError(_('Visit duration must be greater than zero before submission.'))
+        if not (self.start_latitude and self.start_longitude and self.end_latitude and self.end_longitude):
+            raise UserError(_('Both start and end GPS coordinates are required before submission.'))
+        if not self.outcome:
+            raise UserError(_('Select a visit outcome before submission.'))
+        if not self.is_planned and not self.unplanned_reason:
+            raise UserError(_('An unplanned visit reason is required before submission.'))
+        has_execution_evidence = any((
+            self.general_feedback,
+            self.product_line_ids,
+            self.material_view_log_ids,
+            self.sale_order_ids,
+            self.payment_ids,
+            self.stock_check_ids,
+            self.photo_1,
+            self.photo_2,
+            self.photo_3,
+            self.signature,
+        ))
+        if not has_execution_evidence:
+            raise UserError(_(
+                'Add execution evidence before submission. '
+                'Use feedback, product details, linked operations, photos, or a signature.'
+            ))
+
+    def _sync_plan_line_progress(self):
+        for rec in self.filtered('plan_line_id'):
+            plan_line = rec.plan_line_id
+            task = plan_line.daily_task_id
+            plan_vals = {}
+            task_vals = {}
+            if plan_line.visit_id != rec:
+                plan_vals['visit_id'] = rec.id
+            if task and task.visit_id != rec:
+                task_vals['visit_id'] = rec.id
+
+            if rec.state == 'approved':
+                if plan_line.state != 'completed':
+                    plan_vals['state'] = 'completed'
+                if task and task.state not in ('completed', 'cancelled'):
+                    task_vals.update({
+                        'state': 'completed',
+                        'completed_date': rec.end_time or fields.Datetime.now(),
+                    })
+            else:
+                if plan_line.state in ('completed', 'missed'):
+                    plan_vals['state'] = 'pending'
+                if task and task.state not in ('completed', 'cancelled') and rec.state in ('in_progress', 'submitted', 'returned'):
+                    task_vals.setdefault('state', 'in_progress')
+                if task and task.state == 'completed' and rec.state != 'approved':
+                    task_vals.update({
+                        'state': 'pending',
+                        'completed_date': False,
+                    })
+
+            if plan_vals:
+                plan_line.write(plan_vals)
+            if task_vals:
+                task.write(task_vals)
 
 
 class FtiqVisitProductLine(models.Model):

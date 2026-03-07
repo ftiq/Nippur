@@ -10,7 +10,7 @@
     <record id="ftiq_attendance_rule_supervisor" model="ir.rule">
         <field name="name">Attendance: Supervisor sees team</field>
         <field name="model_id" ref="model_ftiq_field_attendance"/>
-        <field name="domain_force">['|', ('user_id', '=', user.id), ('user_id.ftiq_supervisor_id', '=', user.id)]</field>
+        <field name="domain_force">['|', ('user_id', '=', user.id), ('user_id.sale_team_id.user_id', '=', user.id)]</field>
         <field name="groups" eval="[(4, ref('group_ftiq_supervisor'))]"/>
     </record>
 
@@ -31,7 +31,7 @@
     <record id="ftiq_visit_rule_supervisor" model="ir.rule">
         <field name="name">Visit: Supervisor sees team</field>
         <field name="model_id" ref="model_ftiq_visit"/>
-        <field name="domain_force">['|', ('user_id', '=', user.id), ('user_id.ftiq_supervisor_id', '=', user.id)]</field>
+        <field name="domain_force">['|', ('user_id', '=', user.id), ('team_id.user_id', '=', user.id)]</field>
         <field name="groups" eval="[(4, ref('group_ftiq_supervisor'))]"/>
     </record>
 
@@ -45,14 +45,14 @@
     <record id="ftiq_plan_rule_rep" model="ir.rule">
         <field name="name">Plan: Rep sees own</field>
         <field name="model_id" ref="model_ftiq_weekly_plan"/>
-        <field name="domain_force">[('user_id', '=', user.id)]</field>
+        <field name="domain_force">[('line_ids.user_id', '=', user.id)]</field>
         <field name="groups" eval="[(4, ref('group_ftiq_rep'))]"/>
     </record>
 
     <record id="ftiq_plan_rule_supervisor" model="ir.rule">
         <field name="name">Plan: Supervisor sees team</field>
         <field name="model_id" ref="model_ftiq_weekly_plan"/>
-        <field name="domain_force">['|', ('user_id', '=', user.id), ('user_id.ftiq_supervisor_id', '=', user.id)]</field>
+        <field name="domain_force">['|', ('line_ids.user_id', '=', user.id), ('team_id.user_id', '=', user.id)]</field>
         <field name="groups" eval="[(4, ref('group_ftiq_supervisor'))]"/>
     </record>
 
@@ -72,7 +72,7 @@
     <record id="ftiq_stock_check_rule_supervisor" model="ir.rule">
         <field name="name">Stock Check: Supervisor sees team</field>
         <field name="model_id" ref="model_ftiq_stock_check"/>
-        <field name="domain_force">['|', ('user_id', '=', user.id), ('user_id.ftiq_supervisor_id', '=', user.id)]</field>
+        <field name="domain_force">['|', ('user_id', '=', user.id), ('team_id.user_id', '=', user.id)]</field>
         <field name="groups" eval="[(4, ref('group_ftiq_supervisor'))]"/>
     </record>
     <record id="ftiq_stock_check_rule_manager" model="ir.rule">
@@ -91,7 +91,7 @@
     <record id="ftiq_target_rule_supervisor" model="ir.rule">
         <field name="name">Target: Supervisor sees team</field>
         <field name="model_id" ref="model_ftiq_sales_target"/>
-        <field name="domain_force">['|', ('user_id', '=', user.id), ('user_id.ftiq_supervisor_id', '=', user.id)]</field>
+        <field name="domain_force">['|', ('user_id', '=', user.id), ('team_id.user_id', '=', user.id)]</field>
         <field name="groups" eval="[(4, ref('group_ftiq_supervisor'))]"/>
     </record>
     <record id="ftiq_target_rule_manager" model="ir.rule">
@@ -110,12 +110,145 @@
     <record id="ftiq_task_rule_supervisor" model="ir.rule">
         <field name="name">Task: Supervisor sees team</field>
         <field name="model_id" ref="model_ftiq_daily_task"/>
-        <field name="domain_force">['|', ('user_id', '=', user.id), ('user_id.ftiq_supervisor_id', '=', user.id)]</field>
+        <field name="domain_force">['|', ('user_id', '=', user.id), ('team_id.user_id', '=', user.id)]</field>
         <field name="groups" eval="[(4, ref('group_ftiq_supervisor'))]"/>
     </record>
     <record id="ftiq_task_rule_manager" model="ir.rule">
         <field name="name">Task: Manager sees all</field>
         <field name="model_id" ref="model_ftiq_daily_task"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_manager'))]"/>
+    </record>
+
+    <record id="ftiq_plan_line_rule_rep" model="ir.rule">
+        <field name="name">Plan Line: Rep sees own</field>
+        <field name="model_id" ref="model_ftiq_weekly_plan_line"/>
+        <field name="domain_force">[('user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_rep'))]"/>
+    </record>
+    <record id="ftiq_plan_line_rule_supervisor" model="ir.rule">
+        <field name="name">Plan Line: Supervisor sees team</field>
+        <field name="model_id" ref="model_ftiq_weekly_plan_line"/>
+        <field name="domain_force">['|', ('user_id', '=', user.id), ('team_id.user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_supervisor'))]"/>
+    </record>
+    <record id="ftiq_plan_line_rule_manager" model="ir.rule">
+        <field name="name">Plan Line: Manager sees all</field>
+        <field name="model_id" ref="model_ftiq_weekly_plan_line"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_manager'))]"/>
+    </record>
+
+    <record id="ftiq_visit_product_line_rule_rep" model="ir.rule">
+        <field name="name">Visit Product Line: Rep sees own</field>
+        <field name="model_id" ref="model_ftiq_visit_product_line"/>
+        <field name="domain_force">[('visit_id.user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_rep'))]"/>
+    </record>
+    <record id="ftiq_visit_product_line_rule_supervisor" model="ir.rule">
+        <field name="name">Visit Product Line: Supervisor sees team</field>
+        <field name="model_id" ref="model_ftiq_visit_product_line"/>
+        <field name="domain_force">['|', ('visit_id.user_id', '=', user.id), ('visit_id.team_id.user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_supervisor'))]"/>
+    </record>
+    <record id="ftiq_visit_product_line_rule_manager" model="ir.rule">
+        <field name="name">Visit Product Line: Manager sees all</field>
+        <field name="model_id" ref="model_ftiq_visit_product_line"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_manager'))]"/>
+    </record>
+
+    <record id="ftiq_material_view_log_rule_rep" model="ir.rule">
+        <field name="name">Material View Log: Rep sees own</field>
+        <field name="model_id" ref="model_ftiq_material_view_log"/>
+        <field name="domain_force">[('visit_id.user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_rep'))]"/>
+    </record>
+    <record id="ftiq_material_view_log_rule_supervisor" model="ir.rule">
+        <field name="name">Material View Log: Supervisor sees team</field>
+        <field name="model_id" ref="model_ftiq_material_view_log"/>
+        <field name="domain_force">['|', ('visit_id.user_id', '=', user.id), ('visit_id.team_id.user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_supervisor'))]"/>
+    </record>
+    <record id="ftiq_material_view_log_rule_manager" model="ir.rule">
+        <field name="name">Material View Log: Manager sees all</field>
+        <field name="model_id" ref="model_ftiq_material_view_log"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_manager'))]"/>
+    </record>
+
+    <record id="ftiq_stock_check_line_rule_rep" model="ir.rule">
+        <field name="name">Stock Check Line: Rep sees own</field>
+        <field name="model_id" ref="model_ftiq_stock_check_line"/>
+        <field name="domain_force">[('check_id.user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_rep'))]"/>
+    </record>
+    <record id="ftiq_stock_check_line_rule_supervisor" model="ir.rule">
+        <field name="name">Stock Check Line: Supervisor sees team</field>
+        <field name="model_id" ref="model_ftiq_stock_check_line"/>
+        <field name="domain_force">['|', ('check_id.user_id', '=', user.id), ('check_id.team_id.user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_supervisor'))]"/>
+    </record>
+    <record id="ftiq_stock_check_line_rule_manager" model="ir.rule">
+        <field name="name">Stock Check Line: Manager sees all</field>
+        <field name="model_id" ref="model_ftiq_stock_check_line"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_manager'))]"/>
+    </record>
+
+    <record id="ftiq_sales_target_line_rule_rep" model="ir.rule">
+        <field name="name">Sales Target Line: Rep sees own</field>
+        <field name="model_id" ref="model_ftiq_sales_target_line"/>
+        <field name="domain_force">[('target_id.user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_rep'))]"/>
+    </record>
+    <record id="ftiq_sales_target_line_rule_supervisor" model="ir.rule">
+        <field name="name">Sales Target Line: Supervisor sees team</field>
+        <field name="model_id" ref="model_ftiq_sales_target_line"/>
+        <field name="domain_force">['|', ('target_id.user_id', '=', user.id), ('target_id.team_id.user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_supervisor'))]"/>
+    </record>
+    <record id="ftiq_sales_target_line_rule_manager" model="ir.rule">
+        <field name="name">Sales Target Line: Manager sees all</field>
+        <field name="model_id" ref="model_ftiq_sales_target_line"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_manager'))]"/>
+    </record>
+
+    <record id="ftiq_client_answer_rule_rep" model="ir.rule">
+        <field name="name">Client Answer: Rep sees own</field>
+        <field name="model_id" ref="model_ftiq_client_answer"/>
+        <field name="domain_force">['|', ('create_uid', '=', user.id), ('partner_id.user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_rep'))]"/>
+    </record>
+    <record id="ftiq_client_answer_rule_supervisor" model="ir.rule">
+        <field name="name">Client Answer: Supervisor sees team</field>
+        <field name="model_id" ref="model_ftiq_client_answer"/>
+        <field name="domain_force">['|', '|', '|', ('create_uid', '=', user.id), ('create_uid.sale_team_id.user_id', '=', user.id), ('partner_id.user_id', '=', user.id), ('partner_id.user_id.sale_team_id.user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_supervisor'))]"/>
+    </record>
+    <record id="ftiq_client_answer_rule_manager" model="ir.rule">
+        <field name="name">Client Answer: Manager sees all</field>
+        <field name="model_id" ref="model_ftiq_client_answer"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_manager'))]"/>
+    </record>
+
+    <record id="ftiq_collection_line_rule_rep" model="ir.rule">
+        <field name="name">Collection Line: Rep sees own</field>
+        <field name="model_id" ref="model_ftiq_collection_line"/>
+        <field name="domain_force">[('payment_id.ftiq_user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_rep'))]"/>
+    </record>
+    <record id="ftiq_collection_line_rule_supervisor" model="ir.rule">
+        <field name="name">Collection Line: Supervisor sees team</field>
+        <field name="model_id" ref="model_ftiq_collection_line"/>
+        <field name="domain_force">['|', ('payment_id.ftiq_user_id', '=', user.id), ('payment_id.ftiq_team_id.user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_supervisor'))]"/>
+    </record>
+    <record id="ftiq_collection_line_rule_manager" model="ir.rule">
+        <field name="name">Collection Line: Manager sees all</field>
+        <field name="model_id" ref="model_ftiq_collection_line"/>
         <field name="domain_force">[(1, '=', 1)]</field>
         <field name="groups" eval="[(4, ref('group_ftiq_manager'))]"/>
     </record>

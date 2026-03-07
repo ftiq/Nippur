@@ -1,6 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
+    <record id="ftiq_client_category_list" model="ir.ui.view">
+        <field name="name">ftiq.client.category.list</field>
+        <field name="model">ftiq.client.category</field>
+        <field name="arch" type="xml">
+            <list editable="bottom">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="active" column_invisible="1"/>
+            </list>
+        </field>
+    </record>
+    <record id="action_ftiq_client_category" model="ir.actions.act_window">
+        <field name="name">Client Categories</field>
+        <field name="res_model">ftiq.client.category</field>
+        <field name="view_mode">list</field>
+    </record>
+
     <record id="ftiq_specialty_list" model="ir.ui.view">
         <field name="name">ftiq.specialty.list</field>
         <field name="model">ftiq.specialty</field>

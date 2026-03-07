@@ -1,5 +1,5 @@
 {
-    'name': 'FTIQ Pharma SFA',
+    'name': 'FTIQ sale management',
     'version': '18.0.2.0.0',
     'category': 'Sales',
     'summary': 'Pharmaceutical Sales Force Automation - Integrated with Sales, Accounting, Inventory & Expenses',
@@ -31,10 +31,10 @@ Features:
         'mail',
         'product',
         'contacts',
+        'sales_team',
         'sale_management',
         'sale_stock',
         'account',
-        'account_payment',
         'hr_expense',
         'stock',
         'project',
@@ -44,9 +44,11 @@ Features:
         'security/ir.model.access.csv',
         'security/rules.xml',
         'data/ir_sequence_data.xml',
-        'demo/demo_data.xml',
-        'demo/demo_operational_data.xml',
+        'data/client_category_data.xml',
 
+
+
+        'views/dashboard_views.xml',
         'views/config_views.xml',
         'views/client_question_views.xml',
         'views/res_partner_views.xml',
@@ -71,9 +73,18 @@ Features:
         'web.assets_backend': [
             'ftiq_pharma_sfa/static/src/js/geolocation.js',
             'ftiq_pharma_sfa/static/src/xml/geolocation.xml',
+            'ftiq_pharma_sfa/static/src/js/dashboard.js',
+            'ftiq_pharma_sfa/static/src/xml/dashboard.xml',
+            'ftiq_pharma_sfa/static/src/js/plan_geo_map_field.js',
+            'ftiq_pharma_sfa/static/src/xml/plan_geo_map_field.xml',
+            'ftiq_pharma_sfa/static/src/css/dashboard.css',
         ],
     },
     'demo': [
+        'demo/demo_data.xml',
+        'demo/demo_operational_data.xml',
+        'demo/demo_arabic_showcase.xml',
+
 
     ],
     'installable': True,

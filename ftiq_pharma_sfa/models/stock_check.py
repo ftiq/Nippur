@@ -1,4 +1,5 @@
-from odoo import models, fields, api, _
+from odoo import _, api, fields, models
+from odoo.exceptions import UserError
 
 
 class FtiqStockCheck(models.Model):
@@ -10,9 +11,11 @@ class FtiqStockCheck(models.Model):
     name = fields.Char(string='Reference', readonly=True, copy=False, default='New')
     partner_id = fields.Many2one('res.partner', string='Client', required=True, tracking=True)
     user_id = fields.Many2one('res.users', string='Representative', default=lambda self: self.env.uid, tracking=True)
+    team_id = fields.Many2one('crm.team', string='Sales Team', compute='_compute_team_id', store=True, readonly=True)
     check_date = fields.Datetime(string='Check Date', default=fields.Datetime.now, required=True, tracking=True)
     visit_id = fields.Many2one('ftiq.visit', string='Related Visit')
     attendance_id = fields.Many2one('ftiq.field.attendance', string='Attendance')
+    ftiq_daily_task_id = fields.Many2one('ftiq.daily.task', string='Daily Task', copy=False)
     line_ids = fields.One2many('ftiq.stock.check.line', 'check_id', string='Stock Lines')
     total_items = fields.Integer(string='Total Items', compute='_compute_totals', store=True)
     total_qty = fields.Float(string='Total Stock Qty', compute='_compute_totals', store=True)
@@ -27,6 +30,11 @@ class FtiqStockCheck(models.Model):
     latitude = fields.Float(string='Latitude', digits=(10, 7))
     longitude = fields.Float(string='Longitude', digits=(10, 7))
 
+    @api.depends('visit_id.team_id', 'ftiq_daily_task_id.team_id', 'user_id.sale_team_id')
+    def _compute_team_id(self):
+        for rec in self:
+            rec.team_id = rec.visit_id.team_id or rec.ftiq_daily_task_id.team_id or rec.user_id.sale_team_id
+
     @api.depends('line_ids.stock_qty')
     def _compute_totals(self):
         for rec in self:
@@ -38,6 +46,15 @@ class FtiqStockCheck(models.Model):
         for vals in vals_list:
             if vals.get('name', 'New') == 'New':
                 vals['name'] = self.env['ir.sequence'].next_by_code('ftiq.stock.check') or 'New'
+            if not vals.get('attendance_id') and vals.get('user_id'):
+                check_date = fields.Datetime.to_datetime(vals.get('check_date')) or fields.Datetime.now()
+                attendance = self.env['ftiq.field.attendance'].search([
+                    ('user_id', '=', vals['user_id']),
+                    ('date', '=', check_date.date()),
+                    ('state', '=', 'checked_in'),
+                ], limit=1)
+                if attendance:
+                    vals['attendance_id'] = attendance.id
         return super().create(vals_list)
 
     def copy(self, default=None):
@@ -68,13 +85,57 @@ class FtiqStockCheck(models.Model):
         return new_check
 
     def action_submit(self):
+        for rec in self:
+            if not (rec.latitude and rec.longitude):
+                rec._capture_location_from_context()
+            if not rec.attendance_id and rec.user_id:
+                rec.attendance_id = self.env['ftiq.field.attendance'].ensure_operation_attendance(
+                    rec.user_id.id,
+                    attendance_date=fields.Datetime.to_datetime(rec.check_date or fields.Datetime.now()).date(),
+                    latitude=rec.latitude or self.env.context.get('ftiq_latitude'),
+                    longitude=rec.longitude or self.env.context.get('ftiq_longitude'),
+                    accuracy=self.env.context.get('ftiq_accuracy', 0),
+                    is_mock=self.env.context.get('ftiq_is_mock', False),
+                    entry_reference=f'{rec._name},{rec.id}',
+                ).id
+            if rec.state != 'draft':
+                raise UserError(_('Only draft stock checks can be submitted.'))
+            if not rec.line_ids:
+                raise UserError(_('Add at least one stock line before submitting the stock check.'))
+            if not (rec.latitude and rec.longitude):
+                raise UserError(_('GPS coordinates are required before submitting the stock check.'))
         self.write({'state': 'submitted'})
 
     def action_review(self):
+        for rec in self:
+            if rec.state != 'submitted':
+                raise UserError(_('Only submitted stock checks can be reviewed.'))
         self.write({'state': 'reviewed'})
+        completed_tasks = self.filtered(
+            lambda check: check.ftiq_daily_task_id and check.ftiq_daily_task_id.state not in ('completed', 'cancelled')
+        )
+        if completed_tasks:
+            completed_tasks.mapped('ftiq_daily_task_id').write({
+                'state': 'completed',
+                'completed_date': fields.Datetime.now(),
+            })
 
     def action_reset_draft(self):
+        for rec in self:
+            if rec.state != 'submitted':
+                raise UserError(_('Only submitted stock checks can be reset to draft.'))
         self.write({'state': 'draft'})
+
+    def _capture_location_from_context(self):
+        self.ensure_one()
+        ctx = self.env.context
+        latitude = ctx.get('ftiq_latitude')
+        longitude = ctx.get('ftiq_longitude')
+        if latitude and longitude:
+            self.write({
+                'latitude': latitude,
+                'longitude': longitude,
+            })
 
 
 class FtiqStockCheckLine(models.Model):

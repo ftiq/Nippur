@@ -1,4 +1,6 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_ftiq_client_category_rep,ftiq.client.category.rep,model_ftiq_client_category,group_ftiq_rep,1,0,0,0
+access_ftiq_client_category_manager,ftiq.client.category.manager,model_ftiq_client_category,group_ftiq_manager,1,1,1,1
 access_ftiq_specialty_rep,ftiq.specialty.rep,model_ftiq_specialty,group_ftiq_rep,1,0,0,0
 access_ftiq_specialty_manager,ftiq.specialty.manager,model_ftiq_specialty,group_ftiq_manager,1,1,1,1
 access_ftiq_subspecialty_rep,ftiq.subspecialty.rep,model_ftiq_subspecialty,group_ftiq_rep,1,0,0,0
@@ -56,14 +58,17 @@ access_ftiq_stock_check_rep,ftiq.stock.check.rep,model_ftiq_stock_check,group_ft
 access_ftiq_stock_check_supervisor,ftiq.stock.check.supervisor,model_ftiq_stock_check,group_ftiq_supervisor,1,1,1,0
 access_ftiq_stock_check_manager,ftiq.stock.check.manager,model_ftiq_stock_check,group_ftiq_manager,1,1,1,1
 access_ftiq_stock_check_line_rep,ftiq.stock.check.line.rep,model_ftiq_stock_check_line,group_ftiq_rep,1,1,1,1
-access_ftiq_stock_check_line_supervisor,ftiq.stock.check.line.supervisor,model_ftiq_stock_check_line,group_ftiq_supervisor,1,1,1,0
+access_ftiq_stock_check_line_supervisor,ftiq.stock.check.line.supervisor,model_ftiq_stock_check_line,group_ftiq_supervisor,1,1,1,1
 access_ftiq_stock_check_line_manager,ftiq.stock.check.line.manager,model_ftiq_stock_check_line,group_ftiq_manager,1,1,1,1
-access_ftiq_sales_target_rep,ftiq.sales.target.rep,model_ftiq_sales_target,group_ftiq_rep,1,0,0,0
+access_ftiq_sales_target_rep,ftiq.sales.target.rep,model_ftiq_sales_target,group_ftiq_rep,1,1,1,0
 access_ftiq_sales_target_supervisor,ftiq.sales.target.supervisor,model_ftiq_sales_target,group_ftiq_supervisor,1,1,1,0
 access_ftiq_sales_target_manager,ftiq.sales.target.manager,model_ftiq_sales_target,group_ftiq_manager,1,1,1,1
-access_ftiq_sales_target_line_rep,ftiq.sales.target.line.rep,model_ftiq_sales_target_line,group_ftiq_rep,1,0,0,0
+access_ftiq_sales_target_line_rep,ftiq.sales.target.line.rep,model_ftiq_sales_target_line,group_ftiq_rep,1,1,1,0
 access_ftiq_sales_target_line_supervisor,ftiq.sales.target.line.supervisor,model_ftiq_sales_target_line,group_ftiq_supervisor,1,1,1,0
 access_ftiq_sales_target_line_manager,ftiq.sales.target.line.manager,model_ftiq_sales_target_line,group_ftiq_manager,1,1,1,1
 access_ftiq_daily_task_rep,ftiq.daily.task.rep,model_ftiq_daily_task,group_ftiq_rep,1,1,1,0
 access_ftiq_daily_task_supervisor,ftiq.daily.task.supervisor,model_ftiq_daily_task,group_ftiq_supervisor,1,1,1,1
 access_ftiq_daily_task_manager,ftiq.daily.task.manager,model_ftiq_daily_task,group_ftiq_manager,1,1,1,1
+access_ftiq_collection_line_rep,ftiq.collection.line.rep,model_ftiq_collection_line,group_ftiq_rep,1,1,1,0
+access_ftiq_collection_line_supervisor,ftiq.collection.line.supervisor,model_ftiq_collection_line,group_ftiq_supervisor,1,1,1,0
+access_ftiq_collection_line_manager,ftiq.collection.line.manager,model_ftiq_collection_line,group_ftiq_manager,1,1,1,1
