@@ -89,17 +89,18 @@ class FtiqDashboardController(http.Controller):
             ('state', '=', 'checked_in'),
         ])
 
-        tasks_pending = DailyTask.search(task_scope_domain + [('state', 'in', ('pending', 'in_progress'))])
-        tasks_today = DailyTask.search(task_scope_domain + [
+        module_task_domain = self._module_task_domain()
+        tasks_pending = DailyTask.search(task_scope_domain + module_task_domain + [('state', 'in', ('pending', 'in_progress'))])
+        tasks_today = DailyTask.search(task_scope_domain + module_task_domain + [
             ('scheduled_date', '>=', today_dt),
             ('scheduled_date', '<', tomorrow_dt),
         ], order='scheduled_date asc, priority desc', limit=8)
-        tasks_completed_month = DailyTask.search(task_scope_domain + [
+        tasks_completed_month = DailyTask.search(task_scope_domain + module_task_domain + [
             ('state', '=', 'completed'),
             ('completed_date', '>=', month_start_dt),
             ('completed_date', '<', next_month_dt),
         ])
-        overdue_tasks = DailyTask.search(task_scope_domain + [
+        overdue_tasks = DailyTask.search(task_scope_domain + module_task_domain + [
             ('state', 'not in', ('completed', 'cancelled')),
             ('scheduled_date', '<', fields.Datetime.now()),
         ])
@@ -313,6 +314,19 @@ class FtiqDashboardController(http.Controller):
             scope_users = (teams.mapped('member_ids') | user).filtered(lambda member: not member.share)
             return 'supervisor', scope_users
         return 'rep', user
+
+    @staticmethod
+    def _module_task_domain():
+        return [
+            '|', '|', '|', '|', '|', '|',
+            ('plan_id', '!=', False),
+            ('plan_line_id', '!=', False),
+            ('visit_id', '!=', False),
+            ('sale_order_id', '!=', False),
+            ('payment_id', '!=', False),
+            ('stock_check_id', '!=', False),
+            ('project_task_id', '!=', False),
+        ]
 
     @staticmethod
     def _area_key(record):

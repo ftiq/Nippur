@@ -24,11 +24,16 @@
     --ftiq-success: #198754;
     --ftiq-shadow: 0 20px 42px rgba(18, 44, 66, 0.08);
     --ftiq-shadow-soft: 0 12px 28px rgba(18, 44, 66, 0.05);
-    height: 100vh;
+    min-height: calc(100vh - 116px);
+    height: calc(100vh - 116px);
+    max-height: calc(100vh - 116px);
     padding: 0;
     color: var(--ftiq-text);
     overflow-y: auto;
     overflow-x: hidden;
+    scroll-padding-bottom: 48px;
+    overscroll-behavior-y: contain;
+    -webkit-overflow-scrolling: touch;
     scrollbar-width: thin;
     scrollbar-color: rgba(19, 72, 112, 0.28) transparent;
     background:
@@ -63,7 +68,7 @@
 .ftiq_dash_shell {
     max-width: 1520px;
     margin: 0 auto;
-    padding: 24px 24px 34px;
+    padding: 24px 24px 96px;
 }
 
 .ftiq_dashboard_loader {
@@ -261,7 +266,7 @@
 }
 
 .ftiq_metric_card {
-    text-align: left;
+    text-align: start;
     padding: 20px;
     border-radius: 22px;
     color: var(--ftiq-text);
@@ -379,13 +384,41 @@
     display: flex;
     flex-direction: column;
     gap: 12px;
+    max-height: 360px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-inline-end: 8px;
+    overscroll-behavior: contain;
+}
+
+.ftiq_target_stack::-webkit-scrollbar,
+.ftiq_team_stack::-webkit-scrollbar,
+.ftiq_feed::-webkit-scrollbar,
+.ftiq_panel .table-responsive::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+.ftiq_target_stack::-webkit-scrollbar-thumb,
+.ftiq_team_stack::-webkit-scrollbar-thumb,
+.ftiq_feed::-webkit-scrollbar-thumb,
+.ftiq_panel .table-responsive::-webkit-scrollbar-thumb {
+    border-radius: 999px;
+    background: rgba(19, 72, 112, 0.22);
+}
+
+.ftiq_target_stack::-webkit-scrollbar-track,
+.ftiq_team_stack::-webkit-scrollbar-track,
+.ftiq_feed::-webkit-scrollbar-track,
+.ftiq_panel .table-responsive::-webkit-scrollbar-track {
+    background: transparent;
 }
 
 .ftiq_target_item,
 .ftiq_team_item,
 .ftiq_feed_item_button {
     width: 100%;
-    text-align: left;
+    text-align: start;
     border-radius: 18px;
     padding: 16px;
     color: var(--ftiq-text);
@@ -413,6 +446,13 @@
 .ftiq_table {
     margin-bottom: 0;
     color: var(--ftiq-text);
+}
+
+.ftiq_panel .table-responsive {
+    max-height: 360px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding-inline-end: 4px;
 }
 
 .ftiq_table thead th {
@@ -487,7 +527,8 @@
     display: flex;
     flex-wrap: wrap;
     gap: 12px;
-    padding-bottom: 12px;
+    margin-top: 4px;
+    padding-bottom: 32px;
 }
 
 .ftiq_quick_actions .btn {
@@ -651,7 +692,7 @@
 }
 
 .ftiq_plan_wizard_progress_step.is-current {
-    color: var(--ftiq-primary-dark);
+    color: var(--ftiq-primary-strong);
 }
 
 .ftiq_plan_wizard_progress_step.is-current .ftiq_plan_wizard_progress_index,
@@ -707,24 +748,8 @@
     color: #0a2439;
 }
 
-.ftiq_plan_wizard_filter_group .o_field_widget,
-.ftiq_plan_wizard_flag_group .o_field_widget {
-    margin-bottom: 10px;
-}
-
-.ftiq_plan_wizard_filter_group .o_input,
-.ftiq_plan_wizard_filter_group .o-autocomplete--input,
-.ftiq_plan_wizard_filter_group textarea,
-.ftiq_plan_wizard_filter_group select,
-.ftiq_plan_wizard_flag_group .o_input,
-.ftiq_plan_wizard_flag_group .o-autocomplete--input,
-.ftiq_plan_wizard_flag_group textarea,
-.ftiq_plan_wizard_flag_group select {
-    min-height: 42px;
-    border-radius: 12px;
-}
-
 .ftiq_plan_wizard_mode_grid {
+    display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 12px;
 }
@@ -735,8 +760,8 @@
     justify-content: flex-start;
     gap: 16px;
     width: 100%;
-    min-height: 108px;
-    padding: 18px 20px !important;
+    min-height: 94px;
+    padding: 16px 18px !important;
     border-radius: 18px !important;
     border: 1px solid rgba(14, 45, 73, 0.1) !important;
     background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(247, 250, 252, 0.96)) !important;
@@ -779,15 +804,15 @@
 }
 
 .ftiq_plan_wizard_mode_title {
-    font-size: 20px;
+    font-size: 18px;
     line-height: 1.2;
     font-weight: 800;
     color: #0a2439;
 }
 
 .ftiq_plan_wizard_mode_text {
-    font-size: 15px;
-    line-height: 1.55;
+    font-size: 14px;
+    line-height: 1.5;
     color: #60758b;
 }
 
@@ -806,6 +831,64 @@
     align-items: flex-start;
     justify-content: space-between;
     gap: 16px;
+}
+
+.ftiq_plan_wizard_field_grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.ftiq_plan_wizard_field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+}
+
+.ftiq_plan_wizard_field_span_2 {
+    grid-column: span 2;
+}
+
+.ftiq_plan_wizard_field > label,
+.ftiq_plan_wizard_toggle_item > label {
+    margin: 0;
+    font-size: 12px;
+    font-weight: 700;
+    color: #60758b;
+}
+
+.ftiq_plan_wizard_field .o_field_widget,
+.ftiq_plan_wizard_toggle_item .o_field_widget {
+    margin-bottom: 0 !important;
+}
+
+.ftiq_plan_wizard_field .o_input,
+.ftiq_plan_wizard_field .o-autocomplete--input,
+.ftiq_plan_wizard_field textarea,
+.ftiq_plan_wizard_field select,
+.ftiq_plan_wizard_toggle_item .o_input,
+.ftiq_plan_wizard_toggle_item .o-autocomplete--input,
+.ftiq_plan_wizard_toggle_item textarea,
+.ftiq_plan_wizard_toggle_item select {
+    min-height: 42px;
+    border-radius: 12px;
+}
+
+.ftiq_plan_wizard_toggle_list {
+    display: grid;
+    gap: 12px;
+}
+
+.ftiq_plan_wizard_toggle_item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 14px;
+    border-radius: 14px;
+    border: 1px solid rgba(14, 45, 73, 0.08);
+    background: rgba(255, 255, 255, 0.92);
 }
 
 .ftiq_plan_wizard_grid_2 {
@@ -882,9 +965,12 @@
 }
 
 .ftiq_geo_map_actions {
+    display: grid;
     grid-auto-flow: column;
     grid-auto-columns: max-content;
     align-items: center;
+    justify-content: end;
+    gap: 10px;
 }
 
 .ftiq_geo_map_toolbar {
@@ -1003,7 +1089,7 @@
     bottom: 0;
     z-index: 20;
     display: flex !important;
-    justify-content: flex-end;
+    justify-content: space-between;
     align-items: center;
     flex-wrap: nowrap;
     gap: 10px;
@@ -1014,26 +1100,46 @@
     box-shadow: 0 -8px 20px rgba(18, 44, 66, 0.05);
 }
 
-.ftiq_plan_wizard_form .ftiq_btn_primary,
+.ftiq_plan_wizard_footer_group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: nowrap;
+}
+
+.ftiq_plan_wizard_footer_group_end {
+    margin-inline-start: auto;
+}
+
 .ftiq_plan_wizard_footer .ftiq_btn_primary,
-.ftiq_plan_wizard_footer > .btn.ftiq_btn_primary {
+.ftiq_plan_wizard_footer > .btn.ftiq_btn_primary,
+.ftiq_plan_wizard_footer button[name="action_next"] {
     display: inline-flex !important;
     align-items: center;
     justify-content: center;
     width: auto !important;
     white-space: nowrap;
-    background: linear-gradient(135deg, #0f7a78 0%, #0a5e70 100%) !important;
-    border-color: rgba(15, 122, 120, 0.3) !important;
+    background: #111827 !important;
+    border: 1px solid #111827 !important;
     color: #ffffff !important;
-    box-shadow: 0 10px 22px rgba(15, 122, 120, 0.18);
+    box-shadow: 0 10px 22px rgba(15, 23, 42, 0.16);
 }
 
-.ftiq_plan_wizard_form .ftiq_btn_primary:hover,
-.ftiq_plan_wizard_form .ftiq_btn_primary:focus,
-.ftiq_plan_wizard_footer .ftiq_btn_primary:hover,
-.ftiq_plan_wizard_footer .ftiq_btn_primary:focus {
+.ftiq_plan_wizard_footer button[name="action_next"],
+.ftiq_plan_wizard_footer button[name="action_next"] *,
+.ftiq_plan_wizard_footer .ftiq_btn_primary,
+.ftiq_plan_wizard_footer .ftiq_btn_primary * {
     color: #ffffff !important;
-    box-shadow: 0 14px 26px rgba(15, 122, 120, 0.22);
+}
+
+.ftiq_plan_wizard_footer .ftiq_btn_primary:hover,
+.ftiq_plan_wizard_footer .ftiq_btn_primary:focus,
+.ftiq_plan_wizard_footer button[name="action_next"]:hover,
+.ftiq_plan_wizard_footer button[name="action_next"]:focus {
+    color: #ffffff !important;
+    background: #0f172a !important;
+    border-color: #0f172a !important;
+    box-shadow: 0 14px 26px rgba(15, 23, 42, 0.22);
 }
 
 .ftiq_plan_wizard_form .ftiq_btn_secondary,
@@ -1052,40 +1158,14 @@
 .ftiq_geo_map_actions .btn,
 .ftiq_geo_map_search .btn,
 .ftiq_plan_wizard_toolbar .btn,
-.ftiq_plan_wizard_footer .btn {
+.ftiq_plan_wizard_footer .btn,
+.ftiq_plan_wizard_footer button {
     min-width: 108px;
     padding: 9px 14px !important;
     font-size: 13px;
     flex: 0 0 auto;
-}
-
-[dir="rtl"] .ftiq_plan_wizard_mode_card {
-    flex-direction: row-reverse;
-}
-
-[dir="rtl"] .ftiq_plan_wizard_mode_body {
-    text-align: right;
-}
-
-[dir="rtl"] .ftiq_plan_wizard_footer {
-    flex-direction: row-reverse !important;
-}
-
-[dir="rtl"] .ftiq_hero,
-[dir="rtl"] .ftiq_panel_head,
-[dir="rtl"] .ftiq_target_top,
-[dir="rtl"] .ftiq_team_item,
-[dir="rtl"] .ftiq_feed_item,
-[dir="rtl"] .ftiq_plan_wizard_hero,
-[dir="rtl"] .ftiq_plan_wizard_card_head_inline,
-[dir="rtl"] .ftiq_geo_map_header,
-[dir="rtl"] .ftiq_geo_map_toolbar {
-    direction: rtl;
-}
-
-[dir="rtl"] .ftiq_plan_wizard_progress_step::before {
-    inset-inline-start: auto;
-    inset-inline-end: calc(50% + 26px);
+    font-weight: 700;
+    margin: 0 !important;
 }
 
 @media (max-width: 1200px) {
@@ -1106,6 +1186,14 @@
 
     .ftiq_plan_wizard_progress {
         width: 100%;
+    }
+
+    .ftiq_plan_wizard_field_grid {
+        grid-template-columns: 1fr;
+    }
+
+    .ftiq_plan_wizard_field_span_2 {
+        grid-column: span 1;
     }
 }
 
@@ -1154,8 +1242,16 @@
     }
 
     .ftiq_plan_wizard_footer {
-        justify-content: stretch;
-        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .ftiq_plan_wizard_footer_group {
+        gap: 8px;
+    }
+
+    .ftiq_plan_wizard_footer .btn,
+    .ftiq_plan_wizard_footer button {
+        min-width: 96px;
     }
 }
 

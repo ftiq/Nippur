@@ -56,6 +56,19 @@ class FtiqDashboard extends Component {
         return Array.isArray(extraDomain) ? extraDomain : [];
     }
 
+    moduleTaskDomain() {
+        return [
+            "|", "|", "|", "|", "|", "|",
+            ["plan_id", "!=", false],
+            ["plan_line_id", "!=", false],
+            ["visit_id", "!=", false],
+            ["sale_order_id", "!=", false],
+            ["payment_id", "!=", false],
+            ["stock_check_id", "!=", false],
+            ["project_task_id", "!=", false],
+        ];
+    }
+
     scopedDomain(fieldName, extraDomain = []) {
         const scopeUserIds = this.data.scope_user_ids || [];
         const scoped = scopeUserIds.length ? [[fieldName, "in", scopeUserIds]] : [];
@@ -97,10 +110,11 @@ class FtiqDashboard extends Component {
     }
 
     openTasks(extraDomain = []) {
+        extraDomain = this.normalizeDomain(extraDomain);
         this.openWindowAction({
             name: _t("Daily Tasks"),
             resModel: "ftiq.daily.task",
-            domain: this.scopedDomain("user_id", extraDomain),
+            domain: this.scopedDomain("user_id", [...this.moduleTaskDomain(), ...extraDomain]),
             views: [[false, "kanban"], [false, "list"], [false, "form"], [false, "calendar"]],
         });
     }

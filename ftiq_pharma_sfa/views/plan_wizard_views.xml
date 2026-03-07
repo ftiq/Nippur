@@ -133,51 +133,96 @@
                                         <span class="ftiq_eyebrow">Client</span>
                                         <h4>Identity &amp; Location</h4>
                                     </div>
-                                    <group col="2" class="ftiq_plan_wizard_filter_group">
-                                        <field name="filter_partner_id"
-                                               string="Client"
-                                               domain="['|', '|', ('is_ftiq_doctor', '=', True), ('is_ftiq_center', '=', True), ('is_ftiq_pharmacy', '=', True)]"
-                                               options="{'no_create': True, 'no_open': True}"
-                                               placeholder="Select client"/>
-                                        <field name="filter_address" string="Address" placeholder="Keyword"/>
-                                        <field name="filter_country_id" string="Country"/>
-                                        <field name="filter_city_id" string="City" domain="[('country_id', '=', filter_country_id)]"/>
-                                        <field name="filter_area_id" string="Area" domain="[('city_id', '=', filter_city_id)]"/>
-                                        <field name="filter_name" string="Client Keyword" placeholder="Search keyword"/>
-                                    </group>
+                                    <div class="ftiq_plan_wizard_field_grid">
+                                        <div class="ftiq_plan_wizard_field ftiq_plan_wizard_field_span_2">
+                                            <label for="filter_partner_id" string="Client"/>
+                                            <field name="filter_partner_id"
+                                                   nolabel="1"
+                                                   domain="['|', '|', ('is_ftiq_doctor', '=', True), ('is_ftiq_center', '=', True), ('is_ftiq_pharmacy', '=', True)]"
+                                                   options="{'no_create': True, 'no_open': True}"
+                                                   placeholder="Select client"/>
+                                        </div>
+                                        <div class="ftiq_plan_wizard_field">
+                                            <label for="filter_name" string="Client Keyword"/>
+                                            <field name="filter_name" nolabel="1" placeholder="Search keyword"/>
+                                        </div>
+                                        <div class="ftiq_plan_wizard_field">
+                                            <label for="filter_address" string="Address"/>
+                                            <field name="filter_address" nolabel="1" placeholder="Keyword"/>
+                                        </div>
+                                        <div class="ftiq_plan_wizard_field">
+                                            <label for="filter_country_id" string="Country"/>
+                                            <field name="filter_country_id" nolabel="1"/>
+                                        </div>
+                                        <div class="ftiq_plan_wizard_field">
+                                            <label for="filter_city_id" string="City"/>
+                                            <field name="filter_city_id" nolabel="1" domain="[('country_id', '=', filter_country_id)]"/>
+                                        </div>
+                                        <div class="ftiq_plan_wizard_field">
+                                            <label for="filter_area_id" string="Area"/>
+                                            <field name="filter_area_id" nolabel="1" domain="[('city_id', '=', filter_city_id)]"/>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div class="ftiq_plan_wizard_filter_card">
                                     <div class="ftiq_plan_wizard_filter_card_head">
                                         <span class="ftiq_eyebrow">Classification</span>
                                         <h4>Segment &amp; Specialty</h4>
                                     </div>
-                                    <group col="2" class="ftiq_plan_wizard_filter_group">
-                                        <field name="filter_client_category_id" string="Category" placeholder="All categories"/>
-                                        <field name="filter_classification_id" string="Classification"/>
-                                        <field name="filter_specialty_id" string="Specialty"/>
-                                        <field name="filter_subspecialty_id" string="Subcategory" domain="[('specialty_id', '=', filter_specialty_id)]"/>
-                                    </group>
+                                    <div class="ftiq_plan_wizard_field_grid">
+                                        <div class="ftiq_plan_wizard_field">
+                                            <label for="filter_client_category_id" string="Category"/>
+                                            <field name="filter_client_category_id" nolabel="1" placeholder="All categories"/>
+                                        </div>
+                                        <div class="ftiq_plan_wizard_field">
+                                            <label for="filter_classification_id" string="Classification"/>
+                                            <field name="filter_classification_id" nolabel="1"/>
+                                        </div>
+                                        <div class="ftiq_plan_wizard_field">
+                                            <label for="filter_specialty_id" string="Specialty"/>
+                                            <field name="filter_specialty_id" nolabel="1"/>
+                                        </div>
+                                        <div class="ftiq_plan_wizard_field">
+                                            <label for="filter_subspecialty_id" string="Subcategory"/>
+                                            <field name="filter_subspecialty_id" nolabel="1" domain="[('specialty_id', '=', filter_specialty_id)]"/>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div class="ftiq_plan_wizard_filter_card">
                                     <div class="ftiq_plan_wizard_filter_card_head">
                                         <span class="ftiq_eyebrow">Activity</span>
                                         <h4>Operations Signals</h4>
                                     </div>
-                                    <group col="2" class="ftiq_plan_wizard_filter_group">
-                                        <field name="filter_has_cashed" string="Has Cashed"/>
-                                        <field name="filter_has_tasks" string="Has Tasks"/>
-                                    </group>
+                                    <div class="ftiq_plan_wizard_field_grid">
+                                        <div class="ftiq_plan_wizard_field">
+                                            <label for="filter_has_cashed" string="Has Cashed"/>
+                                            <field name="filter_has_cashed" nolabel="1"/>
+                                        </div>
+                                        <div class="ftiq_plan_wizard_field">
+                                            <label for="filter_has_tasks" string="Has Tasks"/>
+                                            <field name="filter_has_tasks" nolabel="1"/>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div class="ftiq_plan_wizard_filter_card">
                                     <div class="ftiq_plan_wizard_filter_card_head">
                                         <span class="ftiq_eyebrow">Verification</span>
                                         <h4>Field Readiness</h4>
                                     </div>
-                                    <group col="1" class="ftiq_plan_wizard_flag_group">
-                                        <field name="filter_geo_confirmed" string="Confirmed GEO"/>
-                                        <field name="filter_app_verified" string="App Verified"/>
-                                        <field name="filter_license_attached" string="License Attached"/>
-                                    </group>
+                                    <div class="ftiq_plan_wizard_toggle_list">
+                                        <div class="ftiq_plan_wizard_toggle_item">
+                                            <label for="filter_geo_confirmed" string="Confirmed GEO"/>
+                                            <field name="filter_geo_confirmed" nolabel="1"/>
+                                        </div>
+                                        <div class="ftiq_plan_wizard_toggle_item">
+                                            <label for="filter_app_verified" string="App Verified"/>
+                                            <field name="filter_app_verified" nolabel="1"/>
+                                        </div>
+                                        <div class="ftiq_plan_wizard_toggle_item">
+                                            <label for="filter_license_attached" string="License Attached"/>
+                                            <field name="filter_license_attached" nolabel="1"/>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -263,15 +308,19 @@
                 </div>
 
                 <footer class="ftiq_plan_wizard_footer">
-                    <button string="Cancel" class="btn ftiq_btn_secondary" special="cancel"/>
-                    <button name="action_back" type="object" string="Back"
-                            class="btn ftiq_btn_secondary" invisible="step == 'type'"/>
-                    <button name="action_next" type="object"
-                            string="Next" class="btn ftiq_btn_primary"
-                            invisible="step == 'setup'"/>
-                    <button name="action_next" type="object"
-                            string="Create Plan" class="btn ftiq_btn_primary"
-                            invisible="step != 'setup'"/>
+                    <div class="ftiq_plan_wizard_footer_group ftiq_plan_wizard_footer_group_start">
+                        <button string="Cancel" class="btn btn-secondary ftiq_btn_secondary" special="cancel"/>
+                        <button name="action_back" type="object" string="Back"
+                                class="btn btn-secondary ftiq_btn_secondary" invisible="step == 'type'"/>
+                    </div>
+                    <div class="ftiq_plan_wizard_footer_group ftiq_plan_wizard_footer_group_end">
+                        <button name="action_next" type="object"
+                                string="Next" class="btn btn-primary ftiq_btn_primary"
+                                invisible="step == 'setup'"/>
+                        <button name="action_next" type="object"
+                                string="Create Plan" class="btn btn-primary ftiq_btn_primary"
+                                invisible="step != 'setup'"/>
+                    </div>
                 </footer>
             </form>
         </field>

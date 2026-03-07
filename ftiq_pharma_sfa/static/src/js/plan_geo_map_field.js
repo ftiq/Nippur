@@ -209,6 +209,7 @@ export class FtiqPlanGeoMapField extends Component {
         this.map.addLayer(this.clusterLayer);
         this.polygonDrawHandler = new L.Draw.Polygon(this.map, {
             allowIntersection: false,
+            maxPoints: 4,
             showArea: true,
             shapeOptions: {
                 color: "#16a34a",
@@ -297,6 +298,9 @@ export class FtiqPlanGeoMapField extends Component {
         }
         if (!this.hasMarkers) {
             return _t("No geo-enabled clients are available. Add coordinates to client records to use GEO selection.");
+        }
+        if (this.state.activeTool === "draw") {
+            return _t("Add up to four points. The fourth point closes the area automatically, or use Finish Area.");
         }
         if (!this.hasPolygon) {
             return _t("Use Draw to define a closed search area on the map.");
@@ -418,6 +422,26 @@ export class FtiqPlanGeoMapField extends Component {
         this.polygonDrawHandler.enable();
     }
 
+    finishDraw() {
+        if (!this.polygonDrawHandler?.enabled()) {
+            return;
+        }
+        if ((this.polygonDrawHandler._markers || []).length < 3) {
+            this.notification.add(_t("Add at least three points before finishing the area."), {
+                type: "warning",
+            });
+            return;
+        }
+        this.polygonDrawHandler.completeShape();
+    }
+
+    undoLastVertex() {
+        if (!this.polygonDrawHandler?.enabled()) {
+            return;
+        }
+        this.polygonDrawHandler.deleteLastVertex();
+    }
+
     startEdit() {
         if (!this.hasPolygon) {
             this.notification.add(_t("Draw an area first."), { type: "warning" });
@@ -467,7 +491,6 @@ export class FtiqPlanGeoMapField extends Component {
             geo_polygon: "",
             geo_client_count: 0,
         });
-        this.fitMap();
     }
 
     async searchLocation() {

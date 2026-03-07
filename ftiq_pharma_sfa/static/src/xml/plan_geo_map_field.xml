@@ -14,6 +14,12 @@
                             t-on-click="startDraw">
                         <i class="fa fa-pencil me-1"/>Draw
                     </button>
+                    <button type="button" class="btn ftiq_btn_secondary" t-if="state.activeTool === 'draw'" t-on-click="finishDraw">
+                        <i class="fa fa-check me-1"/>Finish Area
+                    </button>
+                    <button type="button" class="btn ftiq_btn_secondary" t-if="state.activeTool === 'draw'" t-on-click="undoLastVertex">
+                        <i class="fa fa-undo me-1"/>Undo Point
+                    </button>
                     <button type="button"
                             t-attf-class="btn ftiq_btn_secondary #{state.activeTool === 'edit' ? 'ftiq_geo_map_action_active' : ''}"
                             t-on-click="startEdit">
