@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="ftiq_sales_target_form" model="ir.ui.view">
+        <field name="name">ftiq.sales.target.form</field>
+        <field name="model">ftiq.sales.target</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_activate" type="object" string="Activate"
+                            class="btn-primary" invisible="state != 'draft'"/>
+                    <button name="action_close" type="object" string="Close"
+                            class="btn-warning" invisible="state != 'active'"/>
+                    <button name="action_reset_draft" type="object" string="Reset to Draft"
+                            invisible="state != 'closed'"
+                            groups="ftiq_pharma_sfa.group_ftiq_manager"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,active,closed"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="user_id"/>
+                            <field name="supervisor_id"/>
+                            <field name="target_type"/>
+                        </group>
+                        <group>
+                            <field name="date_from"/>
+                            <field name="date_to"/>
+                            <field name="currency_id" invisible="1"/>
+                            <field name="target_value"/>
+                            <field name="achieved_value"/>
+                            <field name="achievement_rate" widget="progressbar"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Product Targets" invisible="target_type != 'products'">
+                            <field name="line_ids">
+                                <list editable="bottom">
+                                    <field name="product_id"/>
+                                    <field name="target_qty"/>
+                                    <field name="target_amount"/>
+                                    <field name="achieved_qty"/>
+                                    <field name="achieved_amount"/>
+                                    <field name="achievement_rate" widget="progressbar"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Notes">
+                            <field name="notes"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="ftiq_sales_target_list" model="ir.ui.view">
+        <field name="name">ftiq.sales.target.list</field>
+        <field name="model">ftiq.sales.target</field>
+        <field name="arch" type="xml">
+            <list decoration-success="achievement_rate >= 100"
+                  decoration-warning="achievement_rate >= 50 and achievement_rate &lt; 100"
+                  decoration-danger="achievement_rate &lt; 50 and state == 'active'">
+                <field name="name"/>
+                <field name="user_id"/>
+                <field name="target_type"/>
+                <field name="date_from"/>
+                <field name="date_to"/>
+                <field name="target_value"/>
+                <field name="achieved_value"/>
+                <field name="achievement_rate" widget="progressbar"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'active'"
+                       decoration-muted="state in ('draft', 'closed')"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="ftiq_sales_target_kanban" model="ir.ui.view">
+        <field name="name">ftiq.sales.target.kanban</field>
+        <field name="model">ftiq.sales.target</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="state">
+                <field name="name"/>
+                <field name="user_id"/>
+                <field name="target_type"/>
+                <field name="target_value"/>
+                <field name="achieved_value"/>
+                <field name="achievement_rate"/>
+                <field name="state"/>
+                <templates>
+                    <t t-name="card">
+                        <div class="oe_kanban_content">
+                            <div class="o_kanban_record_top mb-0">
+                                <strong><field name="name"/></strong>
+                            </div>
+                            <div class="o_kanban_record_body">
+                                <div><i class="fa fa-user me-1"/><field name="user_id"/></div>
+                                <div><i class="fa fa-bullseye me-1"/><field name="target_type"/></div>
+                                <div class="mt-1">
+                                    Target: <field name="target_value"/> | Achieved: <field name="achieved_value"/>
+                                </div>
+                                <div class="mt-1">
+                                    <field name="achievement_rate" widget="progressbar"/>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <record id="ftiq_sales_target_search" model="ir.ui.view">
+        <field name="name">ftiq.sales.target.search</field>
+        <field name="model">ftiq.sales.target</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="user_id"/>
+                <filter name="active_targets" string="Active" domain="[('state', '=', 'active')]"/>
+                <separator/>
+                <group expand="0" string="Group By">
+                    <filter name="group_user" string="Representative" context="{'group_by': 'user_id'}"/>
+                    <filter name="group_type" string="Target Type" context="{'group_by': 'target_type'}"/>
+                    <filter name="group_state" string="Status" context="{'group_by': 'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_ftiq_sales_target" model="ir.actions.act_window">
+        <field name="name">Sales Targets</field>
+        <field name="res_model">ftiq.sales.target</field>
+        <field name="view_mode">list,kanban,form</field>
+        <field name="search_view_id" ref="ftiq_sales_target_search"/>
+    </record>
+
+    <record id="action_ftiq_my_targets" model="ir.actions.act_window">
+        <field name="name">My Targets</field>
+        <field name="res_model">ftiq.sales.target</field>
+        <field name="view_mode">list,kanban,form</field>
+        <field name="domain">[('user_id', '=', uid)]</field>
+    </record>
+
+</odoo>

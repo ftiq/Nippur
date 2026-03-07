@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="ftiq_plan_wizard_form" model="ir.ui.view">
+        <field name="name">ftiq.plan.wizard.form</field>
+        <field name="model">ftiq.plan.wizard</field>
+        <field name="arch" type="xml">
+            <form>
+                <field name="step" invisible="1"/>
+                <div class="text-center mb-3">
+                    <span class="badge rounded-pill"
+                          t-attf-class="#{step == 'type' and 'bg-primary' or 'bg-secondary'}">
+                        1. Type
+                    </span>
+                    <span class="mx-2">&#8594;</span>
+                    <span class="badge rounded-pill"
+                          t-attf-class="#{step == 'configure' and 'bg-primary' or 'bg-secondary'}">
+                        2. Configure
+                    </span>
+                    <span class="mx-2">&#8594;</span>
+                    <span class="badge rounded-pill"
+                          t-attf-class="#{step == 'clients' and 'bg-primary' or 'bg-secondary'}">
+                        3. Clients
+                    </span>
+                </div>
+
+                <group invisible="step != 'type'">
+                    <group>
+                        <field name="plan_name" string="Plan Name"/>
+                        <field name="task_type_id"/>
+                    </group>
+                    <group>
+                        <field name="user_id" string="Representative"/>
+                        <field name="schedule_date"/>
+                    </group>
+                    <group>
+                        <field name="apply_to_all"/>
+                        <field name="note"/>
+                    </group>
+                </group>
+
+                <group invisible="step != 'configure'" string="Filter Clients">
+                    <group>
+                        <field name="filter_name" string="Client Name"/>
+                        <field name="filter_country_id" string="Country"/>
+                        <field name="filter_city_id" string="City"/>
+                        <field name="filter_area_id" string="Area" domain="[('city_id', '=', filter_city_id)]"/>
+                        <field name="filter_address" string="Address"/>
+                    </group>
+                    <group>
+                        <field name="filter_specialty_id" string="Category"/>
+                        <field name="filter_subspecialty_id" string="Subcategory"
+                               domain="[('specialty_id', '=', filter_specialty_id)]"/>
+                        <field name="filter_classification_id" string="Classification"/>
+                        <field name="filter_has_cashed" string="Has Cashed"/>
+                        <field name="filter_has_tasks" string="Has Tasks"/>
+                    </group>
+                    <group>
+                        <field name="filter_geo_confirmed" string="Confirmed GEO"/>
+                        <field name="filter_app_verified" string="App Verified"/>
+                        <field name="filter_license_attached" string="License Attached"/>
+                    </group>
+                </group>
+
+                <group invisible="step != 'clients'">
+                    <div class="mb-2">
+                        <button name="action_select_all" type="object" string="Select All"
+                                class="btn-secondary me-2"/>
+                        <button name="action_deselect_all" type="object" string="Deselect All"
+                                class="btn-secondary"/>
+                    </div>
+                    <field name="partner_ids" widget="many2many_checkboxes"/>
+                </group>
+
+                <footer>
+                    <button name="action_back" type="object" string="Back"
+                            class="btn-secondary" invisible="step == 'type'"/>
+                    <button name="action_next" type="object"
+                            string="Next" class="btn-primary"
+                            invisible="step == 'clients'"/>
+                    <button name="action_next" type="object"
+                            string="Create Plan" class="btn-success"
+                            invisible="step != 'clients'"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_ftiq_plan_wizard" model="ir.actions.act_window">
+        <field name="name">New Plan Wizard</field>
+        <field name="res_model">ftiq.plan.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+</odoo>

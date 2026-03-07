@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="module_category_ftiq_pharma_sfa" model="ir.module.category">
+        <field name="name">Pharma SFA</field>
+        <field name="sequence">50</field>
+    </record>
+
+    <record id="group_ftiq_rep" model="res.groups">
+        <field name="name">Representative</field>
+        <field name="category_id" ref="module_category_ftiq_pharma_sfa"/>
+    </record>
+
+    <record id="group_ftiq_supervisor" model="res.groups">
+        <field name="name">Supervisor</field>
+        <field name="category_id" ref="module_category_ftiq_pharma_sfa"/>
+        <field name="implied_ids" eval="[(4, ref('group_ftiq_rep'))]"/>
+    </record>
+
+    <record id="group_ftiq_manager" model="res.groups">
+        <field name="name">Manager</field>
+        <field name="category_id" ref="module_category_ftiq_pharma_sfa"/>
+        <field name="implied_ids" eval="[(4, ref('group_ftiq_supervisor'))]"/>
+    </record>
+</odoo>

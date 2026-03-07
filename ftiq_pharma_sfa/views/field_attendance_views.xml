@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="ftiq_field_attendance_form" model="ir.ui.view">
+        <field name="name">ftiq.field.attendance.form</field>
+        <field name="model">ftiq.field.attendance</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_check_in" type="object" string="Check In"
+                            class="btn-primary" invisible="state != 'draft'"/>
+                    <button name="action_check_out" type="object" string="Check Out"
+                            class="btn-primary" invisible="state != 'checked_in'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,checked_in,checked_out"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_open_visits" type="object"
+                                class="oe_stat_button" icon="fa-clipboard">
+                            <field name="visit_count" widget="statinfo" string="Visits"/>
+                        </button>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="user_id"/>
+                            <field name="date"/>
+                            <field name="working_hours" widget="float_time"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Check In">
+                            <group>
+                                <group>
+                                    <field name="check_in_time"/>
+                                    <field name="check_in_latitude"/>
+                                    <field name="check_in_longitude"/>
+                                    <field name="check_in_address"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Check Out">
+                            <group>
+                                <group>
+                                    <field name="check_out_time"/>
+                                    <field name="check_out_latitude"/>
+                                    <field name="check_out_longitude"/>
+                                    <field name="check_out_address"/>
+                                </group>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="ftiq_field_attendance_list" model="ir.ui.view">
+        <field name="name">ftiq.field.attendance.list</field>
+        <field name="model">ftiq.field.attendance</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="user_id"/>
+                <field name="date"/>
+                <field name="check_in_time" optional="show"/>
+                <field name="check_out_time" optional="show"/>
+                <field name="working_hours" widget="float_time" optional="show"/>
+                <field name="visit_count" optional="hide"/>
+                <field name="state" widget="badge"
+                       decoration-info="state == 'checked_in'"
+                       decoration-success="state == 'checked_out'"
+                       decoration-muted="state == 'draft'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="ftiq_field_attendance_kanban" model="ir.ui.view">
+        <field name="name">ftiq.field.attendance.kanban</field>
+        <field name="model">ftiq.field.attendance</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="state" class="o_kanban_small_column">
+                <field name="name"/>
+                <field name="user_id"/>
+                <field name="date"/>
+                <field name="check_in_time"/>
+                <field name="check_out_time"/>
+                <field name="working_hours"/>
+                <field name="visit_count"/>
+                <field name="state"/>
+                <templates>
+                    <t t-name="card">
+                        <div class="oe_kanban_content">
+                            <div class="o_kanban_record_top mb-0">
+                                <div class="o_kanban_record_headings">
+                                    <strong class="o_kanban_record_title">
+                                        <field name="name"/>
+                                    </strong>
+                                </div>
+                                <field name="state" widget="label_selection" options="{'classes': {'draft': 'default', 'checked_in': 'info', 'checked_out': 'success'}}"/>
+                            </div>
+                            <div class="o_kanban_record_body">
+                                <div>
+                                    <i class="fa fa-user me-1"/><field name="user_id"/>
+                                </div>
+                                <div>
+                                    <i class="fa fa-calendar me-1"/><field name="date"/>
+                                </div>
+                                <div t-if="record.check_in_time.raw_value">
+                                    <i class="fa fa-sign-in me-1 text-success"/><field name="check_in_time"/>
+                                </div>
+                                <div t-if="record.check_out_time.raw_value">
+                                    <i class="fa fa-sign-out me-1 text-danger"/><field name="check_out_time"/>
+                                </div>
+                                <div t-if="record.working_hours.raw_value">
+                                    <i class="fa fa-clock-o me-1"/><field name="working_hours" widget="float_time"/>
+                                </div>
+                            </div>
+                            <div class="o_kanban_record_bottom">
+                                <div class="oe_kanban_bottom_left">
+                                    <span class="badge text-bg-primary"><field name="visit_count"/> visits</span>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <record id="ftiq_field_attendance_search" model="ir.ui.view">
+        <field name="name">ftiq.field.attendance.search</field>
+        <field name="model">ftiq.field.attendance</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="user_id"/>
+                <field name="date"/>
+                <filter name="today" string="Today" domain="[('date', '=', context_today().strftime('%Y-%m-%d'))]"/>
+                <filter name="this_week" string="This Week" domain="[('date', '>=', (context_today() - datetime.timedelta(days=context_today().weekday())).strftime('%Y-%m-%d'))]"/>
+                <filter name="checked_in" string="Checked In" domain="[('state', '=', 'checked_in')]"/>
+                <separator/>
+                <group expand="0" string="Group By">
+                    <filter name="group_user" string="Representative" context="{'group_by': 'user_id'}"/>
+                    <filter name="group_date" string="Date" context="{'group_by': 'date'}"/>
+                    <filter name="group_state" string="State" context="{'group_by': 'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_ftiq_field_attendance" model="ir.actions.act_window">
+        <field name="name">Field Attendance</field>
+        <field name="res_model">ftiq.field.attendance</field>
+        <field name="view_mode">list,kanban,form</field>
+        <field name="search_view_id" ref="ftiq_field_attendance_search"/>
+    </record>
+
+    <record id="action_ftiq_my_attendance" model="ir.actions.act_window">
+        <field name="name">My Attendance</field>
+        <field name="res_model">ftiq.field.attendance</field>
+        <field name="view_mode">list,kanban,form</field>
+        <field name="domain">[('user_id', '=', uid)]</field>
+        <field name="context">{'default_user_id': uid}</field>
+    </record>
+
+</odoo>

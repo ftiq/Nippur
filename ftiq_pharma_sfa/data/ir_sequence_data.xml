@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="seq_ftiq_field_attendance" model="ir.sequence">
+        <field name="name">Field Attendance</field>
+        <field name="code">ftiq.field.attendance</field>
+        <field name="prefix">ATT/%(y)s/</field>
+        <field name="padding">4</field>
+    </record>
+
+    <record id="seq_ftiq_visit" model="ir.sequence">
+        <field name="name">Visit</field>
+        <field name="code">ftiq.visit</field>
+        <field name="prefix">VST/%(y)s/</field>
+        <field name="padding">4</field>
+    </record>
+
+    <record id="seq_ftiq_weekly_plan" model="ir.sequence">
+        <field name="name">Weekly Plan</field>
+        <field name="code">ftiq.weekly.plan</field>
+        <field name="prefix">PLN/%(y)s/</field>
+        <field name="padding">4</field>
+    </record>
+
+    <record id="seq_ftiq_stock_check" model="ir.sequence">
+        <field name="name">Stock Check</field>
+        <field name="code">ftiq.stock.check</field>
+        <field name="prefix">STK/%(y)s/</field>
+        <field name="padding">4</field>
+    </record>
+
+    <record id="seq_ftiq_daily_task" model="ir.sequence">
+        <field name="name">Daily Task</field>
+        <field name="code">ftiq.daily.task</field>
+        <field name="prefix">TSK/%(y)s/</field>
+        <field name="padding">4</field>
+    </record>
+
+</odoo>

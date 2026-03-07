@@ -1,0 +1,624 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+
+        <!-- Employees -->
+        <record id="demo_employee_rep1" model="hr.employee">
+            <field name="name">Mohammed Rep Employee</field>
+            <field name="user_id" ref="demo_user_rep1"/>
+        </record>
+        <record id="demo_employee_rep2" model="hr.employee">
+            <field name="name">Ali Rep Employee</field>
+            <field name="user_id" ref="demo_user_rep2"/>
+        </record>
+        <record id="demo_employee_rep3" model="hr.employee">
+            <field name="name">Omar Rep Employee</field>
+            <field name="user_id" ref="demo_user_rep3"/>
+        </record>
+
+        <!-- Attendance -->
+        <record id="demo_attendance_rep1_day1" model="ftiq.field.attendance">
+            <field name="user_id" ref="demo_user_rep1"/>
+            <field name="date">2026-03-03</field>
+            <field name="state">checked_out</field>
+            <field name="check_in_time">2026-03-03 08:05:00</field>
+            <field name="check_in_latitude">15.3521200</field>
+            <field name="check_in_longitude">44.2064400</field>
+            <field name="check_out_time">2026-03-03 15:40:00</field>
+            <field name="check_out_latitude">15.3498100</field>
+            <field name="check_out_longitude">44.2032100</field>
+        </record>
+        <record id="demo_attendance_rep2_day1" model="ftiq.field.attendance">
+            <field name="user_id" ref="demo_user_rep2"/>
+            <field name="date">2026-03-04</field>
+            <field name="state">checked_in</field>
+            <field name="check_in_time">2026-03-04 08:20:00</field>
+            <field name="check_in_latitude">15.3001200</field>
+            <field name="check_in_longitude">44.1402100</field>
+        </record>
+        <record id="demo_attendance_rep3_day1" model="ftiq.field.attendance">
+            <field name="user_id" ref="demo_user_rep3"/>
+            <field name="date">2026-03-04</field>
+            <field name="state">draft</field>
+        </record>
+
+        <!-- Accounting fallback setup for demo finance records -->
+        <record id="demo_account_receivable_ftiq" model="account.account">
+            <field name="name">FTIQ Demo Receivable</field>
+            <field name="code">FTIQREC</field>
+            <field name="account_type">asset_receivable</field>
+            <field name="company_ids" eval="[(6, 0, [ref('base.main_company')])]"/>
+        </record>
+        <record id="demo_account_income_ftiq" model="account.account">
+            <field name="name">FTIQ Demo Revenue</field>
+            <field name="code">FTIQREV</field>
+            <field name="account_type">income</field>
+            <field name="company_ids" eval="[(6, 0, [ref('base.main_company')])]"/>
+        </record>
+        <record id="demo_account_cash_ftiq" model="account.account">
+            <field name="name">FTIQ Demo Cash</field>
+            <field name="code">FTIQCSH</field>
+            <field name="account_type">asset_cash</field>
+            <field name="company_ids" eval="[(6, 0, [ref('base.main_company')])]"/>
+        </record>
+
+        <record id="demo_journal_sale_ftiq" model="account.journal">
+            <field name="name">FTIQ Demo Sales Journal</field>
+            <field name="code">FDS</field>
+            <field name="type">sale</field>
+            <field name="company_id" ref="base.main_company"/>
+        </record>
+        <record id="demo_journal_cash_ftiq" model="account.journal">
+            <field name="name">FTIQ Demo Cash Journal</field>
+            <field name="code">FDC</field>
+            <field name="type">cash</field>
+            <field name="company_id" ref="base.main_company"/>
+            <field name="default_account_id" ref="demo_account_cash_ftiq"/>
+        </record>
+        <record id="demo_payment_method_line_cash_in_ftiq" model="account.payment.method.line">
+            <field name="name">FTIQ Cash In</field>
+            <field name="payment_method_id" ref="account.account_payment_method_manual_in"/>
+            <field name="journal_id" ref="demo_journal_cash_ftiq"/>
+            <field name="payment_account_id" ref="demo_account_cash_ftiq"/>
+        </record>
+        <record id="demo_payment_method_line_cash_out_ftiq" model="account.payment.method.line">
+            <field name="name">FTIQ Cash Out</field>
+            <field name="payment_method_id" ref="account.account_payment_method_manual_out"/>
+            <field name="journal_id" ref="demo_journal_cash_ftiq"/>
+            <field name="payment_account_id" ref="demo_account_cash_ftiq"/>
+        </record>
+
+        <!-- Assign fallback receivable account to key clients used in finance demo -->
+        <record id="demo_doctor1" model="res.partner">
+            <field name="property_account_receivable_id" ref="demo_account_receivable_ftiq"/>
+        </record>
+        <record id="demo_doctor5" model="res.partner">
+            <field name="property_account_receivable_id" ref="demo_account_receivable_ftiq"/>
+        </record>
+        <record id="demo_pharmacy1" model="res.partner">
+            <field name="property_account_receivable_id" ref="demo_account_receivable_ftiq"/>
+        </record>
+
+        <!-- Linked standard projects -->
+        <record id="demo_project_plan_rep1_week10" model="project.project">
+            <field name="name">FTIQ Plan - Rep1 Week 10</field>
+            <field name="user_id" ref="demo_user_rep1"/>
+            <field name="company_id" ref="base.main_company"/>
+        </record>
+        <record id="demo_project_plan_rep2_week10" model="project.project">
+            <field name="name">FTIQ Plan - Rep2 Week 10</field>
+            <field name="user_id" ref="demo_user_rep2"/>
+            <field name="company_id" ref="base.main_company"/>
+        </record>
+
+        <!-- Weekly plans -->
+        <record id="demo_plan_rep1_week10" model="ftiq.weekly.plan">
+            <field name="name">Plan Rep1 - Week 10</field>
+            <field name="user_id" ref="demo_user_rep1"/>
+            <field name="supervisor_id" ref="demo_user_supervisor1"/>
+            <field name="task_type_id" ref="demo_task_regular"/>
+            <field name="week_start">2026-03-02</field>
+            <field name="state">approved</field>
+            <field name="project_id" ref="demo_project_plan_rep1_week10"/>
+        </record>
+        <record id="demo_plan_rep2_week10" model="ftiq.weekly.plan">
+            <field name="name">Plan Rep2 - Week 10</field>
+            <field name="user_id" ref="demo_user_rep2"/>
+            <field name="supervisor_id" ref="demo_user_supervisor1"/>
+            <field name="task_type_id" ref="demo_task_followup"/>
+            <field name="week_start">2026-03-02</field>
+            <field name="state">submitted</field>
+            <field name="project_id" ref="demo_project_plan_rep2_week10"/>
+        </record>
+
+        <record id="demo_plan1_line_doctor1" model="ftiq.weekly.plan.line">
+            <field name="plan_id" ref="demo_plan_rep1_week10"/>
+            <field name="partner_id" ref="demo_doctor1"/>
+            <field name="scheduled_date">2026-03-03</field>
+            <field name="sequence">1</field>
+            <field name="note">Follow-up and order closing.</field>
+        </record>
+        <record id="demo_plan1_line_center1" model="ftiq.weekly.plan.line">
+            <field name="plan_id" ref="demo_plan_rep1_week10"/>
+            <field name="partner_id" ref="demo_center1"/>
+            <field name="scheduled_date">2026-03-03</field>
+            <field name="sequence">2</field>
+            <field name="note">Center panel product briefing.</field>
+        </record>
+        <record id="demo_plan1_line_doctor3" model="ftiq.weekly.plan.line">
+            <field name="plan_id" ref="demo_plan_rep1_week10"/>
+            <field name="partner_id" ref="demo_doctor3"/>
+            <field name="scheduled_date">2026-03-04</field>
+            <field name="sequence">3</field>
+            <field name="note">New campaign launch details.</field>
+        </record>
+        <record id="demo_plan2_line_doctor5" model="ftiq.weekly.plan.line">
+            <field name="plan_id" ref="demo_plan_rep2_week10"/>
+            <field name="partner_id" ref="demo_doctor5"/>
+            <field name="scheduled_date">2026-03-04</field>
+            <field name="sequence">1</field>
+            <field name="note">Collection and adherence follow-up.</field>
+        </record>
+        <record id="demo_plan2_line_pharmacy1" model="ftiq.weekly.plan.line">
+            <field name="plan_id" ref="demo_plan_rep2_week10"/>
+            <field name="partner_id" ref="demo_pharmacy1"/>
+            <field name="scheduled_date">2026-03-05</field>
+            <field name="sequence">2</field>
+            <field name="note">Stock visibility and shelf check.</field>
+        </record>
+
+        <!-- Project tasks generated from plan lines -->
+        <record id="demo_project_task_plan1_line_doctor1" model="project.task">
+            <field name="name">Doctor1 Visit - Rep1 Week10</field>
+            <field name="project_id" ref="demo_project_plan_rep1_week10"/>
+            <field name="partner_id" ref="demo_doctor1"/>
+            <field name="user_ids" eval="[(6, 0, [ref('demo_user_rep1')])]"/>
+            <field name="date_deadline">2026-03-03 23:59:59</field>
+            <field name="planned_date_begin">2026-03-03 09:00:00</field>
+            <field name="ftiq_plan_id" ref="demo_plan_rep1_week10"/>
+            <field name="ftiq_plan_line_id" ref="demo_plan1_line_doctor1"/>
+        </record>
+        <record id="demo_project_task_plan1_line_center1" model="project.task">
+            <field name="name">Center1 Visit - Rep1 Week10</field>
+            <field name="project_id" ref="demo_project_plan_rep1_week10"/>
+            <field name="partner_id" ref="demo_center1"/>
+            <field name="user_ids" eval="[(6, 0, [ref('demo_user_rep1')])]"/>
+            <field name="date_deadline">2026-03-03 23:59:59</field>
+            <field name="planned_date_begin">2026-03-03 11:00:00</field>
+            <field name="ftiq_plan_id" ref="demo_plan_rep1_week10"/>
+            <field name="ftiq_plan_line_id" ref="demo_plan1_line_center1"/>
+        </record>
+        <record id="demo_project_task_plan1_line_doctor3" model="project.task">
+            <field name="name">Doctor3 Visit - Rep1 Week10</field>
+            <field name="project_id" ref="demo_project_plan_rep1_week10"/>
+            <field name="partner_id" ref="demo_doctor3"/>
+            <field name="user_ids" eval="[(6, 0, [ref('demo_user_rep1')])]"/>
+            <field name="date_deadline">2026-03-04 23:59:59</field>
+            <field name="planned_date_begin">2026-03-04 09:00:00</field>
+            <field name="ftiq_plan_id" ref="demo_plan_rep1_week10"/>
+            <field name="ftiq_plan_line_id" ref="demo_plan1_line_doctor3"/>
+        </record>
+        <record id="demo_project_task_plan2_line_doctor5" model="project.task">
+            <field name="name">Doctor5 Visit - Rep2 Week10</field>
+            <field name="project_id" ref="demo_project_plan_rep2_week10"/>
+            <field name="partner_id" ref="demo_doctor5"/>
+            <field name="user_ids" eval="[(6, 0, [ref('demo_user_rep2')])]"/>
+            <field name="date_deadline">2026-03-04 23:59:59</field>
+            <field name="planned_date_begin">2026-03-04 10:30:00</field>
+            <field name="ftiq_plan_id" ref="demo_plan_rep2_week10"/>
+            <field name="ftiq_plan_line_id" ref="demo_plan2_line_doctor5"/>
+        </record>
+        <record id="demo_project_task_plan2_line_pharmacy1" model="project.task">
+            <field name="name">Pharmacy1 Visit - Rep2 Week10</field>
+            <field name="project_id" ref="demo_project_plan_rep2_week10"/>
+            <field name="partner_id" ref="demo_pharmacy1"/>
+            <field name="user_ids" eval="[(6, 0, [ref('demo_user_rep2')])]"/>
+            <field name="date_deadline">2026-03-05 23:59:59</field>
+            <field name="planned_date_begin">2026-03-05 11:00:00</field>
+            <field name="ftiq_plan_id" ref="demo_plan_rep2_week10"/>
+            <field name="ftiq_plan_line_id" ref="demo_plan2_line_pharmacy1"/>
+        </record>
+
+        <!-- Visits -->
+        <record id="demo_visit_rep1_doctor1" model="ftiq.visit">
+            <field name="user_id" ref="demo_user_rep1"/>
+            <field name="partner_id" ref="demo_doctor1"/>
+            <field name="attendance_id" ref="demo_attendance_rep1_day1"/>
+            <field name="plan_line_id" ref="demo_plan1_line_doctor1"/>
+            <field name="visit_date">2026-03-03</field>
+            <field name="start_time">2026-03-03 09:10:00</field>
+            <field name="end_time">2026-03-03 10:20:00</field>
+            <field name="start_latitude">15.3523100</field>
+            <field name="start_longitude">44.2067500</field>
+            <field name="end_latitude">15.3526200</field>
+            <field name="end_longitude">44.2070400</field>
+            <field name="outcome">interested</field>
+            <field name="state">approved</field>
+        </record>
+        <record id="demo_visit_rep1_center1" model="ftiq.visit">
+            <field name="user_id" ref="demo_user_rep1"/>
+            <field name="partner_id" ref="demo_center1"/>
+            <field name="attendance_id" ref="demo_attendance_rep1_day1"/>
+            <field name="plan_line_id" ref="demo_plan1_line_center1"/>
+            <field name="visit_date">2026-03-03</field>
+            <field name="start_time">2026-03-03 11:05:00</field>
+            <field name="end_time">2026-03-03 12:00:00</field>
+            <field name="outcome">follow_up</field>
+            <field name="state">submitted</field>
+        </record>
+        <record id="demo_visit_rep2_doctor5" model="ftiq.visit">
+            <field name="user_id" ref="demo_user_rep2"/>
+            <field name="partner_id" ref="demo_doctor5"/>
+            <field name="attendance_id" ref="demo_attendance_rep2_day1"/>
+            <field name="plan_line_id" ref="demo_plan2_line_doctor5"/>
+            <field name="visit_date">2026-03-04</field>
+            <field name="start_time">2026-03-04 09:15:00</field>
+            <field name="outcome">sample_requested</field>
+            <field name="state">in_progress</field>
+        </record>
+
+        <!-- Visit product lines -->
+        <record id="demo_visit1_line_amoxil" model="ftiq.visit.product.line">
+            <field name="visit_id" ref="demo_visit_rep1_doctor1"/>
+            <field name="product_id" model="product.product" search="[('product_tmpl_id', '=', ref('demo_product_amoxil'))]"/>
+            <field name="call_reason_id" ref="demo_reason_promotion"/>
+            <field name="outcome">interested</field>
+            <field name="samples_distributed">6</field>
+            <field name="stock_on_hand">120</field>
+        </record>
+        <record id="demo_visit2_line_concor" model="ftiq.visit.product.line">
+            <field name="visit_id" ref="demo_visit_rep1_center1"/>
+            <field name="product_id" model="product.product" search="[('product_tmpl_id', '=', ref('demo_product_concor'))]"/>
+            <field name="call_reason_id" ref="demo_reason_education"/>
+            <field name="outcome">sample_requested</field>
+            <field name="samples_distributed">10</field>
+            <field name="stock_on_hand">65</field>
+        </record>
+        <record id="demo_visit3_line_glucophage" model="ftiq.visit.product.line">
+            <field name="visit_id" ref="demo_visit_rep2_doctor5"/>
+            <field name="product_id" model="product.product" search="[('product_tmpl_id', '=', ref('demo_product_glucophage'))]"/>
+            <field name="call_reason_id" ref="demo_reason_sample"/>
+            <field name="outcome">sample_requested</field>
+            <field name="samples_distributed">8</field>
+            <field name="stock_on_hand">50</field>
+        </record>
+
+        <!-- Material logs -->
+        <record id="demo_material_log_visit1_amoxil" model="ftiq.material.view.log">
+            <field name="visit_id" ref="demo_visit_rep1_doctor1"/>
+            <field name="product_line_id" ref="demo_visit1_line_amoxil"/>
+            <field name="material_id" ref="demo_material_amoxil_brochure"/>
+            <field name="start_time">2026-03-03 09:30:00</field>
+            <field name="end_time">2026-03-03 09:37:00</field>
+        </record>
+        <record id="demo_material_log_visit2_concor" model="ftiq.material.view.log">
+            <field name="visit_id" ref="demo_visit_rep1_center1"/>
+            <field name="product_line_id" ref="demo_visit2_line_concor"/>
+            <field name="material_id" ref="demo_material_concor_guide"/>
+            <field name="start_time">2026-03-03 11:25:00</field>
+            <field name="end_time">2026-03-03 11:33:00</field>
+        </record>
+
+        <!-- Stock checks -->
+        <record id="demo_stock_check_visit1" model="ftiq.stock.check">
+            <field name="partner_id" ref="demo_doctor1"/>
+            <field name="user_id" ref="demo_user_rep1"/>
+            <field name="check_date">2026-03-03 10:35:00</field>
+            <field name="visit_id" ref="demo_visit_rep1_doctor1"/>
+            <field name="attendance_id" ref="demo_attendance_rep1_day1"/>
+            <field name="state">reviewed</field>
+            <field name="latitude">15.3525800</field>
+            <field name="longitude">44.2071000</field>
+        </record>
+        <record id="demo_stock_check_rep2_draft" model="ftiq.stock.check">
+            <field name="partner_id" ref="demo_doctor5"/>
+            <field name="user_id" ref="demo_user_rep2"/>
+            <field name="check_date">2026-03-04 09:40:00</field>
+            <field name="visit_id" ref="demo_visit_rep2_doctor5"/>
+            <field name="attendance_id" ref="demo_attendance_rep2_day1"/>
+            <field name="state">draft</field>
+        </record>
+
+        <record id="demo_stock_check_visit1_line1" model="ftiq.stock.check.line">
+            <field name="check_id" ref="demo_stock_check_visit1"/>
+            <field name="sequence">1</field>
+            <field name="product_id" model="product.product" search="[('product_tmpl_id', '=', ref('demo_product_amoxil'))]"/>
+            <field name="stock_qty">35</field>
+            <field name="batch_number">AMX-2603-A</field>
+            <field name="expiry_date">2027-09-30</field>
+        </record>
+        <record id="demo_stock_check_visit1_line2" model="ftiq.stock.check.line">
+            <field name="check_id" ref="demo_stock_check_visit1"/>
+            <field name="sequence">2</field>
+            <field name="product_id" model="product.product" search="[('product_tmpl_id', '=', ref('demo_product_lipitor'))]"/>
+            <field name="stock_qty">18</field>
+            <field name="batch_number">LIP-2601-B</field>
+            <field name="expiry_date">2027-12-31</field>
+        </record>
+        <record id="demo_stock_check_rep2_line1" model="ftiq.stock.check.line">
+            <field name="check_id" ref="demo_stock_check_rep2_draft"/>
+            <field name="sequence">1</field>
+            <field name="product_id" model="product.product" search="[('product_tmpl_id', '=', ref('demo_product_glucophage'))]"/>
+            <field name="stock_qty">22</field>
+            <field name="batch_number">GLU-2603-E</field>
+            <field name="expiry_date">2027-11-30</field>
+        </record>
+
+        <!-- Field sale orders -->
+        <record id="demo_field_order_rep1_doctor1" model="sale.order">
+            <field name="partner_id" ref="demo_doctor1"/>
+            <field name="user_id" ref="demo_user_rep1"/>
+            <field name="date_order">2026-03-03 10:50:00</field>
+            <field name="is_field_order" eval="True"/>
+            <field name="ftiq_visit_id" ref="demo_visit_rep1_doctor1"/>
+            <field name="ftiq_attendance_id" ref="demo_attendance_rep1_day1"/>
+            <field name="ftiq_priority">1</field>
+        </record>
+        <record id="demo_field_order_rep2_doctor5" model="sale.order">
+            <field name="partner_id" ref="demo_doctor5"/>
+            <field name="user_id" ref="demo_user_rep2"/>
+            <field name="date_order">2026-03-04 10:05:00</field>
+            <field name="is_field_order" eval="True"/>
+            <field name="ftiq_visit_id" ref="demo_visit_rep2_doctor5"/>
+            <field name="ftiq_attendance_id" ref="demo_attendance_rep2_day1"/>
+            <field name="ftiq_priority">2</field>
+        </record>
+
+        <record id="demo_field_order_rep1_doctor1_line1" model="sale.order.line">
+            <field name="order_id" ref="demo_field_order_rep1_doctor1"/>
+            <field name="name">AMOX500 promotional order</field>
+            <field name="product_id" model="product.product" search="[('product_tmpl_id', '=', ref('demo_product_amoxil'))]"/>
+            <field name="product_uom_qty">20</field>
+            <field name="price_unit">24.00</field>
+        </record>
+        <record id="demo_field_order_rep2_doctor5_line1" model="sale.order.line">
+            <field name="order_id" ref="demo_field_order_rep2_doctor5"/>
+            <field name="name">GLU850 diabetic clinic stock</field>
+            <field name="product_id" model="product.product" search="[('product_tmpl_id', '=', ref('demo_product_glucophage'))]"/>
+            <field name="product_uom_qty">25</field>
+            <field name="price_unit">19.00</field>
+        </record>
+
+        <!-- Invoices -->
+        <record id="demo_invoice_doctor1" model="account.move">
+            <field name="move_type">out_invoice</field>
+            <field name="partner_id" ref="demo_doctor1"/>
+            <field name="journal_id" ref="demo_journal_sale_ftiq"/>
+            <field name="invoice_date">2026-03-03</field>
+            <field name="invoice_date_due">2026-03-10</field>
+            <field name="invoice_origin">FTIQ-DEMO-ORDER-1</field>
+            <field name="ref">INV-DEMO-001</field>
+            <field name="ftiq_visit_id" ref="demo_visit_rep1_doctor1"/>
+            <field name="invoice_line_ids" eval="[(0, 0, {
+                'name': 'AMOX500 - field invoice line',
+                'account_id': ref('demo_account_income_ftiq'),
+                'quantity': 20,
+                'price_unit': 24.00
+            })]"/>
+        </record>
+        <record id="demo_invoice_doctor5" model="account.move">
+            <field name="move_type">out_invoice</field>
+            <field name="partner_id" ref="demo_doctor5"/>
+            <field name="journal_id" ref="demo_journal_sale_ftiq"/>
+            <field name="invoice_date">2026-03-04</field>
+            <field name="invoice_date_due">2026-03-11</field>
+            <field name="invoice_origin">FTIQ-DEMO-ORDER-2</field>
+            <field name="ref">INV-DEMO-002</field>
+            <field name="ftiq_visit_id" ref="demo_visit_rep2_doctor5"/>
+            <field name="invoice_line_ids" eval="[(0, 0, {
+                'name': 'GLU850 - field invoice line',
+                'account_id': ref('demo_account_income_ftiq'),
+                'quantity': 25,
+                'price_unit': 19.00
+            })]"/>
+        </record>
+
+        <!-- Cash collections -->
+        <record id="demo_payment_collection_rep1" model="account.payment">
+            <field name="partner_id" ref="demo_doctor1"/>
+            <field name="payment_type">inbound</field>
+            <field name="partner_type">customer</field>
+            <field name="journal_id" ref="demo_journal_cash_ftiq"/>
+            <field name="payment_method_line_id" ref="demo_payment_method_line_cash_in_ftiq"/>
+            <field name="outstanding_account_id" ref="demo_account_cash_ftiq"/>
+            <field name="amount">300.00</field>
+            <field name="date">2026-03-03</field>
+            <field name="is_field_collection" eval="True"/>
+            <field name="ftiq_collection_state">collected</field>
+            <field name="ftiq_visit_id" ref="demo_visit_rep1_doctor1"/>
+            <field name="ftiq_attendance_id" ref="demo_attendance_rep1_day1"/>
+            <field name="memo">COL-DEMO-001</field>
+        </record>
+        <record id="demo_payment_collection_rep2" model="account.payment">
+            <field name="partner_id" ref="demo_doctor5"/>
+            <field name="payment_type">inbound</field>
+            <field name="partner_type">customer</field>
+            <field name="journal_id" ref="demo_journal_cash_ftiq"/>
+            <field name="payment_method_line_id" ref="demo_payment_method_line_cash_in_ftiq"/>
+            <field name="outstanding_account_id" ref="demo_account_cash_ftiq"/>
+            <field name="amount">180.00</field>
+            <field name="date">2026-03-04</field>
+            <field name="is_field_collection" eval="True"/>
+            <field name="ftiq_collection_state">draft</field>
+            <field name="ftiq_visit_id" ref="demo_visit_rep2_doctor5"/>
+            <field name="ftiq_attendance_id" ref="demo_attendance_rep2_day1"/>
+            <field name="memo">COL-DEMO-002</field>
+        </record>
+
+        <!-- Sales targets -->
+        <record id="demo_target_rep1_visits" model="ftiq.sales.target">
+            <field name="name">Rep1 Monthly Visit Target</field>
+            <field name="user_id" ref="demo_user_rep1"/>
+            <field name="date_from">2026-03-01</field>
+            <field name="date_to">2026-03-31</field>
+            <field name="target_type">visits</field>
+            <field name="target_value">12</field>
+            <field name="state">active</field>
+        </record>
+        <record id="demo_target_rep3_products" model="ftiq.sales.target">
+            <field name="name">Rep3 Product Coverage Target</field>
+            <field name="user_id" ref="demo_user_rep3"/>
+            <field name="date_from">2026-03-01</field>
+            <field name="date_to">2026-03-31</field>
+            <field name="target_type">products</field>
+            <field name="target_value">2</field>
+            <field name="state">active</field>
+        </record>
+        <record id="demo_target_rep3_products_line1" model="ftiq.sales.target.line">
+            <field name="target_id" ref="demo_target_rep3_products"/>
+            <field name="product_id" model="product.product" search="[('product_tmpl_id', '=', ref('demo_product_amoxil'))]"/>
+            <field name="target_qty">500</field>
+            <field name="achieved_qty">260</field>
+        </record>
+        <record id="demo_target_rep3_products_line2" model="ftiq.sales.target.line">
+            <field name="target_id" ref="demo_target_rep3_products"/>
+            <field name="product_id" model="product.product" search="[('product_tmpl_id', '=', ref('demo_product_glucophage'))]"/>
+            <field name="target_qty">400</field>
+            <field name="achieved_qty">180</field>
+        </record>
+
+        <!-- Daily tasks -->
+        <record id="demo_task_visit_completed" model="ftiq.daily.task">
+            <field name="task_type">visit</field>
+            <field name="partner_id" ref="demo_doctor1"/>
+            <field name="associated_partner_id" ref="demo_doctor1"/>
+            <field name="user_id" ref="demo_user_rep1"/>
+            <field name="scheduled_date">2026-03-03 09:00:00</field>
+            <field name="completed_date">2026-03-03 10:25:00</field>
+            <field name="priority">1</field>
+            <field name="visit_id" ref="demo_visit_rep1_doctor1"/>
+            <field name="state">completed</field>
+            <field name="plan_id" ref="demo_plan_rep1_week10"/>
+            <field name="plan_line_id" ref="demo_plan1_line_doctor1"/>
+            <field name="project_id" ref="demo_project_plan_rep1_week10"/>
+            <field name="project_task_id" ref="demo_project_task_plan1_line_doctor1"/>
+            <field name="tag_ids" eval="[(6, 0, [ref('demo_task_regular')])]"/>
+        </record>
+        <record id="demo_task_visit_center1_completed" model="ftiq.daily.task">
+            <field name="task_type">visit</field>
+            <field name="partner_id" ref="demo_center1"/>
+            <field name="associated_partner_id" ref="demo_center1"/>
+            <field name="user_id" ref="demo_user_rep1"/>
+            <field name="scheduled_date">2026-03-03 11:00:00</field>
+            <field name="completed_date">2026-03-03 12:05:00</field>
+            <field name="priority">1</field>
+            <field name="visit_id" ref="demo_visit_rep1_center1"/>
+            <field name="state">completed</field>
+            <field name="plan_id" ref="demo_plan_rep1_week10"/>
+            <field name="plan_line_id" ref="demo_plan1_line_center1"/>
+            <field name="project_id" ref="demo_project_plan_rep1_week10"/>
+            <field name="project_task_id" ref="demo_project_task_plan1_line_center1"/>
+            <field name="tag_ids" eval="[(6, 0, [ref('demo_task_regular')])]"/>
+        </record>
+        <record id="demo_task_visit_pending_doctor3" model="ftiq.daily.task">
+            <field name="task_type">visit</field>
+            <field name="partner_id" ref="demo_doctor3"/>
+            <field name="associated_partner_id" ref="demo_doctor3"/>
+            <field name="user_id" ref="demo_user_rep1"/>
+            <field name="scheduled_date">2026-03-04 09:00:00</field>
+            <field name="priority">1</field>
+            <field name="state">pending</field>
+            <field name="plan_id" ref="demo_plan_rep1_week10"/>
+            <field name="plan_line_id" ref="demo_plan1_line_doctor3"/>
+            <field name="project_id" ref="demo_project_plan_rep1_week10"/>
+            <field name="project_task_id" ref="demo_project_task_plan1_line_doctor3"/>
+            <field name="tag_ids" eval="[(6, 0, [ref('demo_task_launch')])]"/>
+        </record>
+        <record id="demo_task_order_completed" model="ftiq.daily.task">
+            <field name="task_type">order</field>
+            <field name="partner_id" ref="demo_doctor1"/>
+            <field name="associated_partner_id" ref="demo_doctor1"/>
+            <field name="user_id" ref="demo_user_rep1"/>
+            <field name="scheduled_date">2026-03-03 10:40:00</field>
+            <field name="completed_date">2026-03-03 11:00:00</field>
+            <field name="priority">2</field>
+            <field name="sale_order_id" ref="demo_field_order_rep1_doctor1"/>
+            <field name="state">completed</field>
+            <field name="project_id" ref="demo_project_plan_rep1_week10"/>
+            <field name="project_task_id" ref="demo_project_task_plan1_line_doctor1"/>
+            <field name="tag_ids" eval="[(6, 0, [ref('demo_task_launch')])]"/>
+        </record>
+        <record id="demo_task_collection_in_progress" model="ftiq.daily.task">
+            <field name="task_type">collection</field>
+            <field name="partner_id" ref="demo_doctor5"/>
+            <field name="associated_partner_id" ref="demo_doctor5"/>
+            <field name="user_id" ref="demo_user_rep2"/>
+            <field name="scheduled_date">2026-03-04 10:30:00</field>
+            <field name="priority">1</field>
+            <field name="payment_id" ref="demo_payment_collection_rep2"/>
+            <field name="state">in_progress</field>
+            <field name="plan_id" ref="demo_plan_rep2_week10"/>
+            <field name="plan_line_id" ref="demo_plan2_line_doctor5"/>
+            <field name="project_id" ref="demo_project_plan_rep2_week10"/>
+            <field name="project_task_id" ref="demo_project_task_plan2_line_doctor5"/>
+            <field name="tag_ids" eval="[(6, 0, [ref('demo_task_followup')])]"/>
+        </record>
+        <record id="demo_task_stock_pending" model="ftiq.daily.task">
+            <field name="task_type">stock</field>
+            <field name="partner_id" ref="demo_pharmacy1"/>
+            <field name="associated_partner_id" ref="demo_pharmacy1"/>
+            <field name="user_id" ref="demo_user_rep2"/>
+            <field name="scheduled_date">2026-03-05 11:00:00</field>
+            <field name="priority">0</field>
+            <field name="stock_check_id" ref="demo_stock_check_rep2_draft"/>
+            <field name="state">pending</field>
+            <field name="plan_id" ref="demo_plan_rep2_week10"/>
+            <field name="plan_line_id" ref="demo_plan2_line_pharmacy1"/>
+            <field name="project_id" ref="demo_project_plan_rep2_week10"/>
+            <field name="project_task_id" ref="demo_project_task_plan2_line_pharmacy1"/>
+            <field name="tag_ids" eval="[(6, 0, [ref('demo_task_followup')])]"/>
+        </record>
+
+        <!-- Back-link plan lines to created tasks -->
+        <record id="demo_plan1_line_doctor1" model="ftiq.weekly.plan.line">
+            <field name="state">completed</field>
+            <field name="daily_task_id" ref="demo_task_visit_completed"/>
+            <field name="project_task_id" ref="demo_project_task_plan1_line_doctor1"/>
+        </record>
+        <record id="demo_plan1_line_center1" model="ftiq.weekly.plan.line">
+            <field name="state">completed</field>
+            <field name="daily_task_id" ref="demo_task_visit_center1_completed"/>
+            <field name="project_task_id" ref="demo_project_task_plan1_line_center1"/>
+        </record>
+        <record id="demo_plan1_line_doctor3" model="ftiq.weekly.plan.line">
+            <field name="state">pending</field>
+            <field name="daily_task_id" ref="demo_task_visit_pending_doctor3"/>
+            <field name="project_task_id" ref="demo_project_task_plan1_line_doctor3"/>
+        </record>
+        <record id="demo_plan2_line_doctor5" model="ftiq.weekly.plan.line">
+            <field name="state">pending</field>
+            <field name="daily_task_id" ref="demo_task_collection_in_progress"/>
+            <field name="project_task_id" ref="demo_project_task_plan2_line_doctor5"/>
+        </record>
+        <record id="demo_plan2_line_pharmacy1" model="ftiq.weekly.plan.line">
+            <field name="state">pending</field>
+            <field name="daily_task_id" ref="demo_task_stock_pending"/>
+            <field name="project_task_id" ref="demo_project_task_plan2_line_pharmacy1"/>
+        </record>
+
+        <!-- Field expenses -->
+        <record id="demo_expense_rep1_transport" model="hr.expense">
+            <field name="name">City Route Transportation</field>
+            <field name="employee_id" ref="demo_employee_rep1"/>
+            <field name="product_id" model="product.product" search="[('default_code', '=', 'EXP_GEN')]"/>
+            <field name="date">2026-03-03</field>
+            <field name="quantity">1</field>
+            <field name="total_amount_currency">18.00</field>
+            <field name="is_field_expense" eval="True"/>
+            <field name="ftiq_expense_type">transport</field>
+            <field name="ftiq_attendance_id" ref="demo_attendance_rep1_day1"/>
+        </record>
+        <record id="demo_expense_rep2_food" model="hr.expense">
+            <field name="name">Field Meal Expense</field>
+            <field name="employee_id" ref="demo_employee_rep2"/>
+            <field name="product_id" model="product.product" search="[('default_code', '=', 'FOOD')]"/>
+            <field name="date">2026-03-04</field>
+            <field name="quantity">1</field>
+            <field name="total_amount_currency">12.00</field>
+            <field name="is_field_expense" eval="True"/>
+            <field name="ftiq_expense_type">food</field>
+            <field name="ftiq_attendance_id" ref="demo_attendance_rep2_day1"/>
+        </record>
+
+    </data>
+</odoo>

@@ -1,0 +1,3283 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* ftiq_pharma_sfa
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 18.0+e-20250101\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-03-04 20:21+0000\n"
+"PO-Revision-Date: 2026-03-04 20:21+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_plan_wizard_form
+msgid "1. Type"
+msgstr "1. النوع"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_plan_wizard_form
+msgid "2. Configure"
+msgstr "2. الإعداد"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_plan_wizard_form
+msgid "3. Clients"
+msgstr "3. العملاء"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.report_visit_template
+msgid ""
+"<br/>\n"
+"                                <strong>Area:</strong>"
+msgstr ""
+"<br/>\n"
+"                                <strong>المنطقة:</strong>"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.report_visit_template
+msgid ""
+"<br/>\n"
+"                                <strong>Classification:</strong>"
+msgstr ""
+"<br/>\n"
+"                                <strong>التصنيف:</strong>"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.report_visit_template
+msgid ""
+"<br/>\n"
+"                                <strong>Date:</strong>"
+msgstr ""
+"<br/>\n"
+"                                <strong>التاريخ:</strong>"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.report_visit_template
+msgid ""
+"<br/>\n"
+"                                <strong>Outcome:</strong>"
+msgstr ""
+"<br/>\n"
+"                                <strong>النتيجة:</strong>"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.report_visit_template
+msgid ""
+"<br/>\n"
+"                                <strong>Specialty:</strong>"
+msgstr ""
+"<br/>\n"
+"                                <strong>التخصص:</strong>"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.report_visit_template
+msgid ""
+"<br/>\n"
+"                                <strong>State:</strong>"
+msgstr ""
+"<br/>\n"
+"                                <strong>الحالة:</strong>"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_plan_wizard_form
+msgid "<span class=\"mx-2\">→</span>"
+msgstr "<span class=\"mx-2\">→</span>"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_res_partner_form_inherit
+msgid "<span>WhatsApp</span>"
+msgstr "<span>واتساب</span>"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.report_visit_template
+msgid "<strong>Client:</strong>"
+msgstr "<strong>العميل:</strong>"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.report_visit_template
+msgid "<strong>End GPS:</strong>"
+msgstr "<strong>إحداثيات النهاية:</strong>"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.report_visit_template
+msgid "<strong>Representative:</strong>"
+msgstr "<strong>المندوب:</strong>"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.report_visit_template
+msgid "<strong>Start GPS:</strong>"
+msgstr "<strong>إحداثيات البداية:</strong>"
+
+#. module: ftiq_pharma_sfa
+#. odoo-python
+#: code:addons/ftiq_pharma_sfa/models/weekly_plan.py:0
+msgid "A visit already exists for this plan line."
+msgstr "توجد زيارة بالفعل لهذا السطر من الخطة."
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__hr_expense__ftiq_expense_type__accommodation
+msgid "Accommodation"
+msgstr "إقامة"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_sales_target_line__achieved_amount
+msgid "Achieved Amount"
+msgstr "المبلغ المحقق"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_sales_target_line__achieved_qty
+msgid "Achieved Qty"
+msgstr "الكمية المحققة"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_sales_target__achieved_value
+msgid "Achieved Value"
+msgstr "القيمة المحققة"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_sales_target__achievement_rate
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_sales_target_line__achievement_rate
+msgid "Achievement %"
+msgstr "نسبة الإنجاز"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_daily_task__message_needaction
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_field_attendance__message_needaction
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_sales_target__message_needaction
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_stock_check__message_needaction
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_visit__message_needaction
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_weekly_plan__message_needaction
+msgid "Action Needed"
+msgstr "يتطلب إجراء"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_visit_form
+msgid "Actions"
+msgstr "الإجراءات"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_sales_target_form
+msgid "Activate"
+msgstr "تفعيل"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_area__active
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_call_reason__active
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_city__active
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_client_classification__active
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_client_question__active
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_color_code__active
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_debt_classification__active
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_leadership_level__active
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_marketing_material__active
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_official_type__active
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_prescriber_status__active
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_speaker_level__active
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_specialty__active
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_subspecialty__active
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_task_type__active
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_workplace_type__active
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_sales_target__state__active
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_sales_target_search
+msgid "Active"
+msgstr "نشط"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_daily_task__activity_ids
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_sales_target__activity_ids
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_stock_check__activity_ids
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_visit__activity_ids
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_weekly_plan__activity_ids
+msgid "Activities"
+msgstr "الأنشطة"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_daily_task__activity_exception_decoration
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_sales_target__activity_exception_decoration
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_stock_check__activity_exception_decoration
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_visit__activity_exception_decoration
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_weekly_plan__activity_exception_decoration
+msgid "Activity Exception Decoration"
+msgstr "تنسيق استثناء النشاط"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_daily_task__activity_state
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_sales_target__activity_state
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_stock_check__activity_state
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_visit__activity_state
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_weekly_plan__activity_state
+msgid "Activity State"
+msgstr "حالة النشاط"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_daily_task__activity_type_icon
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_sales_target__activity_type_icon
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_stock_check__activity_type_icon
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_visit__activity_type_icon
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_weekly_plan__activity_type_icon
+msgid "Activity Type Icon"
+msgstr "أيقونة نوع النشاط"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_plan_wizard_form
+msgid "Address"
+msgstr "العنوان"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_plan_wizard__filter_has_cashed__all
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_plan_wizard__filter_has_tasks__all
+msgid "All"
+msgstr "الكل"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.ui.menu,name:ftiq_pharma_sfa.menu_ftiq_daily_tasks
+msgid "All Tasks"
+msgstr "جميع المهام"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.ui.menu,name:ftiq_pharma_sfa.menu_ftiq_visits
+msgid "All Visits"
+msgstr "جميع الزيارات"
+
+#. module: ftiq_pharma_sfa
+#. odoo-python
+#: code:addons/ftiq_pharma_sfa/models/field_attendance.py:0
+msgid "Already checked in."
+msgstr "تم تسجيل الحضور مسبقاً."
+
+#. module: ftiq_pharma_sfa
+#. odoo-python
+#: code:addons/ftiq_pharma_sfa/models/field_attendance.py:0
+msgid "An open attendance session already exists for today."
+msgstr "توجد جلسة حضور مفتوحة لهذا اليوم بالفعل."
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_plan_wizard_form
+msgid "App Verified"
+msgstr "موثق بالتطبيق"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_client_question__applies_to
+msgid "Applies To"
+msgstr "ينطبق على"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_plan_wizard__apply_to_all
+msgid "Apply To All"
+msgstr "تطبيق على الكل"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_visit_form
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_weekly_plan_form
+msgid "Approve"
+msgstr "اعتماد"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_visit__state__approved
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_weekly_plan__state__approved
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_visit_search
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_weekly_plan_search
+msgid "Approved"
+msgstr "معتمدة"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_plan_wizard_form
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_res_partner_search_inherit
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_visit_search
+msgid "Area"
+msgstr "المنطقة"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.actions.act_window,name:ftiq_pharma_sfa.action_ftiq_area
+#: model:ir.ui.menu,name:ftiq_pharma_sfa.menu_ftiq_config_areas
+msgid "Areas"
+msgstr "المناطق"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_daily_task__associated_partner_id
+msgid "Associated Client"
+msgstr "العميل المرتبط"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_daily_task__message_attachment_count
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_field_attendance__message_attachment_count
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_sales_target__message_attachment_count
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_stock_check__message_attachment_count
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_visit__message_attachment_count
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_weekly_plan__message_attachment_count
+msgid "Attachment Count"
+msgstr "عدد المرفقات"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_account_payment__ftiq_attendance_id
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_stock_check__attendance_id
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_visit__attendance_id
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_hr_expense__ftiq_attendance_id
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_sale_order__ftiq_attendance_id
+msgid "Attendance"
+msgstr "الحضور"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_plan_wizard_form
+msgid "Back"
+msgstr "رجوع"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_account_payment__ftiq_bank_name
+msgid "Bank Name"
+msgstr "اسم البنك"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_stock_check_line__batch_number
+msgid "Batch Number"
+msgstr "رقم التشغيلة"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_client_answer__boolean_value
+msgid "Boolean Value"
+msgstr "قيمة منطقية"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_client_question__applies_to__both
+msgid "Both"
+msgstr "كلاهما"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model,name:ftiq_pharma_sfa.model_ftiq_call_reason
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_visit_product_line__call_reason_id
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_visit_product_line_search
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.report_visit_template
+msgid "Call Reason"
+msgstr "سبب الاتصال"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.actions.act_window,name:ftiq_pharma_sfa.action_ftiq_call_reason
+#: model:ir.ui.menu,name:ftiq_pharma_sfa.menu_ftiq_config_call_reasons
+msgid "Call Reasons"
+msgstr "أسباب الاتصال"
+
+#. module: ftiq_pharma_sfa
+#. odoo-python
+#: code:addons/ftiq_pharma_sfa/models/weekly_plan.py:0
+msgid "Can only reset returned plans to draft."
+msgstr "يمكن إعادة الخطط المرتجعة فقط إلى مسودة."
+
+#. module: ftiq_pharma_sfa
+#. odoo-python
+#: code:addons/ftiq_pharma_sfa/models/visit.py:0
+msgid "Can only reset returned visits to draft."
+msgstr "يمكن إعادة الزيارات المرتجعة فقط إلى مسودة."
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_daily_task_form
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_plan_wizard_form
+msgid "Cancel"
+msgstr "إلغاء"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_daily_task__state__cancelled
+msgid "Cancelled"
+msgstr "ملغي"
+
+#. module: ftiq_pharma_sfa
+#. odoo-python
+#: code:addons/ftiq_pharma_sfa/models/visit.py:0
+msgid "Cannot submit from current state."
+msgstr "لا يمكن التقديم من الحالة الحالية."
+
+#. module: ftiq_pharma_sfa
+#. odoo-python
+#: code:addons/ftiq_pharma_sfa/models/visit.py:0
+msgid "Cash Collection"
+msgstr "تحصيل نقدي"
+
+#. module: ftiq_pharma_sfa
+#. odoo-python
+#: code:addons/ftiq_pharma_sfa/models/res_partner.py:0
+#: model:ir.actions.act_window,name:ftiq_pharma_sfa.action_ftiq_field_collections
+#: model:ir.ui.menu,name:ftiq_pharma_sfa.menu_ftiq_cash_collections
+msgid "Cash Collections"
+msgstr "التحصيلات النقدية"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_plan_wizard_form
+msgid "Category"
+msgstr "الفئة"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_client_question__applies_to__center
+msgid "Center"
+msgstr "مركز"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.actions.act_window,name:ftiq_pharma_sfa.action_ftiq_centers
+#: model:ir.ui.menu,name:ftiq_pharma_sfa.menu_ftiq_centers
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_res_partner_search_inherit
+msgid "Centers"
+msgstr "المراكز"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_account_payment__ftiq_check_date
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_stock_check__check_date
+msgid "Check Date"
+msgstr "تاريخ الشيك"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_field_attendance_form
+msgid "Check In"
+msgstr "تسجيل الحضور"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_field_attendance__check_in_address
+msgid "Check In Address"
+msgstr "عنوان تسجيل الحضور"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_field_attendance__check_in_latitude
+msgid "Check In Latitude"
+msgstr "خط عرض الحضور"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_field_attendance__check_in_longitude
+msgid "Check In Longitude"
+msgstr "خط طول الحضور"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_field_attendance__check_in_time
+msgid "Check In Time"
+msgstr "وقت تسجيل الحضور"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_account_payment__ftiq_check_number
+msgid "Check Number"
+msgstr "رقم الشيك"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_field_attendance_form
+msgid "Check Out"
+msgstr "تسجيل الانصراف"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_field_attendance__check_out_address
+msgid "Check Out Address"
+msgstr "عنوان تسجيل الانصراف"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_field_attendance__check_out_latitude
+msgid "Check Out Latitude"
+msgstr "خط عرض الانصراف"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_field_attendance__check_out_longitude
+msgid "Check Out Longitude"
+msgstr "خط طول الانصراف"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_field_attendance__check_out_time
+msgid "Check Out Time"
+msgstr "وقت تسجيل الانصراف"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_field_attendance__state__checked_in
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_field_attendance_search
+msgid "Checked In"
+msgstr "مسجل الحضور"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_field_attendance__state__checked_out
+msgid "Checked Out"
+msgstr "مسجل الانصراف"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_res_partner_form_inherit
+msgid "Children"
+msgstr "الأطفال"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.actions.act_window,name:ftiq_pharma_sfa.action_ftiq_city
+#: model:ir.ui.menu,name:ftiq_pharma_sfa.menu_ftiq_config_cities
+msgid "Cities"
+msgstr "المدن"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model,name:ftiq_pharma_sfa.model_ftiq_city
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_area__city_id
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_plan_wizard_form
+msgid "City"
+msgstr "المدينة"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_plan_wizard_form
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_res_partner_search_inherit
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_visit_search
+msgid "Classification"
+msgstr "التصنيف"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.actions.act_window,name:ftiq_pharma_sfa.action_ftiq_client_classification
+#: model:ir.ui.menu,name:ftiq_pharma_sfa.menu_ftiq_config_classifications
+msgid "Classifications"
+msgstr "التصنيفات"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_daily_task__partner_id
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_stock_check__partner_id
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_daily_task_search
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_stock_check_search
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_visit_search
+msgid "Client"
+msgstr "العميل"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model,name:ftiq_pharma_sfa.model_ftiq_client_answer
+msgid "Client Answer"
+msgstr "إجابة العميل"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model,name:ftiq_pharma_sfa.model_ftiq_client_classification
+msgid "Client Classification"
+msgstr "تصنيف العميل"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.actions.act_window,name:ftiq_pharma_sfa.action_ftiq_client_invoices
+#: model:ir.ui.menu,name:ftiq_pharma_sfa.menu_ftiq_client_invoices
+msgid "Client Invoices"
+msgstr "فواتير العملاء"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_plan_wizard_form
+msgid "Client Name"
+msgstr "اسم العميل"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model,name:ftiq_pharma_sfa.model_ftiq_client_question
+msgid "Client Profile Question"
+msgstr "سؤال العميل"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.actions.act_window,name:ftiq_pharma_sfa.action_ftiq_client_question
+#: model:ir.ui.menu,name:ftiq_pharma_sfa.menu_ftiq_config_questions
+msgid "Client Questions"
+msgstr "أسئلة العملاء"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_visit__signature
+msgid "Client Signature"
+msgstr "توقيع العميل"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_plan_wizard__step__clients
+#: model:ir.ui.menu,name:ftiq_pharma_sfa.menu_ftiq_clients
+msgid "Clients"
+msgstr "العملاء"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_sales_target_form
+msgid "Close"
+msgstr "إغلاق"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_sales_target__state__closed
+msgid "Closed"
+msgstr "مغلق"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__account_payment__ftiq_collection_state__collected
+msgid "Collected"
+msgstr "محصّل"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_daily_task__task_type__collection
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_daily_task_kanban
+msgid "Collection"
+msgstr "تحصيل"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_account_payment__ftiq_collection_state
+msgid "Collection Status"
+msgstr "حالة التحصيل"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_daily_task_search
+msgid "Collection Tasks"
+msgstr "مهام التحصيل"
+
+#. module: ftiq_pharma_sfa
+#. odoo-python
+#: code:addons/ftiq_pharma_sfa/models/visit.py:0
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_visit__payment_ids
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_partner__ftiq_collection_count
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_users__ftiq_collection_count
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_res_partner_form_inherit
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_visit_form
+msgid "Collections"
+msgstr "التحصيلات"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_sales_target__target_type__collections
+msgid "Collections Amount"
+msgstr "مبلغ التحصيلات"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_color_code__color
+msgid "Color"
+msgstr "اللون"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model,name:ftiq_pharma_sfa.model_ftiq_color_code
+msgid "Color Code"
+msgstr "رمز اللون"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.actions.act_window,name:ftiq_pharma_sfa.action_ftiq_color_code
+#: model:ir.ui.menu,name:ftiq_pharma_sfa.menu_ftiq_config_color_code
+msgid "Color Codes"
+msgstr "رموز الألوان"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_stock_check_line__competitor_product
+msgid "Competitor Product"
+msgstr "منتج المنافس"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_stock_check_line__competitor_qty
+msgid "Competitor Qty"
+msgstr "كمية المنافس"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_daily_task_form
+msgid "Complete"
+msgstr "إكمال"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_daily_task__state__completed
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_weekly_plan_line__state__completed
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_daily_task_search
+msgid "Completed"
+msgstr "مكتمل"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_weekly_plan__completed_count
+msgid "Completed Count"
+msgstr "عدد المنجز"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_daily_task__completed_date
+msgid "Completed Date"
+msgstr "تاريخ الإكمال"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_weekly_plan__compliance_rate
+msgid "Compliance Rate"
+msgstr "نسبة الالتزام"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.ui.menu,name:ftiq_pharma_sfa.menu_ftiq_config
+msgid "Configuration"
+msgstr "الإعدادات"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_plan_wizard__step__configure
+msgid "Configure"
+msgstr "إعداد"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_plan_wizard_form
+msgid "Confirmed GEO"
+msgstr "إحداثيات مؤكدة"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model,name:ftiq_pharma_sfa.model_res_partner
+msgid "Contact"
+msgstr "جهة الاتصال"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_visit_graph
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_visit_pivot
+msgid "Count"
+msgstr "العدد"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_city__country_id
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_plan_wizard_form
+msgid "Country"
+msgstr "البلد"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_visit_form
+msgid "Create Cash Collection"
+msgstr "إنشاء تحصيل نقدي"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_daily_task_form
+msgid "Create Collection"
+msgstr "إنشاء تحصيل"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_visit_form
+msgid "Create Field Order"
+msgstr "إنشاء أمر بيع ميداني"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_daily_task_form
+msgid "Create Order"
+msgstr "إنشاء أمر بيع"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_plan_wizard_form
+msgid "Create Plan"
+msgstr "إنشاء خطة"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_daily_task_form
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_visit_form
+msgid "Create Stock Check"
+msgstr "إنشاء جرد مخزون"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_daily_task_form
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_weekly_plan_form
+msgid "Create Visit"
+msgstr "إنشاء زيارة"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_weekly_plan__supervisor_id
+msgid "Created By"
+msgstr "أنشأه"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_daily_task__payment_id
+msgid "Created Payment"
+msgstr "الدفعة المُنشأة"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_daily_task__sale_order_id
+msgid "Created Sale Order"
+msgstr "أمر البيع المُنشأ"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_daily_task__stock_check_id
+msgid "Created Stock Check"
+msgstr "الجرد المُنشأ"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_daily_task__visit_id
+msgid "Created Visit"
+msgstr "الزيارة المُنشأة"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_area__create_uid
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_call_reason__create_uid
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_city__create_uid
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_client_answer__create_uid
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_client_classification__create_uid
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_client_question__create_uid
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_client_question_option__create_uid
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_color_code__create_uid
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_daily_task__create_uid
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_debt_classification__create_uid
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_field_attendance__create_uid
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_leadership_level__create_uid
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_marketing_material__create_uid
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_material_view_log__create_uid
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_official_type__create_uid
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_plan_wizard__create_uid
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_prescriber_status__create_uid
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_sales_target__create_uid
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_sales_target_line__create_uid
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_speaker_level__create_uid
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_specialty__create_uid
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_stock_check__create_uid
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_stock_check_line__create_uid
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_subspecialty__create_uid
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_task_type__create_uid
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_visit__create_uid
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_visit_product_line__create_uid
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_weekly_plan__create_uid
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_weekly_plan_line__create_uid
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_workplace_type__create_uid
+msgid "Created by"
+msgstr "أنشأه"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_area__create_date
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_call_reason__create_date
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_city__create_date
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_client_answer__create_date
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_client_classification__create_date
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_client_question__create_date
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_client_question_option__create_date
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_color_code__create_date
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_daily_task__create_date
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_debt_classification__create_date
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_field_attendance__create_date
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_leadership_level__create_date
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_marketing_material__create_date
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_material_view_log__create_date
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_official_type__create_date
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_plan_wizard__create_date
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_prescriber_status__create_date
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_sales_target__create_date
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_sales_target_line__create_date
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_speaker_level__create_date
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_specialty__create_date
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_stock_check__create_date
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_stock_check_line__create_date
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_subspecialty__create_date
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_task_type__create_date
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_visit__create_date
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_visit_product_line__create_date
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_weekly_plan__create_date
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_weekly_plan_line__create_date
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_workplace_type__create_date
+msgid "Created on"
+msgstr "تاريخ الإنشاء"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_sales_target__currency_id
+msgid "Currency"
+msgstr "العملة"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model,name:ftiq_pharma_sfa.model_ftiq_daily_task
+msgid "Daily Task"
+msgstr "المهمة اليومية"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.actions.act_window,name:ftiq_pharma_sfa.action_ftiq_daily_task
+msgid "Daily Tasks"
+msgstr "المهام اليومية"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_field_attendance__date
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_field_attendance_search
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_visit_product_line_search
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_visit_search
+msgid "Date"
+msgstr "التاريخ"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_weekly_plan_line__day_of_week
+msgid "Day Of Week"
+msgstr "يوم الأسبوع"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model,name:ftiq_pharma_sfa.model_ftiq_debt_classification
+msgid "Debt Classification"
+msgstr "تصنيف الديون"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.actions.act_window,name:ftiq_pharma_sfa.action_ftiq_debt_classification
+#: model:ir.ui.menu,name:ftiq_pharma_sfa.menu_ftiq_config_debt_classification
+msgid "Debt Classifications"
+msgstr "تصنيفات الديون"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_daily_task__task_type__delivery
+msgid "Delivery"
+msgstr "تسليم"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__account_payment__ftiq_collection_state__deposited
+msgid "Deposited"
+msgstr "مودع"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_daily_task__description
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_marketing_material__description
+msgid "Description"
+msgstr "الوصف"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_plan_wizard_form
+msgid "Deselect All"
+msgstr "إلغاء تحديد الكل"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_visit_product_line__detail_notes
+msgid "Detail Notes"
+msgstr "ملاحظات تفصيلية"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_daily_task_form
+msgid "Details"
+msgstr "التفاصيل"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_area__display_name
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_call_reason__display_name
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_city__display_name
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_client_answer__display_name
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_client_classification__display_name
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_client_question__display_name
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_client_question_option__display_name
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_color_code__display_name
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_daily_task__display_name
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_debt_classification__display_name
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_field_attendance__display_name
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_leadership_level__display_name
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_marketing_material__display_name
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_material_view_log__display_name
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_official_type__display_name
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_plan_wizard__display_name
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_prescriber_status__display_name
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_sales_target__display_name
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_sales_target_line__display_name
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_speaker_level__display_name
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_specialty__display_name
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_stock_check__display_name
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_stock_check_line__display_name
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_subspecialty__display_name
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_task_type__display_name
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_visit__display_name
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_visit_product_line__display_name
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_weekly_plan__display_name
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_weekly_plan_line__display_name
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_workplace_type__display_name
+msgid "Display Name"
+msgstr "الاسم المعروض"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_client_question__applies_to__doctor
+msgid "Doctor"
+msgstr "طبيب"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model,name:ftiq_pharma_sfa.model_ftiq_visit
+msgid "Doctor/Center Visit"
+msgstr "زيارة طبيب/مركز"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.actions.act_window,name:ftiq_pharma_sfa.action_ftiq_doctors
+#: model:ir.ui.menu,name:ftiq_pharma_sfa.menu_ftiq_doctors
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_res_partner_search_inherit
+msgid "Doctors"
+msgstr "الأطباء"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__account_payment__ftiq_collection_state__draft
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_field_attendance__state__draft
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_sales_target__state__draft
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_stock_check__state__draft
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_visit__state__draft
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_weekly_plan__state__draft
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_visit_search
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_weekly_plan_search
+msgid "Draft"
+msgstr "مسودة"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_material_view_log__duration
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_visit__duration
+msgid "Duration"
+msgstr "المدة"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_material_view_log_list
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_visit_form
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.report_visit_template
+msgid "Duration (min)"
+msgstr "المدة (دقيقة)"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.report_visit_template
+msgid "End"
+msgstr "النهاية"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_visit__end_latitude
+msgid "End Latitude"
+msgstr "خط عرض النهاية"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_visit_form
+msgid "End Location"
+msgstr "موقع النهاية"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_visit__end_longitude
+msgid "End Longitude"
+msgstr "خط طول النهاية"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_material_view_log__end_time
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_visit__end_time
+msgid "End Time"
+msgstr "وقت النهاية"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_visit_form
+msgid "End Visit"
+msgstr "إنهاء الزيارة"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model,name:ftiq_pharma_sfa.model_hr_expense
+msgid "Expense"
+msgstr "النفقة "
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_stock_check_line__expiry_date
+msgid "Expiry Date"
+msgstr "تاريخ الصلاحية"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_visit_product_line__feedback
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_visit_form
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.report_visit_template
+msgid "Feedback"
+msgstr "ملاحظات"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.actions.act_window,name:ftiq_pharma_sfa.action_ftiq_field_attendance
+#: model:ir.model,name:ftiq_pharma_sfa.model_ftiq_field_attendance
+#: model:ir.ui.menu,name:ftiq_pharma_sfa.menu_ftiq_attendance
+msgid "Field Attendance"
+msgstr "الحضور الميداني"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_account_payment__is_field_collection
+msgid "Field Collection"
+msgstr "تحصيل ميداني"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_account_payment_form_inherit
+msgid "Field Collection Details"
+msgstr "تفاصيل التحصيل الميداني"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_sale_order__ftiq_delivery_notes
+msgid "Field Delivery Notes"
+msgstr "ملاحظات التسليم الميداني"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_hr_expense__is_field_expense
+msgid "Field Expense"
+msgstr "مصروف ميداني"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_hr_expense__ftiq_expense_type
+msgid "Field Expense Type"
+msgstr "نوع المصروف الميداني"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.actions.act_window,name:ftiq_pharma_sfa.action_ftiq_field_expenses
+#: model:ir.ui.menu,name:ftiq_pharma_sfa.menu_ftiq_expenses
+msgid "Field Expenses"
+msgstr "المصروفات الميدانية"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_account_bank_statement_line__ftiq_field_notes
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_account_move__ftiq_field_notes
+msgid "Field Notes"
+msgstr "ملاحظات ميدانية"
+
+#. module: ftiq_pharma_sfa
+#. odoo-python
+#: code:addons/ftiq_pharma_sfa/models/visit.py:0
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_sale_order__is_field_order
+msgid "Field Order"
+msgstr "أمر ميداني"
+
+#. module: ftiq_pharma_sfa
+#. odoo-python
+#: code:addons/ftiq_pharma_sfa/models/res_partner.py:0
+#: code:addons/ftiq_pharma_sfa/models/visit.py:0
+#: model:ir.actions.act_window,name:ftiq_pharma_sfa.action_ftiq_field_orders
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_visit__sale_order_ids
+#: model:ir.ui.menu,name:ftiq_pharma_sfa.menu_ftiq_field_orders
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_sale_order_search
+msgid "Field Orders"
+msgstr "أوامر البيع الميدانية"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_sale_order__ftiq_priority
+msgid "Field Priority"
+msgstr "الأولوية الميدانية"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_sale_order_form_inherit
+msgid "Field delivery notes..."
+msgstr "ملاحظات التسليم الميداني..."
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_marketing_material__file
+msgid "File"
+msgstr "ملف"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_marketing_material__file_name
+msgid "File Name"
+msgstr "اسم الملف"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_plan_wizard__filter_address
+msgid "Filter Address"
+msgstr "تصفية العنوان"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_plan_wizard__filter_app_verified
+msgid "Filter App Verified"
+msgstr "تصفية موثق بالتطبيق"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_plan_wizard__filter_area_id
+msgid "Filter Area"
+msgstr "تصفية المنطقة"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_plan_wizard__filter_city_id
+msgid "Filter City"
+msgstr "تصفية المدينة"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_plan_wizard__filter_classification_id
+msgid "Filter Classification"
+msgstr "تصفية التصنيف"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_plan_wizard_form
+msgid "Filter Clients"
+msgstr "تصفية العملاء"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_plan_wizard__filter_country_id
+msgid "Filter Country"
+msgstr "تصفية البلد"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_plan_wizard__filter_geo_confirmed
+msgid "Filter Geo Confirmed"
+msgstr "تصفية الإحداثيات المؤكدة"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_plan_wizard__filter_has_cashed
+msgid "Filter Has Cashed"
+msgstr "تصفية لديه تحصيلات"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_plan_wizard__filter_has_tasks
+msgid "Filter Has Tasks"
+msgstr "تصفية لديه مهام"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_plan_wizard__filter_license_attached
+msgid "Filter License Attached"
+msgstr "تصفية الرخصة مرفقة"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_plan_wizard__filter_name
+msgid "Filter Name"
+msgstr "تصفية الاسم"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_plan_wizard__filter_specialty_id
+msgid "Filter Specialty"
+msgstr "تصفية التخصص"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_plan_wizard__filter_subspecialty_id
+msgid "Filter Subspecialty"
+msgstr "تصفية التخصص الفرعي"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.ui.menu,name:ftiq_pharma_sfa.menu_ftiq_finance
+msgid "Finance"
+msgstr "المالية"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_client_question__question_type__float
+msgid "Float"
+msgstr "رقم عشري"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_client_answer__float_value
+msgid "Float Value"
+msgstr "قيمة عشرية"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_visit__outcome__follow_up
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_visit_product_line__outcome__follow_up
+msgid "Follow Up Required"
+msgstr "يتطلب متابعة"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_daily_task__message_follower_ids
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_field_attendance__message_follower_ids
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_sales_target__message_follower_ids
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_stock_check__message_follower_ids
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_visit__message_follower_ids
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_weekly_plan__message_follower_ids
+msgid "Followers"
+msgstr "المتابعون"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_daily_task__message_partner_ids
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_field_attendance__message_partner_ids
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_sales_target__message_partner_ids
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_stock_check__message_partner_ids
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_visit__message_partner_ids
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_weekly_plan__message_partner_ids
+msgid "Followers (Partners)"
+msgstr "المتابعون (الشركاء)"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,help:ftiq_pharma_sfa.field_ftiq_daily_task__activity_type_icon
+#: model:ir.model.fields,help:ftiq_pharma_sfa.field_ftiq_sales_target__activity_type_icon
+#: model:ir.model.fields,help:ftiq_pharma_sfa.field_ftiq_stock_check__activity_type_icon
+#: model:ir.model.fields,help:ftiq_pharma_sfa.field_ftiq_visit__activity_type_icon
+#: model:ir.model.fields,help:ftiq_pharma_sfa.field_ftiq_weekly_plan__activity_type_icon
+msgid "Font awesome icon e.g. fa-tasks"
+msgstr "أيقونة Font Awesome مثل fa-tasks"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__hr_expense__ftiq_expense_type__food
+msgid "Food & Meals"
+msgstr "طعام ووجبات"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_weekly_plan_line__day_of_week__4
+msgid "Friday"
+msgstr "الجمعة"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_partner__ftiq_answer_ids
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_users__ftiq_answer_ids
+msgid "Ftiq Answer"
+msgstr "إجابة FTIQ"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_partner__ftiq_app_verified
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_users__ftiq_app_verified
+msgid "Ftiq App Verified"
+msgstr "موثق بالتطبيق"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_visit__partner_area_id
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_weekly_plan_line__partner_area_id
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_partner__ftiq_area_id
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_users__ftiq_area_id
+msgid "Ftiq Area"
+msgstr "المنطقة"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_partner__ftiq_birthday
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_users__ftiq_birthday
+msgid "Ftiq Birthday"
+msgstr "تاريخ الميلاد"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_partner__ftiq_city_id
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_users__ftiq_city_id
+msgid "Ftiq City"
+msgstr "المدينة"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_visit__partner_classification_id
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_weekly_plan_line__partner_classification_id
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_partner__ftiq_classification_id
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_users__ftiq_classification_id
+msgid "Ftiq Classification"
+msgstr "تصنيف FTIQ"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_partner__ftiq_color_code_id
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_users__ftiq_color_code_id
+msgid "Ftiq Color Code"
+msgstr "رمز لون FTIQ"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_partner__ftiq_debt_classification_id
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_users__ftiq_debt_classification_id
+msgid "Ftiq Debt Classification"
+msgstr "تصنيف ديون FTIQ"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_partner__ftiq_general_note
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_users__ftiq_general_note
+msgid "Ftiq General Note"
+msgstr "ملاحظة عامة"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_partner__ftiq_geo_confirmed
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_users__ftiq_geo_confirmed
+msgid "Ftiq Geo Confirmed"
+msgstr "الموقع مؤكد"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_users__ftiq_is_medical_rep
+msgid "Ftiq Is Medical Rep"
+msgstr "مندوب طبي"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_partner__ftiq_kid1_birthday
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_users__ftiq_kid1_birthday
+msgid "Ftiq Kid1 Birthday"
+msgstr "ميلاد الطفل الأول"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_partner__ftiq_kid1_name
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_users__ftiq_kid1_name
+msgid "Ftiq Kid1 Name"
+msgstr "اسم الطفل الأول"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_partner__ftiq_kid2_birthday
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_users__ftiq_kid2_birthday
+msgid "Ftiq Kid2 Birthday"
+msgstr "ميلاد الطفل الثاني"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_partner__ftiq_kid2_name
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_users__ftiq_kid2_name
+msgid "Ftiq Kid2 Name"
+msgstr "اسم الطفل الثاني"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_partner__ftiq_kid3_birthday
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_users__ftiq_kid3_birthday
+msgid "Ftiq Kid3 Birthday"
+msgstr "ميلاد الطفل الثالث"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_partner__ftiq_kid3_name
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_users__ftiq_kid3_name
+msgid "Ftiq Kid3 Name"
+msgstr "اسم الطفل الثالث"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_partner__ftiq_last_visit_date
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_users__ftiq_last_visit_date
+msgid "Ftiq Last Visit Date"
+msgstr "تاريخ آخر زيارة"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_partner__ftiq_leadership_level_id
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_users__ftiq_leadership_level_id
+msgid "Ftiq Leadership Level"
+msgstr "مستوى قيادة FTIQ"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_partner__ftiq_license_attached
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_users__ftiq_license_attached
+msgid "Ftiq License Attached"
+msgstr "الرخصة مرفقة"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_partner__ftiq_nickname
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_users__ftiq_nickname
+msgid "Ftiq Nickname"
+msgstr "الكنية"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_partner__ftiq_official_type_id
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_users__ftiq_official_type_id
+msgid "Ftiq Official Type"
+msgstr "نوع رسمي FTIQ"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_partner__ftiq_prescriber_status_id
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_users__ftiq_prescriber_status_id
+msgid "Ftiq Prescriber Status"
+msgstr "حالة واصف FTIQ"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_partner__ftiq_speaker_level_id
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_users__ftiq_speaker_level_id
+msgid "Ftiq Speaker Level"
+msgstr "مستوى متحدث FTIQ"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_visit__partner_specialty_id
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_weekly_plan_line__partner_specialty_id
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_partner__ftiq_specialty_id
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_users__ftiq_specialty_id
+msgid "Ftiq Specialty"
+msgstr "تخصص FTIQ"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_partner__ftiq_spouse_birthday
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_users__ftiq_spouse_birthday
+msgid "Ftiq Spouse Birthday"
+msgstr "ميلاد الزوج/الزوجة"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_partner__ftiq_spouse_name
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_users__ftiq_spouse_name
+msgid "Ftiq Spouse Name"
+msgstr "اسم الزوج/الزوجة"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_partner__ftiq_subspecialty_id
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_users__ftiq_subspecialty_id
+msgid "Ftiq Subspecialty"
+msgstr "تخصص فرعي FTIQ"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_users__ftiq_supervisor_id
+msgid "Ftiq Supervisor"
+msgstr "المشرف"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_partner__ftiq_total_visits
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_users__ftiq_total_visits
+msgid "Ftiq Total Visits"
+msgstr "إجمالي الزيارات"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_partner__ftiq_visit_ids
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_users__ftiq_visit_ids
+msgid "Ftiq Visit"
+msgstr "زيارة FTIQ"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_partner__ftiq_workplace_type_id
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_users__ftiq_workplace_type_id
+msgid "Ftiq Workplace Type"
+msgstr "نوع مكان عمل FTIQ"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__hr_expense__ftiq_expense_type__fuel
+msgid "Fuel"
+msgstr "وقود"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_account_payment_form_inherit
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_daily_task_form
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_stock_check_form
+msgid "GPS"
+msgstr "GPS"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_visit_form
+msgid "GPS Data"
+msgstr "بيانات GPS"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_visit__general_feedback
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.report_visit_template
+msgid "General Feedback"
+msgstr "الملاحظات العامة"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_res_partner_form_inherit
+msgid "General notes..."
+msgstr "ملاحظات عامة..."
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_visit_form
+msgid "General visit feedback..."
+msgstr "ملاحظات عامة عن الزيارة..."
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model,name:ftiq_pharma_sfa.model_ftiq_area
+msgid "Geographic Area"
+msgstr "المنطقة الجغرافية"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_daily_task_search
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_field_attendance_search
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_marketing_material_search
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_sales_target_search
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_stock_check_search
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_visit_product_line_search
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_visit_search
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_weekly_plan_search
+msgid "Group By"
+msgstr "تجميع حسب"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_plan_wizard_form
+msgid "Has Cashed"
+msgstr "لديه تحصيلات"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_daily_task__has_message
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_field_attendance__has_message
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_sales_target__has_message
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_stock_check__has_message
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_visit__has_message
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_weekly_plan__has_message
+msgid "Has Message"
+msgstr "لديه رسالة"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_plan_wizard_form
+msgid "Has Tasks"
+msgstr "لديه مهام"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_area__id
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_call_reason__id
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_city__id
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_client_answer__id
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_client_classification__id
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_client_question__id
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_client_question_option__id
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_color_code__id
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_daily_task__id
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_debt_classification__id
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_field_attendance__id
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_leadership_level__id
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_marketing_material__id
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_material_view_log__id
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_official_type__id
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_plan_wizard__id
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_prescriber_status__id
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_sales_target__id
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_sales_target_line__id
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_speaker_level__id
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_specialty__id
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_stock_check__id
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_stock_check_line__id
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_subspecialty__id
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_task_type__id
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_visit__id
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_visit_product_line__id
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_weekly_plan__id
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_weekly_plan_line__id
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_workplace_type__id
+msgid "ID"
+msgstr "المعرف"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_daily_task__activity_exception_icon
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_sales_target__activity_exception_icon
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_stock_check__activity_exception_icon
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_visit__activity_exception_icon
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_weekly_plan__activity_exception_icon
+msgid "Icon"
+msgstr "الأيقونة"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,help:ftiq_pharma_sfa.field_ftiq_daily_task__activity_exception_icon
+#: model:ir.model.fields,help:ftiq_pharma_sfa.field_ftiq_sales_target__activity_exception_icon
+#: model:ir.model.fields,help:ftiq_pharma_sfa.field_ftiq_stock_check__activity_exception_icon
+#: model:ir.model.fields,help:ftiq_pharma_sfa.field_ftiq_visit__activity_exception_icon
+#: model:ir.model.fields,help:ftiq_pharma_sfa.field_ftiq_weekly_plan__activity_exception_icon
+msgid "Icon to indicate an exception activity."
+msgstr "أيقونة لتمييز نشاط استثنائي."
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,help:ftiq_pharma_sfa.field_ftiq_daily_task__message_needaction
+#: model:ir.model.fields,help:ftiq_pharma_sfa.field_ftiq_field_attendance__message_needaction
+#: model:ir.model.fields,help:ftiq_pharma_sfa.field_ftiq_sales_target__message_needaction
+#: model:ir.model.fields,help:ftiq_pharma_sfa.field_ftiq_stock_check__message_needaction
+#: model:ir.model.fields,help:ftiq_pharma_sfa.field_ftiq_visit__message_needaction
+#: model:ir.model.fields,help:ftiq_pharma_sfa.field_ftiq_weekly_plan__message_needaction
+msgid "If checked, new messages require your attention."
+msgstr "إذا تم التحديد، هناك رسائل جديدة تتطلب انتباهك."
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,help:ftiq_pharma_sfa.field_ftiq_daily_task__message_has_error
+#: model:ir.model.fields,help:ftiq_pharma_sfa.field_ftiq_daily_task__message_has_sms_error
+#: model:ir.model.fields,help:ftiq_pharma_sfa.field_ftiq_field_attendance__message_has_error
+#: model:ir.model.fields,help:ftiq_pharma_sfa.field_ftiq_field_attendance__message_has_sms_error
+#: model:ir.model.fields,help:ftiq_pharma_sfa.field_ftiq_sales_target__message_has_error
+#: model:ir.model.fields,help:ftiq_pharma_sfa.field_ftiq_sales_target__message_has_sms_error
+#: model:ir.model.fields,help:ftiq_pharma_sfa.field_ftiq_stock_check__message_has_error
+#: model:ir.model.fields,help:ftiq_pharma_sfa.field_ftiq_stock_check__message_has_sms_error
+#: model:ir.model.fields,help:ftiq_pharma_sfa.field_ftiq_visit__message_has_error
+#: model:ir.model.fields,help:ftiq_pharma_sfa.field_ftiq_visit__message_has_sms_error
+#: model:ir.model.fields,help:ftiq_pharma_sfa.field_ftiq_weekly_plan__message_has_error
+#: model:ir.model.fields,help:ftiq_pharma_sfa.field_ftiq_weekly_plan__message_has_sms_error
+msgid "If checked, some messages have a delivery error."
+msgstr "إذا تم التحديد، بعض الرسائل بها خطأ في التسليم."
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_marketing_material__image
+msgid "Image"
+msgstr "صورة"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_daily_task__priority__1
+msgid "Important"
+msgstr "مهم"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_daily_task__state__in_progress
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_visit__state__in_progress
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_daily_task_search
+msgid "In Progress"
+msgstr "قيد التنفيذ"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_client_question__question_type__integer
+msgid "Integer"
+msgstr "رقم صحيح"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_client_answer__integer_value
+msgid "Integer Value"
+msgstr "قيمة رقمية"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_visit__outcome__interested
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_visit_product_line__outcome__interested
+msgid "Interested"
+msgstr "مهتم"
+
+#. module: ftiq_pharma_sfa
+#. odoo-python
+#: code:addons/ftiq_pharma_sfa/models/res_partner.py:0
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_visit__invoice_ids
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_partner__ftiq_invoice_count
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_users__ftiq_invoice_count
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_res_partner_form_inherit
+msgid "Invoices"
+msgstr "الفواتير"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_daily_task__message_is_follower
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_field_attendance__message_is_follower
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_sales_target__message_is_follower
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_stock_check__message_is_follower
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_visit__message_is_follower
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_weekly_plan__message_is_follower
+msgid "Is Follower"
+msgstr "متابع"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_partner__is_ftiq_center
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_users__is_ftiq_center
+msgid "Is Ftiq Center"
+msgstr "مركز طبي"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_partner__is_ftiq_doctor
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_users__is_ftiq_doctor
+msgid "Is Ftiq Doctor"
+msgstr "طبيب"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_partner__is_ftiq_pharmacy
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_users__is_ftiq_pharmacy
+msgid "Is Ftiq Pharmacy"
+msgstr "صيدلية"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_visit__is_planned
+msgid "Is Planned"
+msgstr "مخططة"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model,name:ftiq_pharma_sfa.model_account_move
+msgid "Journal Entry"
+msgstr "قيد اليومية"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_area__write_uid
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_call_reason__write_uid
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_city__write_uid
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_client_answer__write_uid
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_client_classification__write_uid
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_client_question__write_uid
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_client_question_option__write_uid
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_color_code__write_uid
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_daily_task__write_uid
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_debt_classification__write_uid
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_field_attendance__write_uid
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_leadership_level__write_uid
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_marketing_material__write_uid
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_material_view_log__write_uid
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_official_type__write_uid
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_plan_wizard__write_uid
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_prescriber_status__write_uid
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_sales_target__write_uid
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_sales_target_line__write_uid
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_speaker_level__write_uid
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_specialty__write_uid
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_stock_check__write_uid
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_stock_check_line__write_uid
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_subspecialty__write_uid
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_task_type__write_uid
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_visit__write_uid
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_visit_product_line__write_uid
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_weekly_plan__write_uid
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_weekly_plan_line__write_uid
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_workplace_type__write_uid
+msgid "Last Updated by"
+msgstr "آخر تحديث بواسطة"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_area__write_date
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_call_reason__write_date
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_city__write_date
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_client_answer__write_date
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_client_classification__write_date
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_client_question__write_date
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_client_question_option__write_date
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_color_code__write_date
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_daily_task__write_date
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_debt_classification__write_date
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_field_attendance__write_date
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_leadership_level__write_date
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_marketing_material__write_date
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_material_view_log__write_date
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_official_type__write_date
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_plan_wizard__write_date
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_prescriber_status__write_date
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_sales_target__write_date
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_sales_target_line__write_date
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_speaker_level__write_date
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_specialty__write_date
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_stock_check__write_date
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_stock_check_line__write_date
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_subspecialty__write_date
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_task_type__write_date
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_visit__write_date
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_visit_product_line__write_date
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_weekly_plan__write_date
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_weekly_plan_line__write_date
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_workplace_type__write_date
+msgid "Last Updated on"
+msgstr "آخر تحديث في"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_account_payment__ftiq_latitude
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_daily_task__latitude
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_stock_check__latitude
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_sale_order__ftiq_latitude
+msgid "Latitude"
+msgstr "خط العرض"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model,name:ftiq_pharma_sfa.model_ftiq_leadership_level
+msgid "Leadership Level"
+msgstr "مستوى القيادة"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.actions.act_window,name:ftiq_pharma_sfa.action_ftiq_leadership_level
+#: model:ir.ui.menu,name:ftiq_pharma_sfa.menu_ftiq_config_leadership_level
+msgid "Leadership Levels"
+msgstr "مستويات القيادة"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_plan_wizard_form
+msgid "License Attached"
+msgstr "الرخصة مرفقة"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_weekly_plan__line_ids
+msgid "Line"
+msgstr "سطر"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_account_payment__ftiq_longitude
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_daily_task__longitude
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_stock_check__longitude
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_sale_order__ftiq_longitude
+msgid "Longitude"
+msgstr "خط الطول"
+
+#. module: ftiq_pharma_sfa
+#: model:res.groups,name:ftiq_pharma_sfa.group_ftiq_manager
+msgid "Manager"
+msgstr "مدير"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_weekly_plan_form
+msgid "Mark Missed"
+msgstr "تحديد كفائت"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_stock_check_form
+msgid "Mark Reviewed"
+msgstr "تحديد كمراجع"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model,name:ftiq_pharma_sfa.model_ftiq_marketing_material
+msgid "Marketing Material"
+msgstr "المادة التسويقية"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.actions.act_window,name:ftiq_pharma_sfa.action_ftiq_marketing_material
+#: model:ir.ui.menu,name:ftiq_pharma_sfa.menu_ftiq_marketing_materials
+msgid "Marketing Materials"
+msgstr "المواد التسويقية"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_material_view_log__material_id
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.report_visit_template
+msgid "Material"
+msgstr "مادة تسويقية"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model,name:ftiq_pharma_sfa.model_ftiq_material_view_log
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_visit__material_view_log_ids
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_visit_form
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.report_visit_template
+msgid "Material View Log"
+msgstr "سجل عرض المادة"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.actions.act_window,name:ftiq_pharma_sfa.action_ftiq_material_view_log_report
+#: model:ir.ui.menu,name:ftiq_pharma_sfa.menu_ftiq_material_view_report
+msgid "Material View Report"
+msgstr "تقرير عرض المواد"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model,name:ftiq_pharma_sfa.model_ftiq_specialty
+msgid "Medical Specialty"
+msgstr "التخصص الطبي"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model,name:ftiq_pharma_sfa.model_ftiq_subspecialty
+msgid "Medical Subspecialty"
+msgstr "التخصص الفرعي"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_daily_task__message_has_error
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_field_attendance__message_has_error
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_sales_target__message_has_error
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_stock_check__message_has_error
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_visit__message_has_error
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_weekly_plan__message_has_error
+msgid "Message Delivery error"
+msgstr "خطأ في تسليم الرسالة"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_daily_task__message_ids
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_field_attendance__message_ids
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_sales_target__message_ids
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_stock_check__message_ids
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_visit__message_ids
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_weekly_plan__message_ids
+msgid "Messages"
+msgstr "الرسائل"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_weekly_plan_line__state__missed
+msgid "Missed"
+msgstr "فائت"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_weekly_plan__missed_count
+msgid "Missed Count"
+msgstr "عدد الفائت"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_weekly_plan_line__day_of_week__0
+msgid "Monday"
+msgstr "الاثنين"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.ui.menu,name:ftiq_pharma_sfa.menu_ftiq_my_activities
+msgid "My Activities"
+msgstr "نشاطاتي"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_daily_task__my_activity_date_deadline
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_sales_target__my_activity_date_deadline
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_stock_check__my_activity_date_deadline
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_visit__my_activity_date_deadline
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_weekly_plan__my_activity_date_deadline
+msgid "My Activity Deadline"
+msgstr "موعد نشاطي"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.actions.act_window,name:ftiq_pharma_sfa.action_ftiq_my_attendance
+#: model:ir.ui.menu,name:ftiq_pharma_sfa.menu_ftiq_my_attendance
+msgid "My Attendance"
+msgstr "حضوري"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.actions.act_window,name:ftiq_pharma_sfa.action_ftiq_my_collections
+#: model:ir.ui.menu,name:ftiq_pharma_sfa.menu_ftiq_my_collections
+msgid "My Collections"
+msgstr "تحصيلاتي"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.ui.menu,name:ftiq_pharma_sfa.menu_ftiq_my_expenses
+msgid "My Expenses"
+msgstr "مصروفاتي"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.actions.act_window,name:ftiq_pharma_sfa.action_ftiq_my_expenses
+msgid "My Field Expenses"
+msgstr "مصروفاتي الميدانية"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.actions.act_window,name:ftiq_pharma_sfa.action_ftiq_my_field_orders
+msgid "My Field Orders"
+msgstr "طلباتي الميدانية"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.ui.menu,name:ftiq_pharma_sfa.menu_ftiq_my_orders
+msgid "My Orders"
+msgstr "طلباتي"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.actions.act_window,name:ftiq_pharma_sfa.action_ftiq_my_plans
+#: model:ir.ui.menu,name:ftiq_pharma_sfa.menu_ftiq_my_plans
+msgid "My Plans"
+msgstr "خططي"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.actions.act_window,name:ftiq_pharma_sfa.action_ftiq_my_stock_checks
+#: model:ir.ui.menu,name:ftiq_pharma_sfa.menu_ftiq_my_stock_checks
+msgid "My Stock Checks"
+msgstr "جرد مخزوني"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.actions.act_window,name:ftiq_pharma_sfa.action_ftiq_my_targets
+#: model:ir.ui.menu,name:ftiq_pharma_sfa.menu_ftiq_my_targets
+msgid "My Targets"
+msgstr "أهدافي"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.actions.act_window,name:ftiq_pharma_sfa.action_ftiq_my_tasks
+#: model:ir.ui.menu,name:ftiq_pharma_sfa.menu_ftiq_my_tasks
+msgid "My Tasks"
+msgstr "مهامي"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.actions.act_window,name:ftiq_pharma_sfa.action_ftiq_my_visits
+#: model:ir.ui.menu,name:ftiq_pharma_sfa.menu_ftiq_my_visits
+msgid "My Visits"
+msgstr "زياراتي"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_area__name
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_call_reason__name
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_city__name
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_client_classification__name
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_client_question__name
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_client_question_option__name
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_color_code__name
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_debt_classification__name
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_field_attendance__name
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_leadership_level__name
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_marketing_material__name
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_official_type__name
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_prescriber_status__name
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_sales_target__name
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_speaker_level__name
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_specialty__name
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_subspecialty__name
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_task_type__name
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_visit__name
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_weekly_plan__name
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_workplace_type__name
+msgid "Name"
+msgstr "المرجع"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_sales_target__target_type__new_clients
+msgid "New Clients"
+msgstr "عملاء جدد"
+
+#. module: ftiq_pharma_sfa
+#. odoo-python
+#: code:addons/ftiq_pharma_sfa/wizard/plan_wizard.py:0
+msgid "New Plan"
+msgstr "خطة جديدة"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.actions.act_window,name:ftiq_pharma_sfa.action_ftiq_plan_wizard
+#: model:ir.ui.menu,name:ftiq_pharma_sfa.menu_ftiq_plan_wizard
+msgid "New Plan Wizard"
+msgstr "معالج خطة جديدة"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_plan_wizard_form
+msgid "Next"
+msgstr "التالي"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_daily_task__activity_calendar_event_id
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_sales_target__activity_calendar_event_id
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_stock_check__activity_calendar_event_id
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_visit__activity_calendar_event_id
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_weekly_plan__activity_calendar_event_id
+msgid "Next Activity Calendar Event"
+msgstr "حدث التقويم للنشاط التالي"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_daily_task__activity_date_deadline
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_sales_target__activity_date_deadline
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_stock_check__activity_date_deadline
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_visit__activity_date_deadline
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_weekly_plan__activity_date_deadline
+msgid "Next Activity Deadline"
+msgstr "موعد النشاط التالي"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_daily_task__activity_summary
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_sales_target__activity_summary
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_stock_check__activity_summary
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_visit__activity_summary
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_weekly_plan__activity_summary
+msgid "Next Activity Summary"
+msgstr "ملخص النشاط التالي"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_daily_task__activity_type_id
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_sales_target__activity_type_id
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_stock_check__activity_type_id
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_visit__activity_type_id
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_weekly_plan__activity_type_id
+msgid "Next Activity Type"
+msgstr "نوع النشاط التالي"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_plan_wizard__filter_has_cashed__no
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_plan_wizard__filter_has_tasks__no
+msgid "No"
+msgstr "لا"
+
+#. module: ftiq_pharma_sfa
+#. odoo-python
+#: code:addons/ftiq_pharma_sfa/models/visit.py:0
+msgid "No GPS coordinates recorded for this visit."
+msgstr "لا توجد إحداثيات GPS مسجلة لهذه الزيارة."
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_daily_task__priority__0
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__sale_order__ftiq_priority__0
+msgid "Normal"
+msgstr "عادي"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_visit__outcome__not_interested
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_visit_product_line__outcome__not_interested
+msgid "Not Interested"
+msgstr "غير مهتم"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_client_answer__note
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_plan_wizard__note
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_stock_check_line__note
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_weekly_plan__note
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_weekly_plan_line__note
+msgid "Note"
+msgstr "ملاحظة"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_sales_target__notes
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_stock_check__notes
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_sales_target_form
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_stock_check_form
+msgid "Notes"
+msgstr "ملاحظات"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_daily_task__message_needaction_counter
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_field_attendance__message_needaction_counter
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_sales_target__message_needaction_counter
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_stock_check__message_needaction_counter
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_visit__message_needaction_counter
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_weekly_plan__message_needaction_counter
+msgid "Number of Actions"
+msgstr "عدد الإجراءات"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_daily_task__message_has_error_counter
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_field_attendance__message_has_error_counter
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_sales_target__message_has_error_counter
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_stock_check__message_has_error_counter
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_visit__message_has_error_counter
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_weekly_plan__message_has_error_counter
+msgid "Number of errors"
+msgstr "عدد الأخطاء"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,help:ftiq_pharma_sfa.field_ftiq_daily_task__message_needaction_counter
+#: model:ir.model.fields,help:ftiq_pharma_sfa.field_ftiq_field_attendance__message_needaction_counter
+#: model:ir.model.fields,help:ftiq_pharma_sfa.field_ftiq_sales_target__message_needaction_counter
+#: model:ir.model.fields,help:ftiq_pharma_sfa.field_ftiq_stock_check__message_needaction_counter
+#: model:ir.model.fields,help:ftiq_pharma_sfa.field_ftiq_visit__message_needaction_counter
+#: model:ir.model.fields,help:ftiq_pharma_sfa.field_ftiq_weekly_plan__message_needaction_counter
+msgid "Number of messages requiring action"
+msgstr "عدد الرسائل التي تتطلب إجراء"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,help:ftiq_pharma_sfa.field_ftiq_daily_task__message_has_error_counter
+#: model:ir.model.fields,help:ftiq_pharma_sfa.field_ftiq_field_attendance__message_has_error_counter
+#: model:ir.model.fields,help:ftiq_pharma_sfa.field_ftiq_sales_target__message_has_error_counter
+#: model:ir.model.fields,help:ftiq_pharma_sfa.field_ftiq_stock_check__message_has_error_counter
+#: model:ir.model.fields,help:ftiq_pharma_sfa.field_ftiq_visit__message_has_error_counter
+#: model:ir.model.fields,help:ftiq_pharma_sfa.field_ftiq_weekly_plan__message_has_error_counter
+msgid "Number of messages with delivery error"
+msgstr "عدد الرسائل التي بها خطأ في التسليم"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model,name:ftiq_pharma_sfa.model_ftiq_official_type
+msgid "Official Type"
+msgstr "النوع الرسمي"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.actions.act_window,name:ftiq_pharma_sfa.action_ftiq_official_type
+#: model:ir.ui.menu,name:ftiq_pharma_sfa.menu_ftiq_config_official_type
+msgid "Official Types"
+msgstr "الأنواع الرسمية"
+
+#. module: ftiq_pharma_sfa
+#. odoo-python
+#: code:addons/ftiq_pharma_sfa/models/weekly_plan.py:0
+msgid "Only draft plans can be submitted."
+msgstr "يمكن تقديم الخطط المسودة فقط."
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.constraint,message:ftiq_pharma_sfa.constraint_ftiq_client_answer_partner_question_uniq
+msgid "Only one answer per question per client is allowed."
+msgstr "يُسمح بإجابة واحدة فقط لكل سؤال لكل عميل."
+
+#. module: ftiq_pharma_sfa
+#. odoo-python
+#: code:addons/ftiq_pharma_sfa/models/weekly_plan.py:0
+msgid "Only submitted plans can be approved."
+msgstr "يمكن اعتماد الخطط المقدمة فقط."
+
+#. module: ftiq_pharma_sfa
+#. odoo-python
+#: code:addons/ftiq_pharma_sfa/models/weekly_plan.py:0
+msgid "Only submitted plans can be returned."
+msgstr "يمكن إرجاع الخطط المقدمة فقط."
+
+#. module: ftiq_pharma_sfa
+#. odoo-python
+#: code:addons/ftiq_pharma_sfa/models/visit.py:0
+msgid "Only submitted visits can be approved."
+msgstr "يمكن اعتماد الزيارات المقدمة فقط."
+
+#. module: ftiq_pharma_sfa
+#. odoo-python
+#: code:addons/ftiq_pharma_sfa/models/visit.py:0
+msgid "Only submitted visits can be returned."
+msgstr "يمكن إرجاع الزيارات المقدمة فقط."
+
+#. module: ftiq_pharma_sfa
+#: model:ir.ui.menu,name:ftiq_pharma_sfa.menu_ftiq_operations
+msgid "Operations"
+msgstr "العمليات"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_client_answer__option_id
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_client_question__option_ids
+msgid "Option"
+msgstr "خيار"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_client_question_form
+msgid "Options"
+msgstr "الخيارات"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_daily_task__task_type__order
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_daily_task_kanban
+msgid "Order"
+msgstr "أمر بيع"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_daily_task_search
+msgid "Order Tasks"
+msgstr "مهام البيع"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_partner__ftiq_order_count
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_users__ftiq_order_count
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_res_partner_form_inherit
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_visit_form
+msgid "Orders"
+msgstr "الطلبات"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_sales_target__target_type__orders
+msgid "Orders Amount"
+msgstr "مبلغ الطلبات"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_daily_task__task_type__other
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__hr_expense__ftiq_expense_type__other
+msgid "Other"
+msgstr "أخرى"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_visit__outcome
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_visit_product_line__outcome
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_visit_product_line_search
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_visit_search
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.report_visit_template
+msgid "Outcome"
+msgstr "النتيجة"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_daily_task__outcome
+msgid "Outcome / Result"
+msgstr "النتيجة"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__hr_expense__ftiq_expense_type__parking
+msgid "Parking"
+msgstr "مواقف"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_client_answer__partner_id
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_plan_wizard__partner_ids
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_visit__partner_id
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_visit_product_line__partner_id
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_weekly_plan_line__partner_id
+msgid "Partner"
+msgstr "العميل"
+
+#. module: ftiq_pharma_sfa
+#. odoo-python
+#: code:addons/ftiq_pharma_sfa/models/daily_task.py:0
+msgid "Payment"
+msgstr "دفعة"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_visit__payment_count
+msgid "Payment Count"
+msgstr "عدد التحصيلات"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model,name:ftiq_pharma_sfa.model_account_payment
+msgid "Payments"
+msgstr "الدفعات"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_daily_task__state__pending
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_weekly_plan_line__state__pending
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_daily_task_search
+msgid "Pending"
+msgstr "معلق"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_sales_target__date_to
+msgid "Period End"
+msgstr "إلى تاريخ"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_sales_target__date_from
+msgid "Period Start"
+msgstr "من تاريخ"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.module.category,name:ftiq_pharma_sfa.module_category_ftiq_pharma_sfa
+#: model:ir.ui.menu,name:ftiq_pharma_sfa.menu_ftiq_pharma_sfa_root
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_res_partner_form_inherit
+msgid "Pharma SFA"
+msgstr "أتمتة المبيعات"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.actions.act_window,name:ftiq_pharma_sfa.action_ftiq_pharmacies
+#: model:ir.ui.menu,name:ftiq_pharma_sfa.menu_ftiq_pharmacies
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_res_partner_search_inherit
+msgid "Pharmacies"
+msgstr "الصيدليات"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__hr_expense__ftiq_expense_type__phone
+msgid "Phone & Communication"
+msgstr "هاتف واتصالات"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_daily_task__photo_1
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_visit__photo_1
+msgid "Photo 1"
+msgstr "صورة 1"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_daily_task__photo_2
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_visit__photo_2
+msgid "Photo 2"
+msgstr "صورة 2"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_daily_task__photo_3
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_visit__photo_3
+msgid "Photo 3"
+msgstr "صورة 3"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_stock_check__photo_name
+msgid "Photo Name"
+msgstr "اسم الصورة"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_daily_task_form
+msgid "Photos"
+msgstr "الصور"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_visit_form
+msgid "Photos & Signature"
+msgstr "الصور والتوقيع"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_weekly_plan_line__plan_id
+msgid "Plan"
+msgstr "خطة"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.actions.act_window,name:ftiq_pharma_sfa.action_ftiq_plan_line_report
+#: model:ir.ui.menu,name:ftiq_pharma_sfa.menu_ftiq_plan_compliance_report
+msgid "Plan Compliance Report"
+msgstr "تقرير الالتزام بالخطة"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model,name:ftiq_pharma_sfa.model_ftiq_plan_wizard
+msgid "Plan Creation Wizard"
+msgstr "معالج الخطة"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_visit__plan_line_id
+msgid "Plan Line"
+msgstr "سطر الخطة"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_weekly_plan_form
+msgid "Plan Lines"
+msgstr "أسطر الخطة"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_plan_wizard__plan_name
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_plan_wizard_form
+msgid "Plan Name"
+msgstr "اسم الخطة"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_visit_search
+msgid "Planned"
+msgstr "مخطط"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_weekly_plan__planned_count
+msgid "Planned Count"
+msgstr "عدد المخطط"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.ui.menu,name:ftiq_pharma_sfa.menu_ftiq_planning
+msgid "Planning"
+msgstr "التخطيط"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.actions.act_window,name:ftiq_pharma_sfa.action_ftiq_plans_to_approve
+#: model:ir.ui.menu,name:ftiq_pharma_sfa.menu_ftiq_plans_to_approve
+msgid "Plans to Approve"
+msgstr "خطط للاعتماد"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model,name:ftiq_pharma_sfa.model_ftiq_prescriber_status
+msgid "Prescriber Status"
+msgstr "حالة الواصف"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.actions.act_window,name:ftiq_pharma_sfa.action_ftiq_prescriber_status
+#: model:ir.ui.menu,name:ftiq_pharma_sfa.menu_ftiq_config_prescriber_status
+msgid "Prescriber Statuses"
+msgstr "حالات الواصف"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_daily_task__priority
+msgid "Priority"
+msgstr "الأولوية"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_marketing_material__product_id
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_material_view_log__product_id
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_sales_target_line__product_id
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_stock_check_line__product_id
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_visit_product_line__product_id
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_marketing_material_search
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_visit_product_line_search
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.report_visit_template
+msgid "Product"
+msgstr "المنتج"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_sales_target__target_type__products
+msgid "Product Coverage"
+msgstr "تغطية المنتج"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.actions.act_window,name:ftiq_pharma_sfa.action_ftiq_visit_product_line_report
+#: model:ir.ui.menu,name:ftiq_pharma_sfa.menu_ftiq_product_line_report
+msgid "Product Detail Report"
+msgstr "تقرير تفاصيل المنتجات"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_visit_form
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.report_visit_template
+msgid "Product Details"
+msgstr "تفاصيل المنتجات"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_material_view_log__product_line_id
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_visit__product_line_ids
+msgid "Product Line"
+msgstr "سطر المنتج"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_sales_target__line_ids
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_sales_target_form
+msgid "Product Targets"
+msgstr "أهداف المنتجات"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_client_answer__question_id
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_client_question_option__question_id
+msgid "Question"
+msgstr "السؤال"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model,name:ftiq_pharma_sfa.model_ftiq_client_question_option
+msgid "Question Option"
+msgstr "خيار السؤال"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_client_question__question_type
+msgid "Question Type"
+msgstr "نوع السؤال"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_daily_task__rating_ids
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_field_attendance__rating_ids
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_sales_target__rating_ids
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_stock_check__rating_ids
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_visit__rating_ids
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_weekly_plan__rating_ids
+msgid "Ratings"
+msgstr "التقييمات"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_account_payment__ftiq_receipt_image
+msgid "Receipt Image"
+msgstr "صورة الإيصال"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_account_payment__ftiq_receipt_image_name
+msgid "Receipt Image Name"
+msgstr "اسم صورة الإيصال"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_daily_task__name
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_stock_check__name
+msgid "Reference"
+msgstr "المرجع"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_daily_task_form
+msgid "Related Records"
+msgstr "السجلات المرتبطة"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_account_bank_statement_line__ftiq_visit_id
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_account_move__ftiq_visit_id
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_account_payment__ftiq_visit_id
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_stock_check__visit_id
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_sale_order__ftiq_visit_id
+msgid "Related Visit"
+msgstr "الزيارة المرتبطة"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_daily_task__task_type__report
+msgid "Report"
+msgstr "تقرير"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.ui.menu,name:ftiq_pharma_sfa.menu_ftiq_reports
+msgid "Reports"
+msgstr "التقارير"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_daily_task__user_id
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_sales_target__user_id
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_stock_check__user_id
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_weekly_plan__user_id
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_weekly_plan_line__user_id
+#: model:res.groups,name:ftiq_pharma_sfa.group_ftiq_rep
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_daily_task_search
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_field_attendance_search
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_plan_wizard_form
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_sales_target_search
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_stock_check_search
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_visit_product_line_search
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_visit_search
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_weekly_plan_search
+msgid "Representative"
+msgstr "مندوب طبي"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_client_question__required
+msgid "Required"
+msgstr "مطلوب"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_daily_task_form
+msgid "Reset"
+msgstr "إعادة تعيين"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_sales_target_form
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_stock_check_form
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_visit_form
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_weekly_plan_form
+msgid "Reset to Draft"
+msgstr "إعادة إلى مسودة"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_daily_task__activity_user_id
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_sales_target__activity_user_id
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_stock_check__activity_user_id
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_visit__activity_user_id
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_weekly_plan__activity_user_id
+msgid "Responsible User"
+msgstr "المستخدم المسؤول"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_visit_form
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_weekly_plan_form
+msgid "Return"
+msgstr "إرجاع"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_visit__state__returned
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_weekly_plan__state__returned
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_visit_search
+msgid "Returned"
+msgstr "مرتجعة"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_stock_check__state__reviewed
+msgid "Reviewed"
+msgstr "تمت المراجعة"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_res_partner_form_inherit
+msgid "SFA - General"
+msgstr "SFA - عام"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_res_partner_form_inherit
+msgid "SFA - Location"
+msgstr "SFA - الموقع"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_res_partner_form_inherit
+msgid "SFA - Personal"
+msgstr "SFA - شخصي"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_res_partner_form_inherit
+msgid "SFA - Questionnaire"
+msgstr "SFA - الاستبيان"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_res_partner_form_inherit
+msgid "SFA - Visits"
+msgstr "SFA - الزيارات"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_daily_task__message_has_sms_error
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_field_attendance__message_has_sms_error
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_sales_target__message_has_sms_error
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_stock_check__message_has_sms_error
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_visit__message_has_sms_error
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_weekly_plan__message_has_sms_error
+msgid "SMS Delivery error"
+msgstr "خطأ في تسليم الرسالة القصيرة"
+
+#. module: ftiq_pharma_sfa
+#. odoo-python
+#: code:addons/ftiq_pharma_sfa/models/daily_task.py:0
+msgid "Sale Order"
+msgstr "أمر البيع"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_visit__sale_order_count
+msgid "Sale Order Count"
+msgstr "عدد أوامر البيع"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model,name:ftiq_pharma_sfa.model_sale_order
+msgid "Sales Order"
+msgstr "أمر البيع"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model,name:ftiq_pharma_sfa.model_ftiq_sales_target
+msgid "Sales Target"
+msgstr "هدف المبيعات"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model,name:ftiq_pharma_sfa.model_ftiq_sales_target_line
+msgid "Sales Target Line"
+msgstr "سطر هدف المبيعات"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.actions.act_window,name:ftiq_pharma_sfa.action_ftiq_sales_target
+#: model:ir.ui.menu,name:ftiq_pharma_sfa.menu_ftiq_sales_targets
+msgid "Sales Targets"
+msgstr "أهداف المبيعات"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_visit__outcome__sample_requested
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_visit_product_line__outcome__sample_requested
+msgid "Sample Requested"
+msgstr "طلب عينة"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.report_visit_template
+msgid "Samples"
+msgstr "العينات"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_visit_product_line__samples_distributed
+msgid "Samples Distributed"
+msgstr "العينات الموزعة"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_weekly_plan_line__day_of_week__5
+msgid "Saturday"
+msgstr "السبت"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_plan_wizard__schedule_date
+msgid "Schedule Date"
+msgstr "تاريخ الجدولة"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_daily_task__scheduled_date
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_weekly_plan_line__scheduled_date
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_daily_task_search
+msgid "Scheduled Date"
+msgstr "التاريخ المجدول"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_plan_wizard_form
+msgid "Select All"
+msgstr "تحديد الكل"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_client_question__question_type__selection
+msgid "Selection"
+msgstr "اختيار"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_call_reason__sequence
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_client_classification__sequence
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_client_question__sequence
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_client_question_option__sequence
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_marketing_material__sequence
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_stock_check_line__sequence
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_visit_product_line__sequence
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_weekly_plan_line__sequence
+msgid "Sequence"
+msgstr "التسلسل"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_stock_check__photo
+msgid "Shelf Photo"
+msgstr "صورة الرف"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_stock_check_line__shelf_position
+msgid "Shelf Position"
+msgstr "موقع الرف"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_visit_form
+msgid "Show on Map"
+msgstr "عرض على الخريطة"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model,name:ftiq_pharma_sfa.model_ftiq_speaker_level
+msgid "Speaker Level"
+msgstr "مستوى المتحدث"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.actions.act_window,name:ftiq_pharma_sfa.action_ftiq_speaker_level
+#: model:ir.ui.menu,name:ftiq_pharma_sfa.menu_ftiq_config_speaker_level
+msgid "Speaker Levels"
+msgstr "مستويات المتحدثين"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.actions.act_window,name:ftiq_pharma_sfa.action_ftiq_specialty
+#: model:ir.ui.menu,name:ftiq_pharma_sfa.menu_ftiq_config_specialties
+msgid "Specialties"
+msgstr "التخصصات"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_subspecialty__specialty_id
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_res_partner_search_inherit
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_visit_search
+msgid "Specialty"
+msgstr "التخصص"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_daily_task_form
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.report_visit_template
+msgid "Start"
+msgstr "بدء"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_visit__start_latitude
+msgid "Start Latitude"
+msgstr "خط عرض البداية"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_visit_form
+msgid "Start Location"
+msgstr "موقع البداية"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_visit__start_longitude
+msgid "Start Longitude"
+msgstr "خط طول البداية"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_material_view_log__start_time
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_visit__start_time
+msgid "Start Time"
+msgstr "وقت البداية"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_visit_form
+msgid "Start Visit"
+msgstr "بدء الزيارة"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_city__state_id
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_field_attendance__state
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_visit__state
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_weekly_plan__state
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_weekly_plan_line__state
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_field_attendance_search
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_visit_search
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_weekly_plan_search
+msgid "State"
+msgstr "الحالة"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_weekly_plan_form
+msgid "Statistics"
+msgstr "الإحصائيات"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_daily_task__state
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_sales_target__state
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_stock_check__state
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_daily_task_search
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_sales_target_search
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_stock_check_search
+msgid "Status"
+msgstr "الحالة"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,help:ftiq_pharma_sfa.field_ftiq_daily_task__activity_state
+#: model:ir.model.fields,help:ftiq_pharma_sfa.field_ftiq_sales_target__activity_state
+#: model:ir.model.fields,help:ftiq_pharma_sfa.field_ftiq_stock_check__activity_state
+#: model:ir.model.fields,help:ftiq_pharma_sfa.field_ftiq_visit__activity_state
+#: model:ir.model.fields,help:ftiq_pharma_sfa.field_ftiq_weekly_plan__activity_state
+msgid ""
+"Status based on activities\n"
+"Overdue: Due date is already passed\n"
+"Today: Activity date is today\n"
+"Planned: Future activities."
+msgstr ""
+"الحالة بناءً على الأنشطة\n"
+"متأخر: تجاوز تاريخ الاستحقاق\n"
+"اليوم: موعد النشاط اليوم\n"
+"مخطط: أنشطة مستقبلية."
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_plan_wizard__step
+msgid "Step"
+msgstr "الخطوة"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_daily_task_kanban
+msgid "Stock"
+msgstr "مخزون"
+
+#. module: ftiq_pharma_sfa
+#. odoo-python
+#: code:addons/ftiq_pharma_sfa/models/daily_task.py:0
+#: code:addons/ftiq_pharma_sfa/models/visit.py:0
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_stock_check_line__check_id
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_daily_task__task_type__stock
+msgid "Stock Check"
+msgstr "جرد مخزون"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_visit__stock_check_count
+msgid "Stock Check Count"
+msgstr "عدد الجرد"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model,name:ftiq_pharma_sfa.model_ftiq_stock_check_line
+msgid "Stock Check Line"
+msgstr "سطر جرد المخزون"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model,name:ftiq_pharma_sfa.model_ftiq_stock_check
+msgid "Stock Check at Client"
+msgstr "جرد المخزون عند العميل"
+
+#. module: ftiq_pharma_sfa
+#. odoo-python
+#: code:addons/ftiq_pharma_sfa/models/visit.py:0
+#: model:ir.actions.act_window,name:ftiq_pharma_sfa.action_ftiq_stock_check
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_visit__stock_check_ids
+#: model:ir.ui.menu,name:ftiq_pharma_sfa.menu_ftiq_stock_checks
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_visit_form
+msgid "Stock Checks"
+msgstr "جرد المخزون"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_stock_check__line_ids
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_stock_check_form
+msgid "Stock Lines"
+msgstr "أسطر المخزون"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_visit_product_line__stock_on_hand
+msgid "Stock On Hand"
+msgstr "المخزون المتاح"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_stock_check_line__stock_qty
+msgid "Stock Quantity"
+msgstr "كمية المخزون"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_daily_task_search
+msgid "Stock Tasks"
+msgstr "مهام الجرد"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.report_visit_template
+msgid "Stock on Hand"
+msgstr "المخزون المتاح"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_plan_wizard_form
+msgid "Subcategory"
+msgstr "الفئة الفرعية"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_stock_check_form
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_visit_form
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_weekly_plan_form
+msgid "Submit"
+msgstr "تقديم"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_stock_check__state__submitted
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_visit__state__submitted
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_weekly_plan__state__submitted
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_visit_search
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_weekly_plan_search
+msgid "Submitted"
+msgstr "مقدمة"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_specialty_form
+msgid "Subspecialties"
+msgstr "التخصصات الفرعية"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_specialty__subspecialty_ids
+msgid "Subspecialty"
+msgstr "التخصص الفرعي"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_weekly_plan_line__day_of_week__6
+msgid "Sunday"
+msgstr "الأحد"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_daily_task__supervisor_id
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_sales_target__supervisor_id
+#: model:res.groups,name:ftiq_pharma_sfa.group_ftiq_supervisor
+msgid "Supervisor"
+msgstr "المشرف"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_daily_task__tag_ids
+msgid "Tags"
+msgstr "الوسوم"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_sales_target_line__target_id
+msgid "Target"
+msgstr "الهدف"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_sales_target_line__target_amount
+msgid "Target Amount"
+msgstr "المبلغ المستهدف"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_sales_target_line__target_qty
+msgid "Target Qty"
+msgstr "الكمية المستهدفة"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_sales_target__target_type
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_sales_target_search
+msgid "Target Type"
+msgstr "نوع الهدف"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_sales_target__target_value
+msgid "Target Value"
+msgstr "القيمة المستهدفة"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_sales_target_kanban
+msgid "Target:"
+msgstr "الهدف:"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model,name:ftiq_pharma_sfa.model_ftiq_task_type
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_daily_task__task_type
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_plan_wizard__task_type_id
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_weekly_plan__task_type_id
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_daily_task_search
+msgid "Task Type"
+msgstr "نوع المهمة"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.actions.act_window,name:ftiq_pharma_sfa.action_ftiq_task_type
+#: model:ir.ui.menu,name:ftiq_pharma_sfa.menu_ftiq_config_task_types
+msgid "Task Types"
+msgstr "أنواع المهام"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_daily_task_form
+msgid "Task description..."
+msgstr "وصف المهمة..."
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_daily_task_form
+msgid "Task outcome / result..."
+msgstr "نتيجة المهمة..."
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_client_question__question_type__text
+msgid "Text"
+msgstr "نص"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_client_answer__text_value
+msgid "Text Value"
+msgstr "قيمة نصية"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_visit_search
+msgid "This Month"
+msgstr "هذا الشهر"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_daily_task_search
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_field_attendance_search
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_visit_search
+msgid "This Week"
+msgstr "هذا الأسبوع"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_weekly_plan_line__day_of_week__3
+msgid "Thursday"
+msgstr "الخميس"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_daily_task_search
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_field_attendance_search
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_stock_check_search
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_visit_search
+msgid "Today"
+msgstr "اليوم"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_material_view_log_list
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_stock_check_list
+msgid "Total"
+msgstr "الإجمالي"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_stock_check__total_items
+msgid "Total Items"
+msgstr "إجمالي الأصناف"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_visit_product_line_list
+msgid "Total Samples"
+msgstr "إجمالي العينات"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_stock_check__total_qty
+msgid "Total Stock Qty"
+msgstr "إجمالي الكمية"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__hr_expense__ftiq_expense_type__transport
+msgid "Transportation"
+msgstr "نقل"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_weekly_plan_line__day_of_week__1
+msgid "Tuesday"
+msgstr "الثلاثاء"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_plan_wizard__step__type
+msgid "Type"
+msgstr "النوع"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,help:ftiq_pharma_sfa.field_ftiq_daily_task__activity_exception_decoration
+#: model:ir.model.fields,help:ftiq_pharma_sfa.field_ftiq_sales_target__activity_exception_decoration
+#: model:ir.model.fields,help:ftiq_pharma_sfa.field_ftiq_stock_check__activity_exception_decoration
+#: model:ir.model.fields,help:ftiq_pharma_sfa.field_ftiq_visit__activity_exception_decoration
+#: model:ir.model.fields,help:ftiq_pharma_sfa.field_ftiq_weekly_plan__activity_exception_decoration
+msgid "Type of the exception activity on record."
+msgstr "نوع نشاط الاستثناء في السجل."
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_visit_search
+msgid "Unplanned"
+msgstr "غير مخططة"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_visit__unplanned_reason
+msgid "Unplanned Reason"
+msgstr "سبب عدم التخطيط"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_daily_task__priority__2
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__sale_order__ftiq_priority__1
+msgid "Urgent"
+msgstr "عاجل"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model,name:ftiq_pharma_sfa.model_res_users
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_field_attendance__user_id
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_material_view_log__user_id
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_plan_wizard__user_id
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_visit__user_id
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_visit_product_line__user_id
+msgid "User"
+msgstr "المستخدم"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__account_payment__ftiq_collection_state__verified
+msgid "Verified"
+msgstr "موثّق"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__sale_order__ftiq_priority__2
+msgid "Very Urgent"
+msgstr "عاجل جداً"
+
+#. module: ftiq_pharma_sfa
+#. odoo-python
+#: code:addons/ftiq_pharma_sfa/models/daily_task.py:0
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_field_attendance__visit_ids
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_material_view_log__visit_id
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_visit_product_line__visit_id
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_weekly_plan_line__visit_id
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_daily_task__task_type__visit
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_daily_task_kanban
+msgid "Visit"
+msgstr "زيارة"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.ui.menu,name:ftiq_pharma_sfa.menu_ftiq_visit_report
+msgid "Visit Analysis"
+msgstr "تحليل الزيارات"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_field_attendance__visit_count
+msgid "Visit Count"
+msgstr "عدد الزيارات"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_visit__visit_date
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_visit_product_line__visit_date
+msgid "Visit Date"
+msgstr "تاريخ الزيارة"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model,name:ftiq_pharma_sfa.model_ftiq_visit_product_line
+msgid "Visit Product Line"
+msgstr "سطر منتج الزيارة"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.actions.report,name:ftiq_pharma_sfa.action_report_ftiq_visit
+msgid "Visit Report"
+msgstr "تقرير الزيارة"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.report_visit_template
+msgid "Visit Report:"
+msgstr "تقرير الزيارة:"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_daily_task_search
+msgid "Visit Tasks"
+msgstr "مهام الزيارة"
+
+#. module: ftiq_pharma_sfa
+#. odoo-python
+#: code:addons/ftiq_pharma_sfa/models/visit.py:0
+msgid "Visit can only be started from draft state."
+msgstr "يمكن بدء الزيارة من حالة المسودة فقط."
+
+#. module: ftiq_pharma_sfa
+#. odoo-python
+#: code:addons/ftiq_pharma_sfa/models/visit.py:0
+msgid "Visit must be in progress to end it."
+msgstr "يجب أن تكون الزيارة قيد التنفيذ لإنهائها."
+
+#. module: ftiq_pharma_sfa
+#. odoo-python
+#: code:addons/ftiq_pharma_sfa/models/field_attendance.py:0
+#: code:addons/ftiq_pharma_sfa/models/res_partner.py:0
+#: model:ir.actions.act_window,name:ftiq_pharma_sfa.action_ftiq_visit
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_field_attendance_form
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_res_partner_form_inherit
+msgid "Visits"
+msgstr "الزيارات"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_sales_target__target_type__visits
+msgid "Visits Count"
+msgstr "عدد الزيارات"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.actions.act_window,name:ftiq_pharma_sfa.action_ftiq_visits_to_approve
+#: model:ir.ui.menu,name:ftiq_pharma_sfa.menu_ftiq_visits_to_approve
+msgid "Visits to Approve"
+msgstr "الزيارات المعلقة"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_daily_task__website_message_ids
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_field_attendance__website_message_ids
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_sales_target__website_message_ids
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_stock_check__website_message_ids
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_visit__website_message_ids
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_weekly_plan__website_message_ids
+msgid "Website Messages"
+msgstr "رسائل الموقع"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,help:ftiq_pharma_sfa.field_ftiq_daily_task__website_message_ids
+#: model:ir.model.fields,help:ftiq_pharma_sfa.field_ftiq_field_attendance__website_message_ids
+#: model:ir.model.fields,help:ftiq_pharma_sfa.field_ftiq_sales_target__website_message_ids
+#: model:ir.model.fields,help:ftiq_pharma_sfa.field_ftiq_stock_check__website_message_ids
+#: model:ir.model.fields,help:ftiq_pharma_sfa.field_ftiq_visit__website_message_ids
+#: model:ir.model.fields,help:ftiq_pharma_sfa.field_ftiq_weekly_plan__website_message_ids
+msgid "Website communication history"
+msgstr "سجل اتصالات الموقع"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_weekly_plan_line__day_of_week__2
+msgid "Wednesday"
+msgstr "الأربعاء"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_weekly_plan_search
+msgid "Week"
+msgstr "الأسبوع"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_weekly_plan__week_end
+msgid "Week End"
+msgstr "نهاية الأسبوع"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_weekly_plan__week_start
+msgid "Week Start"
+msgstr "بداية الأسبوع"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model,name:ftiq_pharma_sfa.model_ftiq_weekly_plan_line
+msgid "Weekly Plan Line"
+msgstr "سطر الخطة الأسبوعية"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.actions.act_window,name:ftiq_pharma_sfa.action_ftiq_weekly_plan
+#: model:ir.ui.menu,name:ftiq_pharma_sfa.menu_ftiq_weekly_plans
+msgid "Weekly Plans"
+msgstr "الخطط الأسبوعية"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model,name:ftiq_pharma_sfa.model_ftiq_weekly_plan
+msgid "Weekly Visit Plan"
+msgstr "خطة الزيارات الأسبوعية"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_field_attendance__working_hours
+msgid "Working Hours"
+msgstr "ساعات العمل"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model,name:ftiq_pharma_sfa.model_ftiq_workplace_type
+msgid "Workplace Type"
+msgstr "نوع مكان العمل"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.actions.act_window,name:ftiq_pharma_sfa.action_ftiq_workplace_type
+#: model:ir.ui.menu,name:ftiq_pharma_sfa.menu_ftiq_config_workplace_type
+msgid "Workplace Types"
+msgstr "أنواع أماكن العمل"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_plan_wizard__filter_has_cashed__yes
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_plan_wizard__filter_has_tasks__yes
+msgid "Yes"
+msgstr "نعم"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_client_question__question_type__boolean
+msgid "Yes / No"
+msgstr "نعم / لا"
+
+#. module: ftiq_pharma_sfa
+#. odoo-python
+#: code:addons/ftiq_pharma_sfa/models/field_attendance.py:0
+msgid "You must check in first."
+msgstr "يجب تسجيل الحضور أولاً."
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_weekly_plan_kanban
+msgid "done"
+msgstr "منجز"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_stock_check_kanban
+msgid "items"
+msgstr "أصناف"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_weekly_plan_kanban
+msgid "missed"
+msgstr "فائت"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_weekly_plan_kanban
+msgid "planned"
+msgstr "مخطط"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_stock_check_kanban
+msgid "qty"
+msgstr "كمية"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_field_attendance_kanban
+msgid "visits"
+msgstr "زيارات"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_sales_target_kanban
+msgid "| Achieved:"
+msgstr "| المحقق:"

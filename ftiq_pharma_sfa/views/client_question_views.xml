@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="ftiq_client_question_list" model="ir.ui.view">
+        <field name="name">ftiq.client.question.list</field>
+        <field name="model">ftiq.client.question</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="question_type"/>
+                <field name="applies_to"/>
+                <field name="required"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="ftiq_client_question_form" model="ir.ui.view">
+        <field name="name">ftiq.client.question.form</field>
+        <field name="model">ftiq.client.question</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="question_type"/>
+                            <field name="applies_to"/>
+                        </group>
+                        <group>
+                            <field name="required"/>
+                            <field name="sequence"/>
+                            <field name="active" invisible="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Options" invisible="question_type != 'selection'">
+                            <field name="option_ids">
+                                <list editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="name"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_ftiq_client_question" model="ir.actions.act_window">
+        <field name="name">Client Questions</field>
+        <field name="res_model">ftiq.client.question</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+</odoo>

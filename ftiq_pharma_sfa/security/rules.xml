@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="ftiq_attendance_rule_rep" model="ir.rule">
+        <field name="name">Attendance: Rep sees own</field>
+        <field name="model_id" ref="model_ftiq_field_attendance"/>
+        <field name="domain_force">[('user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_rep'))]"/>
+    </record>
+
+    <record id="ftiq_attendance_rule_supervisor" model="ir.rule">
+        <field name="name">Attendance: Supervisor sees team</field>
+        <field name="model_id" ref="model_ftiq_field_attendance"/>
+        <field name="domain_force">['|', ('user_id', '=', user.id), ('user_id.ftiq_supervisor_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_supervisor'))]"/>
+    </record>
+
+    <record id="ftiq_attendance_rule_manager" model="ir.rule">
+        <field name="name">Attendance: Manager sees all</field>
+        <field name="model_id" ref="model_ftiq_field_attendance"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_manager'))]"/>
+    </record>
+
+    <record id="ftiq_visit_rule_rep" model="ir.rule">
+        <field name="name">Visit: Rep sees own</field>
+        <field name="model_id" ref="model_ftiq_visit"/>
+        <field name="domain_force">[('user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_rep'))]"/>
+    </record>
+
+    <record id="ftiq_visit_rule_supervisor" model="ir.rule">
+        <field name="name">Visit: Supervisor sees team</field>
+        <field name="model_id" ref="model_ftiq_visit"/>
+        <field name="domain_force">['|', ('user_id', '=', user.id), ('user_id.ftiq_supervisor_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_supervisor'))]"/>
+    </record>
+
+    <record id="ftiq_visit_rule_manager" model="ir.rule">
+        <field name="name">Visit: Manager sees all</field>
+        <field name="model_id" ref="model_ftiq_visit"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_manager'))]"/>
+    </record>
+
+    <record id="ftiq_plan_rule_rep" model="ir.rule">
+        <field name="name">Plan: Rep sees own</field>
+        <field name="model_id" ref="model_ftiq_weekly_plan"/>
+        <field name="domain_force">[('user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_rep'))]"/>
+    </record>
+
+    <record id="ftiq_plan_rule_supervisor" model="ir.rule">
+        <field name="name">Plan: Supervisor sees team</field>
+        <field name="model_id" ref="model_ftiq_weekly_plan"/>
+        <field name="domain_force">['|', ('user_id', '=', user.id), ('user_id.ftiq_supervisor_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_supervisor'))]"/>
+    </record>
+
+    <record id="ftiq_plan_rule_manager" model="ir.rule">
+        <field name="name">Plan: Manager sees all</field>
+        <field name="model_id" ref="model_ftiq_weekly_plan"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_manager'))]"/>
+    </record>
+
+    <record id="ftiq_stock_check_rule_rep" model="ir.rule">
+        <field name="name">Stock Check: Rep sees own</field>
+        <field name="model_id" ref="model_ftiq_stock_check"/>
+        <field name="domain_force">[('user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_rep'))]"/>
+    </record>
+    <record id="ftiq_stock_check_rule_supervisor" model="ir.rule">
+        <field name="name">Stock Check: Supervisor sees team</field>
+        <field name="model_id" ref="model_ftiq_stock_check"/>
+        <field name="domain_force">['|', ('user_id', '=', user.id), ('user_id.ftiq_supervisor_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_supervisor'))]"/>
+    </record>
+    <record id="ftiq_stock_check_rule_manager" model="ir.rule">
+        <field name="name">Stock Check: Manager sees all</field>
+        <field name="model_id" ref="model_ftiq_stock_check"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_manager'))]"/>
+    </record>
+
+    <record id="ftiq_target_rule_rep" model="ir.rule">
+        <field name="name">Target: Rep sees own</field>
+        <field name="model_id" ref="model_ftiq_sales_target"/>
+        <field name="domain_force">[('user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_rep'))]"/>
+    </record>
+    <record id="ftiq_target_rule_supervisor" model="ir.rule">
+        <field name="name">Target: Supervisor sees team</field>
+        <field name="model_id" ref="model_ftiq_sales_target"/>
+        <field name="domain_force">['|', ('user_id', '=', user.id), ('user_id.ftiq_supervisor_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_supervisor'))]"/>
+    </record>
+    <record id="ftiq_target_rule_manager" model="ir.rule">
+        <field name="name">Target: Manager sees all</field>
+        <field name="model_id" ref="model_ftiq_sales_target"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_manager'))]"/>
+    </record>
+
+    <record id="ftiq_task_rule_rep" model="ir.rule">
+        <field name="name">Task: Rep sees own</field>
+        <field name="model_id" ref="model_ftiq_daily_task"/>
+        <field name="domain_force">[('user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_rep'))]"/>
+    </record>
+    <record id="ftiq_task_rule_supervisor" model="ir.rule">
+        <field name="name">Task: Supervisor sees team</field>
+        <field name="model_id" ref="model_ftiq_daily_task"/>
+        <field name="domain_force">['|', ('user_id', '=', user.id), ('user_id.ftiq_supervisor_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_supervisor'))]"/>
+    </record>
+    <record id="ftiq_task_rule_manager" model="ir.rule">
+        <field name="name">Task: Manager sees all</field>
+        <field name="model_id" ref="model_ftiq_daily_task"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_manager'))]"/>
+    </record>
+
+</odoo>

@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="ftiq_res_partner_form_inherit" model="ir.ui.view">
+        <field name="name">res.partner.ftiq.form.inherit</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_open_ftiq_visits" type="object"
+                        class="oe_stat_button" icon="fa-stethoscope"
+                        invisible="not is_ftiq_doctor and not is_ftiq_center and not is_ftiq_pharmacy">
+                    <field name="ftiq_total_visits" widget="statinfo" string="Visits"/>
+                </button>
+                <button name="action_open_ftiq_orders" type="object"
+                        class="oe_stat_button" icon="fa-shopping-cart"
+                        invisible="not is_ftiq_doctor and not is_ftiq_center and not is_ftiq_pharmacy">
+                    <field name="ftiq_order_count" widget="statinfo" string="Orders"/>
+                </button>
+                <button name="action_open_ftiq_collections" type="object"
+                        class="oe_stat_button" icon="fa-money"
+                        invisible="not is_ftiq_doctor and not is_ftiq_center and not is_ftiq_pharmacy">
+                    <field name="ftiq_collection_count" widget="statinfo" string="Collections"/>
+                </button>
+                <button name="action_open_ftiq_invoices" type="object"
+                        class="oe_stat_button" icon="fa-file-text-o"
+                        invisible="not is_ftiq_doctor and not is_ftiq_center and not is_ftiq_pharmacy">
+                    <field name="ftiq_invoice_count" widget="statinfo" string="Invoices"/>
+                </button>
+                <button name="action_open_whatsapp" type="object"
+                        class="oe_stat_button" icon="fa-whatsapp"
+                        invisible="not phone and not mobile">
+                    <span>WhatsApp</span>
+                </button>
+            </xpath>
+            <xpath expr="//group[@name='sale']" position="before">
+                <group string="Pharma SFA" name="ftiq_sfa">
+                    <group>
+                        <field name="is_ftiq_doctor"/>
+                        <field name="is_ftiq_center"/>
+                        <field name="is_ftiq_pharmacy"/>
+                    </group>
+                </group>
+            </xpath>
+            <xpath expr="//notebook" position="inside">
+                <page string="SFA - General" invisible="not is_ftiq_doctor and not is_ftiq_center">
+                    <group>
+                        <group>
+                            <field name="ftiq_specialty_id"/>
+                            <field name="ftiq_subspecialty_id" domain="[('specialty_id', '=', ftiq_specialty_id)]"/>
+                            <field name="ftiq_classification_id"/>
+                            <field name="ftiq_prescriber_status_id"/>
+                            <field name="ftiq_official_type_id"/>
+                        </group>
+                        <group>
+                            <field name="ftiq_speaker_level_id"/>
+                            <field name="ftiq_leadership_level_id"/>
+                            <field name="ftiq_workplace_type_id"/>
+                            <field name="ftiq_debt_classification_id"/>
+                            <field name="ftiq_color_code_id"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="ftiq_general_note" placeholder="General notes..."/>
+                    </group>
+                </page>
+                <page string="SFA - Personal" invisible="not is_ftiq_doctor and not is_ftiq_center">
+                    <group>
+                        <group>
+                            <field name="ftiq_nickname"/>
+                            <field name="ftiq_birthday"/>
+                        </group>
+                        <group>
+                            <field name="ftiq_spouse_name"/>
+                            <field name="ftiq_spouse_birthday"/>
+                        </group>
+                    </group>
+                    <group string="Children">
+                        <group>
+                            <field name="ftiq_kid1_name"/>
+                            <field name="ftiq_kid1_birthday"/>
+                        </group>
+                        <group>
+                            <field name="ftiq_kid2_name"/>
+                            <field name="ftiq_kid2_birthday"/>
+                        </group>
+                        <group>
+                            <field name="ftiq_kid3_name"/>
+                            <field name="ftiq_kid3_birthday"/>
+                        </group>
+                    </group>
+                </page>
+                <page string="SFA - Location" invisible="not is_ftiq_doctor and not is_ftiq_center">
+                    <group>
+                        <group>
+                            <field name="ftiq_city_id"/>
+                            <field name="ftiq_area_id" domain="[('city_id', '=', ftiq_city_id)]"/>
+                        </group>
+                        <group>
+                            <field name="ftiq_geo_confirmed"/>
+                            <field name="ftiq_app_verified"/>
+                            <field name="ftiq_license_attached"/>
+                        </group>
+                    </group>
+                </page>
+                <page string="SFA - Questionnaire" invisible="not is_ftiq_doctor and not is_ftiq_center">
+                    <field name="ftiq_answer_ids">
+                        <list editable="bottom">
+                            <field name="question_id"/>
+                            <field name="option_id" domain="[('question_id', '=', question_id)]"/>
+                            <field name="text_value"/>
+                            <field name="integer_value"/>
+                            <field name="float_value"/>
+                            <field name="boolean_value"/>
+                            <field name="note"/>
+                        </list>
+                    </field>
+                </page>
+                <page string="SFA - Visits" invisible="not is_ftiq_doctor and not is_ftiq_center">
+                    <field name="ftiq_visit_ids" readonly="1">
+                        <list>
+                            <field name="name"/>
+                            <field name="visit_date"/>
+                            <field name="user_id"/>
+                            <field name="outcome"/>
+                            <field name="state"/>
+                        </list>
+                    </field>
+                    <group>
+                        <field name="ftiq_last_visit_date"/>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="ftiq_res_partner_list_inherit" model="ir.ui.view">
+        <field name="name">res.partner.ftiq.list.inherit</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='email']" position="after">
+                <field name="ftiq_specialty_id" optional="hide"/>
+                <field name="ftiq_classification_id" optional="hide"/>
+                <field name="ftiq_area_id" optional="hide"/>
+                <field name="ftiq_total_visits" optional="hide"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="ftiq_res_partner_search_inherit" model="ir.ui.view">
+        <field name="name">res.partner.ftiq.search.inherit</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_res_partner_filter"/>
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='type_company']" position="after">
+                <separator/>
+                <filter name="is_doctor" string="Doctors" domain="[('is_ftiq_doctor', '=', True)]"/>
+                <filter name="is_center" string="Centers" domain="[('is_ftiq_center', '=', True)]"/>
+                <filter name="is_pharmacy" string="Pharmacies" domain="[('is_ftiq_pharmacy', '=', True)]"/>
+            </xpath>
+            <xpath expr="//group" position="inside">
+                <filter name="group_specialty" string="Specialty" context="{'group_by': 'ftiq_specialty_id'}"/>
+                <filter name="group_classification" string="Classification" context="{'group_by': 'ftiq_classification_id'}"/>
+                <filter name="group_area" string="Area" context="{'group_by': 'ftiq_area_id'}"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="action_ftiq_doctors" model="ir.actions.act_window">
+        <field name="name">Doctors</field>
+        <field name="res_model">res.partner</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('is_ftiq_doctor', '=', True)]</field>
+        <field name="context">{'default_is_ftiq_doctor': True}</field>
+    </record>
+
+    <record id="action_ftiq_centers" model="ir.actions.act_window">
+        <field name="name">Centers</field>
+        <field name="res_model">res.partner</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('is_ftiq_center', '=', True)]</field>
+        <field name="context">{'default_is_ftiq_center': True}</field>
+    </record>
+
+    <record id="action_ftiq_pharmacies" model="ir.actions.act_window">
+        <field name="name">Pharmacies</field>
+        <field name="res_model">res.partner</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('is_ftiq_pharmacy', '=', True)]</field>
+        <field name="context">{'default_is_ftiq_pharmacy': True}</field>
+    </record>
+
+</odoo>
