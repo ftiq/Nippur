@@ -30,6 +30,7 @@ class FtiqPlanWizard(models.TransientModel):
     apply_to_all = fields.Boolean(default=False)
 
     filter_name = fields.Char()
+    filter_client_code = fields.Char()
     filter_partner_id = fields.Many2one('res.partner')
     filter_country_id = fields.Many2one('res.country', default=lambda self: self.env.company.country_id)
     filter_city_id = fields.Many2one('ftiq.city')
@@ -62,6 +63,11 @@ class FtiqPlanWizard(models.TransientModel):
     candidate_partner_count = fields.Integer(readonly=True)
     client_review_name = fields.Char(default='')
     partner_ids = fields.Many2many('res.partner', 'ftiq_plan_wizard_partner_rel', 'wizard_id', 'partner_id')
+    task_generation_policy = fields.Selection([
+        ('create', 'On Plan Creation'),
+        ('approve', 'On Approval'),
+        ('manual', 'Manual Sync'),
+    ], default='approve', required=True)
 
     @api.model
     def default_get(self, fields_list):
@@ -141,118 +147,20 @@ class FtiqPlanWizard(models.TransientModel):
                 wizard.filter_subspecialty_id = False
 
     def _get_client_base_domain(self):
-        return [
-            '|', '|', '|',
-            ('is_ftiq_doctor', '=', True),
-            ('is_ftiq_center', '=', True),
-            ('is_ftiq_pharmacy', '=', True),
-            ('ftiq_client_category_id', '!=', False),
-        ]
+        return self.env['ftiq.plan.candidate.service'].get_client_base_domain()
 
     def _build_partner_domain(self):
-        domain = list(self._get_client_base_domain())
-        if self.filter_partner_id:
-            domain.append(('id', '=', self.filter_partner_id.id))
-        if self.filter_name:
-            domain.append(('name', 'ilike', self.filter_name))
-        if self.filter_country_id:
-            domain.append(('country_id', '=', self.filter_country_id.id))
-        if self.filter_city_id:
-            domain.append(('ftiq_city_id', '=', self.filter_city_id.id))
-        if self.filter_area_id:
-            domain.append(('ftiq_area_id', '=', self.filter_area_id.id))
-        if self.filter_address:
-            domain.append(('street', 'ilike', self.filter_address))
-        if self.filter_client_category_id:
-            domain.append(('ftiq_client_category_id', '=', self.filter_client_category_id.id))
-        if self.filter_specialty_id:
-            domain.append(('ftiq_specialty_id', '=', self.filter_specialty_id.id))
-        if self.filter_subspecialty_id:
-            domain.append(('ftiq_subspecialty_id', '=', self.filter_subspecialty_id.id))
-        if self.filter_classification_id:
-            domain.append(('ftiq_classification_id', '=', self.filter_classification_id.id))
-        if self.filter_geo_confirmed:
-            domain.append(('ftiq_geo_confirmed', '=', True))
-        if self.filter_app_verified:
-            domain.append(('ftiq_app_verified', '=', True))
-        if self.filter_license_attached:
-            domain.append(('ftiq_license_attached', '=', True))
-        return domain
+        return self.env['ftiq.plan.candidate.service'].build_filter_domain(self)
 
     def _build_geo_partner_domain(self, polygon_points=None):
-        domain = list(self._get_client_base_domain())
-        domain.extend([
-            ('partner_latitude', '!=', False),
-            ('partner_longitude', '!=', False),
-        ])
-        if polygon_points:
-            longitudes = [point[0] for point in polygon_points]
-            latitudes = [point[1] for point in polygon_points]
-            domain.extend([
-                ('partner_longitude', '>=', min(longitudes)),
-                ('partner_longitude', '<=', max(longitudes)),
-                ('partner_latitude', '>=', min(latitudes)),
-                ('partner_latitude', '<=', max(latitudes)),
-            ])
-        return domain
+        return self.env['ftiq.plan.candidate.service'].build_geo_domain(polygon_points)
 
     def _post_filter_partners(self, partners):
-        if self.filter_has_cashed == 'yes':
-            has_payment = self.env['account.payment'].sudo().search([
-                ('is_field_collection', '=', True),
-                ('partner_id', 'in', partners.ids),
-                ('state', 'in', ('in_process', 'paid')),
-            ]).mapped('partner_id')
-            partners = partners & has_payment
-        elif self.filter_has_cashed == 'no':
-            has_payment = self.env['account.payment'].sudo().search([
-                ('is_field_collection', '=', True),
-                ('partner_id', 'in', partners.ids),
-                ('state', 'in', ('in_process', 'paid')),
-            ]).mapped('partner_id')
-            partners = partners - has_payment
-        if self.filter_has_tasks == 'yes':
-            has_task = self.env['ftiq.daily.task'].sudo().search([
-                ('partner_id', 'in', partners.ids),
-                ('state', '!=', 'cancelled'),
-            ]).mapped('partner_id')
-            partners = partners & has_task
-        elif self.filter_has_tasks == 'no':
-            has_task = self.env['ftiq.daily.task'].sudo().search([
-                ('partner_id', 'in', partners.ids),
-                ('state', '!=', 'cancelled'),
-            ]).mapped('partner_id')
-            partners = partners - has_task
-        return partners
+        return self.env['ftiq.plan.candidate.service'].post_filter_partners(self, partners)
 
     def _normalize_geo_polygon(self):
         self.ensure_one()
-        if not self.geo_polygon:
-            return []
-        try:
-            raw_polygon = json.loads(self.geo_polygon)
-        except (TypeError, ValueError):
-            return []
-        points = []
-        if isinstance(raw_polygon, dict):
-            coordinates = raw_polygon.get('coordinates') or []
-            if raw_polygon.get('type') == 'Polygon' and coordinates:
-                points = coordinates[0]
-        elif isinstance(raw_polygon, list):
-            points = raw_polygon
-        normalized_points = []
-        for point in points:
-            if not isinstance(point, (list, tuple)) or len(point) < 2:
-                continue
-            try:
-                longitude = float(point[0])
-                latitude = float(point[1])
-            except (TypeError, ValueError):
-                continue
-            normalized_points.append((longitude, latitude))
-        if len(normalized_points) > 1 and normalized_points[0] == normalized_points[-1]:
-            normalized_points = normalized_points[:-1]
-        return normalized_points if len(normalized_points) >= 3 else []
+        return self.env['ftiq.plan.candidate.service'].normalize_geo_polygon(self.geo_polygon)
 
     @staticmethod
     def _point_in_polygon(longitude, latitude, polygon_points):
@@ -273,35 +181,17 @@ class FtiqPlanWizard(models.TransientModel):
 
     def _get_filtered_partners(self):
         self.ensure_one()
-        partners = self.env['res.partner'].search(self._build_partner_domain(), order='name')
-        return self._post_filter_partners(partners)
+        return self.env['ftiq.plan.candidate.service'].get_filtered_partners(self)
 
     def _get_geo_partners(self):
         self.ensure_one()
-        polygon_points = self._normalize_geo_polygon()
-        if not polygon_points:
-            raise ValidationError(_('Draw an area on the map before continuing.'))
-        candidate_partners = self.env['res.partner'].search(
-            self._build_geo_partner_domain(polygon_points),
-            order='name',
-        )
-        partners_in_polygon = candidate_partners.filtered(
-            lambda partner: self._point_in_polygon(
-                partner.partner_longitude,
-                partner.partner_latitude,
-                polygon_points,
-            )
-        )
-        if not partners_in_polygon:
-            raise ValidationError(_('No clients were found inside the selected area.'))
-        self.geo_client_count = len(partners_in_polygon)
-        return partners_in_polygon
+        partners = self.env['ftiq.plan.candidate.service'].get_geo_partners(self)
+        self.geo_client_count = len(partners)
+        return partners
 
     def _get_matching_partners(self):
         self.ensure_one()
-        if self.selection_mode == 'geo':
-            return self._get_geo_partners()
-        return self._get_filtered_partners()
+        return self.env['ftiq.plan.candidate.service'].get_matching_partners(self)
 
     def _set_candidate_partners(self, partners):
         self.ensure_one()
@@ -324,30 +214,7 @@ class FtiqPlanWizard(models.TransientModel):
 
     @api.model
     def get_geo_partner_markers(self):
-        partners = self.env['res.partner'].search(self._build_geo_partner_domain(), order='name')
-        markers = []
-        for partner in partners:
-            address_parts = [
-                partner.street,
-                partner.ftiq_area_id.name,
-                partner.ftiq_city_id.name,
-                partner.country_id.name,
-            ]
-            markers.append({
-                'id': partner.id,
-                'name': partner.name,
-                'latitude': partner.partner_latitude,
-                'longitude': partner.partner_longitude,
-                'client_type': self._get_partner_client_type(partner),
-                'category': partner.ftiq_client_category_id.name or '',
-                'specialty': partner.ftiq_specialty_id.name or '',
-                'classification': partner.ftiq_classification_id.name or '',
-                'address': ', '.join(part for part in address_parts if part),
-                'area': partner.ftiq_area_id.name or '',
-                'city': partner.ftiq_city_id.name or partner.city or '',
-                'geo_confirmed': bool(partner.ftiq_geo_confirmed),
-            })
-        return markers
+        return self.env['ftiq.plan.candidate.service'].get_geo_partner_markers()
 
     def action_next(self):
         self.ensure_one()

@@ -1,5 +1,5 @@
 from odoo import _, api, fields, models
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, ValidationError
 
 
 class FtiqVisit(models.Model):
@@ -64,7 +64,13 @@ class FtiqVisit(models.Model):
 
     sale_order_count = fields.Integer(compute='_compute_related_counts')
     payment_count = fields.Integer(compute='_compute_related_counts')
+    invoice_count = fields.Integer(compute='_compute_related_counts')
     stock_check_count = fields.Integer(compute='_compute_related_counts')
+    detail_line_count = fields.Integer(compute='_compute_execution_metrics', store=True)
+    material_log_count = fields.Integer(compute='_compute_execution_metrics', store=True)
+    total_samples_distributed = fields.Integer(compute='_compute_execution_metrics', store=True)
+    total_material_minutes = fields.Float(compute='_compute_execution_metrics', store=True)
+    has_linked_operations = fields.Boolean(compute='_compute_execution_metrics', store=True)
 
     @api.depends('plan_line_id.team_id', 'user_id.sale_team_id')
     def _compute_team_id(self):
@@ -74,6 +80,7 @@ class FtiqVisit(models.Model):
     def _compute_related_counts(self):
         sale_order_obj = self.env['sale.order'].sudo()
         payment_obj = self.env['account.payment'].sudo()
+        invoice_obj = self.env['account.move'].sudo()
         stock_check_obj = self.env['ftiq.stock.check'].sudo()
         for rec in self:
             rec.sale_order_count = sale_order_obj.search_count([
@@ -82,9 +89,36 @@ class FtiqVisit(models.Model):
             rec.payment_count = payment_obj.search_count([
                 ('ftiq_visit_id', '=', rec.id),
             ])
+            rec.invoice_count = invoice_obj.search_count([
+                ('ftiq_visit_id', '=', rec.id),
+                ('move_type', '=', 'out_invoice'),
+            ])
             rec.stock_check_count = stock_check_obj.search_count([
                 ('visit_id', '=', rec.id),
             ])
+
+    @api.depends(
+        'product_line_ids',
+        'product_line_ids.samples_distributed',
+        'material_view_log_ids',
+        'material_view_log_ids.duration',
+        'sale_order_ids',
+        'payment_ids',
+        'invoice_ids',
+        'stock_check_ids',
+    )
+    def _compute_execution_metrics(self):
+        for rec in self:
+            rec.detail_line_count = len(rec.product_line_ids)
+            rec.material_log_count = len(rec.material_view_log_ids)
+            rec.total_samples_distributed = sum(rec.product_line_ids.mapped('samples_distributed'))
+            rec.total_material_minutes = sum(rec.material_view_log_ids.mapped('duration'))
+            rec.has_linked_operations = any((
+                rec.sale_order_ids,
+                rec.payment_ids,
+                rec.invoice_ids,
+                rec.stock_check_ids,
+            ))
 
     @api.depends('plan_line_id')
     def _compute_is_planned(self):
@@ -262,12 +296,14 @@ class FtiqVisit(models.Model):
     def action_create_sale_order(self):
         self.ensure_one()
         self._ensure_execution_started()
+        daily_task = self.plan_line_id.daily_task_id
         order = self.env['sale.order'].create({
             'partner_id': self.partner_id.id,
             'user_id': self.user_id.id,
             'is_field_order': True,
             'ftiq_visit_id': self.id,
             'ftiq_attendance_id': self.attendance_id.id if self.attendance_id else False,
+            'ftiq_daily_task_id': daily_task.id if daily_task else False,
             'ftiq_latitude': self.start_latitude,
             'ftiq_longitude': self.start_longitude,
         })
@@ -283,6 +319,7 @@ class FtiqVisit(models.Model):
     def action_create_payment(self):
         self.ensure_one()
         self._ensure_execution_started()
+        daily_task = self.plan_line_id.daily_task_id
         payment = self.env['account.payment'].create({
             'partner_id': self.partner_id.id,
             'payment_type': 'inbound',
@@ -291,6 +328,7 @@ class FtiqVisit(models.Model):
             'ftiq_user_id': self.user_id.id,
             'ftiq_visit_id': self.id,
             'ftiq_attendance_id': self.attendance_id.id if self.attendance_id else False,
+            'ftiq_daily_task_id': daily_task.id if daily_task else False,
             'ftiq_latitude': self.start_latitude,
             'ftiq_longitude': self.start_longitude,
         })
@@ -306,11 +344,13 @@ class FtiqVisit(models.Model):
     def action_create_stock_check(self):
         self.ensure_one()
         self._ensure_execution_started()
+        daily_task = self.plan_line_id.daily_task_id
         check = self.env['ftiq.stock.check'].create({
             'partner_id': self.partner_id.id,
             'user_id': self.user_id.id,
             'visit_id': self.id,
             'attendance_id': self.attendance_id.id if self.attendance_id else False,
+            'ftiq_daily_task_id': daily_task.id if daily_task else False,
             'latitude': self.end_latitude or self.start_latitude,
             'longitude': self.end_longitude or self.start_longitude,
         })
@@ -343,6 +383,17 @@ class FtiqVisit(models.Model):
             'view_mode': 'list,form',
             'domain': [('ftiq_visit_id', '=', self.id)],
             'context': {'default_ftiq_visit_id': self.id, 'default_partner_id': self.partner_id.id, 'default_is_field_collection': True},
+        }
+
+    def action_view_invoices(self):
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Invoices'),
+            'res_model': 'account.move',
+            'view_mode': 'list,form',
+            'domain': [('ftiq_visit_id', '=', self.id), ('move_type', '=', 'out_invoice')],
+            'context': {'default_ftiq_visit_id': self.id, 'default_move_type': 'out_invoice'},
         }
 
     def action_view_stock_checks(self):
@@ -388,6 +439,8 @@ class FtiqVisit(models.Model):
             raise UserError(_('Select a visit outcome before submission.'))
         if not self.is_planned and not self.unplanned_reason:
             raise UserError(_('An unplanned visit reason is required before submission.'))
+        self._validate_product_detailing()
+        self._validate_material_logs()
         has_execution_evidence = any((
             self.general_feedback,
             self.product_line_ids,
@@ -406,40 +459,65 @@ class FtiqVisit(models.Model):
                 'Use feedback, product details, linked operations, photos, or a signature.'
             ))
 
+    def _validate_product_detailing(self):
+        self.ensure_one()
+        for line in self.product_line_ids:
+            if not any((
+                line.call_reason_id,
+                line.outcome,
+                line.feedback,
+                line.detail_notes,
+                line.samples_distributed,
+                line.stock_on_hand,
+            )):
+                raise UserError(_(
+                    'Each product detailing line must contain execution output such as call reason, outcome, '
+                    'feedback, notes, samples, or stock on hand.'
+                ))
+
+    def _validate_material_logs(self):
+        self.ensure_one()
+        for log in self.material_view_log_ids:
+            if bool(log.start_time) != bool(log.end_time):
+                raise UserError(_('Each material log must have both start and end timestamps before submission.'))
+            if log.start_time and log.end_time and log.end_time < log.start_time:
+                raise UserError(_('Material log end time cannot be earlier than the start time.'))
+
     def _sync_plan_line_progress(self):
         for rec in self.filtered('plan_line_id'):
             plan_line = rec.plan_line_id
             task = plan_line.daily_task_id
             plan_vals = {}
-            task_vals = {}
             if plan_line.visit_id != rec:
                 plan_vals['visit_id'] = rec.id
             if task and task.visit_id != rec:
-                task_vals['visit_id'] = rec.id
+                task.write({'visit_id': rec.id})
 
             if rec.state == 'approved':
                 if plan_line.state != 'completed':
                     plan_vals['state'] = 'completed'
-                if task and task.state not in ('completed', 'cancelled'):
-                    task_vals.update({
-                        'state': 'completed',
-                        'completed_date': rec.end_time or fields.Datetime.now(),
-                    })
+                if task:
+                    task._mark_linked_execution_confirmed(rec.end_time or fields.Datetime.now())
+            elif rec.state == 'submitted':
+                if task:
+                    task._mark_linked_execution_submitted(rec.end_time or fields.Datetime.now())
+            elif rec.state == 'returned':
+                if task:
+                    task._mark_linked_execution_returned()
+            elif rec.state == 'in_progress':
+                if task:
+                    task._mark_linked_execution_in_progress()
             else:
                 if plan_line.state in ('completed', 'missed'):
                     plan_vals['state'] = 'pending'
-                if task and task.state not in ('completed', 'cancelled') and rec.state in ('in_progress', 'submitted', 'returned'):
-                    task_vals.setdefault('state', 'in_progress')
-                if task and task.state == 'completed' and rec.state != 'approved':
-                    task_vals.update({
+                if task and task.state in ('completed', 'confirmed', 'submitted', 'returned'):
+                    task.write({
                         'state': 'pending',
                         'completed_date': False,
                     })
 
             if plan_vals:
                 plan_line.write(plan_vals)
-            if task_vals:
-                task.write(task_vals)
 
 
 class FtiqVisitProductLine(models.Model):
@@ -466,6 +544,12 @@ class FtiqVisitProductLine(models.Model):
     visit_date = fields.Date(related='visit_id.visit_date', store=True)
     partner_id = fields.Many2one(related='visit_id.partner_id', store=True)
 
+    @api.constrains('samples_distributed', 'stock_on_hand')
+    def _check_quantities(self):
+        for rec in self:
+            if rec.samples_distributed < 0 or rec.stock_on_hand < 0:
+                raise ValidationError(_('Samples distributed and stock on hand cannot be negative.'))
+
 
 class FtiqMaterialViewLog(models.Model):
     _name = 'ftiq.material.view.log'
@@ -476,9 +560,12 @@ class FtiqMaterialViewLog(models.Model):
     product_line_id = fields.Many2one('ftiq.visit.product.line', ondelete='set null')
     material_id = fields.Many2one('ftiq.marketing.material', required=True)
     product_id = fields.Many2one(related='material_id.product_id', store=True)
+    material_scope = fields.Selection(related='material_id.material_scope', store=True, readonly=True)
+    material_type = fields.Selection(related='material_id.material_type', store=True, readonly=True)
     user_id = fields.Many2one(related='visit_id.user_id', store=True)
     start_time = fields.Datetime()
     end_time = fields.Datetime()
+    note = fields.Char()
     duration = fields.Float(compute='_compute_duration', store=True)
 
     MAX_DURATION_MINUTES = 10
@@ -494,3 +581,13 @@ class FtiqMaterialViewLog(models.Model):
                 rec.duration = minutes
             else:
                 rec.duration = 0.0
+
+    @api.constrains('material_id', 'product_line_id', 'start_time', 'end_time')
+    def _check_material_alignment(self):
+        for rec in self:
+            if rec.material_id.material_scope == 'product' and not rec.product_line_id:
+                raise ValidationError(_('Product-scoped material logs must be linked to a product detailing line.'))
+            if rec.product_line_id and rec.material_id.product_id and rec.product_line_id.product_id != rec.material_id.product_id:
+                raise ValidationError(_('Material product must match the selected product detailing line.'))
+            if rec.start_time and rec.end_time and rec.end_time < rec.start_time:
+                raise ValidationError(_('Material log end time cannot be earlier than the start time.'))

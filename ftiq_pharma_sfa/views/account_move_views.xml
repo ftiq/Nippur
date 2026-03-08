@@ -7,7 +7,11 @@
         <field name="inherit_id" ref="account.view_move_form"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='invoice_date']" position="after">
+                <field name="is_field_invoice" invisible="1"/>
                 <field name="ftiq_visit_id" optional="hide"/>
+                <field name="ftiq_attendance_id" optional="hide"/>
+                <field name="ftiq_daily_task_id" optional="hide"/>
+                <field name="ftiq_user_id" optional="hide"/>
                 <field name="ftiq_field_notes" optional="hide"/>
             </xpath>
         </field>

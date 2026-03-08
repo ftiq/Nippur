@@ -35,6 +35,7 @@
                                decoration-info="ftiq_collection_state == 'draft'"
                                decoration-warning="ftiq_collection_state in ('collected', 'deposited')"
                                decoration-success="ftiq_collection_state == 'verified'"/>
+                        <field name="ftiq_team_id" readonly="1"/>
                         <field name="ftiq_visit_id"/>
                         <field name="ftiq_attendance_id"/>
                         <field name="ftiq_daily_task_id"/>

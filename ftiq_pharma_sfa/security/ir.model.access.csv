@@ -29,6 +29,9 @@ access_ftiq_call_reason_rep,ftiq.call.reason.rep,model_ftiq_call_reason,group_ft
 access_ftiq_call_reason_manager,ftiq.call.reason.manager,model_ftiq_call_reason,group_ftiq_manager,1,1,1,1
 access_ftiq_task_type_rep,ftiq.task.type.rep,model_ftiq_task_type,group_ftiq_rep,1,0,0,0
 access_ftiq_task_type_manager,ftiq.task.type.manager,model_ftiq_task_type,group_ftiq_manager,1,1,1,1
+access_ftiq_task_profile_rep,ftiq.task.profile.rep,model_ftiq_task_profile,group_ftiq_rep,1,0,0,0
+access_ftiq_task_profile_supervisor,ftiq.task.profile.supervisor,model_ftiq_task_profile,group_ftiq_supervisor,1,0,0,0
+access_ftiq_task_profile_manager,ftiq.task.profile.manager,model_ftiq_task_profile,group_ftiq_manager,1,1,1,1
 access_ftiq_client_question_rep,ftiq.client.question.rep,model_ftiq_client_question,group_ftiq_rep,1,0,0,0
 access_ftiq_client_question_manager,ftiq.client.question.manager,model_ftiq_client_question,group_ftiq_manager,1,1,1,1
 access_ftiq_client_question_option_rep,ftiq.client.question.option.rep,model_ftiq_client_question_option,group_ftiq_rep,1,0,0,0

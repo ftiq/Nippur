@@ -10,6 +10,7 @@
                 <field name="is_field_order" invisible="1"/>
                 <field name="ftiq_visit_id" invisible="not is_field_order"/>
                 <field name="ftiq_attendance_id" invisible="not is_field_order"/>
+                <field name="ftiq_daily_task_id" invisible="not is_field_order"/>
                 <field name="ftiq_priority" invisible="not is_field_order" widget="priority"/>
             </xpath>
             <xpath expr="//field[@name='note']" position="after">

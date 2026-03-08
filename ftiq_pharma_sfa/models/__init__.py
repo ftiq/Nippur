@@ -1,4 +1,7 @@
 from . import config_models
+from . import task_profile
+from . import plan_candidate_service
+from . import client_search_service
 from . import client_question
 from . import res_partner
 from . import res_users
@@ -6,6 +9,7 @@ from . import field_attendance
 from . import marketing_material
 from . import visit
 from . import weekly_plan
+from . import weekly_plan_refactor
 from . import sale_order
 from . import account_payment
 from . import account_move
@@ -13,4 +17,6 @@ from . import hr_expense
 from . import stock_check
 from . import sales_target
 from . import daily_task
+from . import daily_task_refactor
 from . import project
+from . import activity_feed

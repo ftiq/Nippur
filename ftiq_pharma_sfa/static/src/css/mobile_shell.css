@@ -1,0 +1,32 @@
+:root {
+    --ftiq-bg: #f4f7fb;
+    --ftiq-bg-soft: #e7eef7;
+    --ftiq-panel: rgba(255, 255, 255, 0.92);
+    --ftiq-panel-strong: rgba(255, 255, 255, 0.97);
+    --ftiq-border: rgba(14, 45, 73, 0.09);
+    --ftiq-text: #143047;
+    --ftiq-heading: #0a2439;
+    --ftiq-muted: #60758b;
+    --ftiq-text-soft: #64748b;
+    --ftiq-primary: #0f7a78;
+    --ftiq-primary-strong: #0a5e70;
+    --ftiq-warning: #d98628;
+    --ftiq-info: #2c84b8;
+    --ftiq-danger: #d85656;
+    --ftiq-success: #198754;
+    --ftiq-shadow: 0 20px 42px rgba(18, 44, 66, 0.08);
+    --ftiq-shadow-soft: 0 12px 28px rgba(18, 44, 66, 0.05);
+}
+
+.ftiq_mobile_shell {
+    min-height: 100%;
+    background: linear-gradient(180deg, #f7fafc 0%, #eef4f9 100%);
+    color: var(--ftiq-text);
+}
+
+.ftiq_mobile_shell_card {
+    border: 1px solid var(--ftiq-border);
+    border-radius: 22px;
+    background: var(--ftiq-panel);
+    box-shadow: var(--ftiq-shadow-soft);
+}

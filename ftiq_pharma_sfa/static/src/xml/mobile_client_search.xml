@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="ftiq_pharma_sfa.MobileClientSearch">
+        <div class="ftiq_client_search_page">
+            <div class="ftiq_client_search_shell">
+            <section class="ftiq_client_search_header">
+                <div>
+                    <span class="ftiq_eyebrow">Field Client Search</span>
+                    <h2>Client Search</h2>
+                    <p>Find the right client by name, code, or current location, then open the execution record directly.</p>
+                </div>
+                <div class="ftiq_client_search_actions">
+                    <button type="button" class="btn ftiq_btn_primary" t-on-click="searchClients">
+                        <i class="fa fa-search me-1"/>Search
+                    </button>
+                    <button type="button" class="btn ftiq_btn_secondary" t-on-click="useNearbySearch">
+                        <i class="fa fa-crosshairs me-1"/>Nearby
+                    </button>
+                    <button t-if="state.nearbyMode" type="button" class="btn ftiq_btn_secondary" t-on-click="clearNearbyMode">
+                        <i class="fa fa-times me-1"/>Clear Nearby
+                    </button>
+                </div>
+            </section>
+
+            <section class="ftiq_client_search_filters">
+                <div class="ftiq_client_search_field">
+                    <label>Name / Address</label>
+                    <input type="text" class="form-control" placeholder="Search by name or address"
+                           t-att-value="state.query" t-on-input="onQueryInput" t-on-keydown="onSearchKeydown"/>
+                </div>
+                <div class="ftiq_client_search_field">
+                    <label>Client Code</label>
+                    <input type="text" class="form-control" placeholder="Search by code"
+                           t-att-value="state.clientCode" t-on-input="onCodeInput" t-on-keydown="onSearchKeydown"/>
+                </div>
+                <div class="ftiq_client_search_field">
+                    <label>Radius (km)</label>
+                    <input type="number" min="1" step="1" class="form-control"
+                           t-att-value="state.radiusKm" t-on-input="onRadiusInput"/>
+                </div>
+            </section>
+
+            <section class="ftiq_client_search_layout">
+                <div class="ftiq_client_search_results">
+                    <div class="ftiq_client_search_results_head">
+                        <strong>Results</strong>
+                        <span class="text-muted"><t t-esc="formatNumber(state.results.length)"/> clients</span>
+                    </div>
+                    <div class="ftiq_client_search_results_body">
+                        <div t-if="state.loading" class="ftiq_client_search_empty">Loading...</div>
+                        <div t-elif="!state.results.length" class="ftiq_client_search_empty">No matching clients found.</div>
+                        <button t-else="" type="button" class="ftiq_client_result_card"
+                                t-foreach="state.results" t-as="item" t-key="item.id"
+                                t-on-click="() => this.loadCard(item.id)">
+                            <div class="ftiq_client_result_top">
+                                <strong t-esc="item.name"/>
+                                <span class="badge text-bg-secondary" t-esc="item.client_type_label"/>
+                            </div>
+                            <div class="ftiq_client_result_meta">
+                                <span t-if="item.client_code" t-esc="item.client_code"/>
+                                <span t-if="item.area" t-esc="item.area"/>
+                                <span t-if="item.city" t-esc="item.city"/>
+                            </div>
+                            <small class="d-block text-muted" t-esc="item.address"/>
+                            <div class="ftiq_client_result_metrics">
+                                <span><t t-esc="formatNumber(item.total_visits)"/> visits</span>
+                                <span><t t-esc="formatCurrency(item.open_invoice_amount)"/> due</span>
+                                <span t-if="item.distance_km !== false" t-esc="formatDistance(item.distance_km)"/>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="ftiq_client_search_card">
+                    <div t-if="!hasCard" class="ftiq_client_search_empty">Select a client to view the execution card.</div>
+                    <t t-else="">
+                        <div class="ftiq_client_card_head">
+                            <div>
+                                <span class="ftiq_eyebrow">Execution Card</span>
+                                <h3 t-esc="card.name"/>
+                                <p>
+                                    <span t-esc="card.client_code || 'No Code'"/>
+                                    <span class="ftiq_dot"/>
+                                    <span t-esc="card.client_type_label"/>
+                                    <span class="ftiq_dot"/>
+                                    <span t-esc="card.updated_at"/>
+                                </p>
+                            </div>
+                            <span class="badge" t-att-class="card.geo_ready ? 'text-bg-success' : 'text-bg-warning'">
+                                <t t-esc="card.geo_ready ? 'Geo Ready' : 'Geo Pending'"/>
+                            </span>
+                        </div>
+
+                        <div class="ftiq_client_card_grid">
+                            <div class="ftiq_client_card_stat">
+                                <span>Category</span>
+                                <strong t-esc="card.category || 'N/A'"/>
+                            </div>
+                            <div class="ftiq_client_card_stat">
+                                <span>Specialty</span>
+                                <strong t-esc="card.specialty || 'N/A'"/>
+                            </div>
+                            <div class="ftiq_client_card_stat">
+                                <span>Classification</span>
+                                <strong t-esc="card.classification || 'N/A'"/>
+                            </div>
+                            <div class="ftiq_client_card_stat">
+                                <span>Distance</span>
+                                <strong t-esc="formatDistance(card.distance_km)"/>
+                            </div>
+                        </div>
+
+                        <div class="ftiq_client_card_body">
+                            <div class="ftiq_client_card_row">
+                                <span>Address</span>
+                                <strong t-esc="card.address || 'N/A'"/>
+                            </div>
+                            <div class="ftiq_client_card_row">
+                                <span>Phone</span>
+                                <strong t-esc="card.mobile || card.phone || 'N/A'"/>
+                            </div>
+                            <div class="ftiq_client_card_row">
+                                <span>Last Visit</span>
+                                <strong t-esc="card.last_visit_date || 'N/A'"/>
+                            </div>
+                        </div>
+
+                        <div class="ftiq_client_card_metrics">
+                            <button type="button" class="ftiq_client_card_metric" t-on-click="openVisits">
+                                <span>Visits</span>
+                                <strong t-esc="formatNumber(card.total_visits)"/>
+                            </button>
+                            <button type="button" class="ftiq_client_card_metric" t-on-click="openOrders">
+                                <span>Orders</span>
+                                <strong t-esc="formatNumber(card.order_count)"/>
+                            </button>
+                            <button type="button" class="ftiq_client_card_metric" t-on-click="openCollections">
+                                <span>Collections</span>
+                                <strong t-esc="formatNumber(card.collection_count)"/>
+                            </button>
+                            <button type="button" class="ftiq_client_card_metric" t-on-click="openInvoices">
+                                <span>Open Due</span>
+                                <strong t-esc="formatCurrency(card.open_invoice_amount)"/>
+                            </button>
+                        </div>
+
+                        <div class="ftiq_client_card_recent">
+                            <div class="ftiq_client_search_results_head">
+                                <strong>Recent Visits</strong>
+                            </div>
+                            <div t-if="!card.recent_visits.length" class="ftiq_client_search_empty">No recent visits found.</div>
+                            <div t-else="" class="ftiq_client_recent_stack">
+                                <button type="button" class="ftiq_client_recent_item"
+                                        t-foreach="card.recent_visits" t-as="visit" t-key="visit.id"
+                                        t-on-click="() => this.openRecord('ftiq.visit', visit.id)">
+                                    <div>
+                                        <strong t-esc="visit.name"/>
+                                        <small class="d-block text-muted" t-esc="visit.date"/>
+                                    </div>
+                                    <span class="badge text-bg-secondary" t-esc="visit.state"/>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="ftiq_client_card_footer">
+                            <button type="button" class="btn ftiq_btn_primary" t-on-click="openClient">
+                                <i class="fa fa-external-link me-1"/>Open Client
+                            </button>
+                        </div>
+                    </t>
+                </div>
+            </section>
+            </div>
+        </div>
+    </t>
+</templates>

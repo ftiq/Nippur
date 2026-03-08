@@ -20,6 +20,10 @@ class SaleOrder(models.Model):
     @api.model_create_multi
     def create(self, vals_list):
         for vals in vals_list:
+            if vals.get('is_field_order') and vals.get('ftiq_visit_id') and not vals.get('ftiq_daily_task_id'):
+                visit = self.env['ftiq.visit'].browse(vals['ftiq_visit_id'])
+                if visit.plan_line_id.daily_task_id:
+                    vals['ftiq_daily_task_id'] = visit.plan_line_id.daily_task_id.id
             if vals.get('is_field_order') and not vals.get('ftiq_attendance_id'):
                 rep_id = vals.get('user_id') or self.env.uid
                 att = self.env['ftiq.field.attendance'].get_active_attendance(rep_id, fields.Date.context_today(self))
@@ -30,23 +34,29 @@ class SaleOrder(models.Model):
     def action_confirm(self):
         self._ensure_ftiq_operational_attendance()
         result = super().action_confirm()
-        completed_tasks = self.filtered(
-            lambda order: order.ftiq_daily_task_id and order.ftiq_daily_task_id.state not in ('completed', 'cancelled')
-        )
+        completed_tasks = self.filtered('ftiq_daily_task_id').mapped('ftiq_daily_task_id')
         if completed_tasks:
-            completed_tasks.mapped('ftiq_daily_task_id').write({
-                'state': 'completed',
-                'completed_date': fields.Datetime.now(),
-            })
+            completed_tasks._mark_linked_execution_confirmed(fields.Datetime.now())
         return result
 
     def _create_invoices(self, grouped=False, final=False, date=None):
         moves = super()._create_invoices(grouped=grouped, final=final, date=date)
         for move in moves:
             origins = move.line_ids.sale_line_ids.order_id
-            field_orders = origins.filtered('ftiq_visit_id')
-            if field_orders and not move.ftiq_visit_id:
-                move.ftiq_visit_id = field_orders[0].ftiq_visit_id.id
+            field_orders = origins.filtered(lambda order: order.is_field_order or order.ftiq_visit_id or order.ftiq_daily_task_id)
+            if field_orders:
+                field_order = field_orders[0]
+                vals = {}
+                if field_order.ftiq_visit_id and not move.ftiq_visit_id:
+                    vals['ftiq_visit_id'] = field_order.ftiq_visit_id.id
+                if field_order.ftiq_attendance_id and not move.ftiq_attendance_id:
+                    vals['ftiq_attendance_id'] = field_order.ftiq_attendance_id.id
+                if field_order.ftiq_daily_task_id and not move.ftiq_daily_task_id:
+                    vals['ftiq_daily_task_id'] = field_order.ftiq_daily_task_id.id
+                if field_order.user_id and not move.ftiq_user_id:
+                    vals['ftiq_user_id'] = field_order.user_id.id
+                if vals:
+                    move.write(vals)
         return moves
 
     def _ensure_ftiq_operational_attendance(self):

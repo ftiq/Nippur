@@ -5,6 +5,7 @@ from odoo.http import request
 
 
 FTIQ_DASHBOARD_PAYMENT_STATES = ('in_process', 'paid')
+FTIQ_DASHBOARD_TASK_TERMINAL_STATES = ('completed', 'confirmed', 'cancelled')
 
 
 class FtiqDashboardController(http.Controller):
@@ -33,6 +34,7 @@ class FtiqDashboardController(http.Controller):
         Invoice = env['account.move'].sudo()
         Partner = env['res.partner'].sudo()
         Target = env['ftiq.sales.target'].sudo()
+        ActivityFeed = env['ftiq.activity.feed']
 
         visit_scope_domain = [('user_id', 'in', scope_user_ids)]
         plan_scope_domain = [('user_id', 'in', scope_user_ids)]
@@ -57,8 +59,6 @@ class FtiqDashboardController(http.Controller):
             ('state', '=', 'approved'),
         ])
         pending_visits = Visit.search(visit_scope_domain + [('state', '=', 'submitted')])
-        recent_visits = Visit.search(visit_scope_domain, order='visit_date desc, id desc', limit=6)
-
         plan_lines_month = PlanLine.search(plan_scope_domain + [
             ('scheduled_date', '>=', month_start),
             ('scheduled_date', '<=', month_end),
@@ -90,18 +90,18 @@ class FtiqDashboardController(http.Controller):
         ])
 
         module_task_domain = self._module_task_domain()
-        tasks_pending = DailyTask.search(task_scope_domain + module_task_domain + [('state', 'in', ('pending', 'in_progress'))])
+        tasks_pending = DailyTask.search(task_scope_domain + module_task_domain + [('state', 'in', ('draft', 'pending', 'in_progress', 'submitted', 'returned'))])
         tasks_today = DailyTask.search(task_scope_domain + module_task_domain + [
             ('scheduled_date', '>=', today_dt),
             ('scheduled_date', '<', tomorrow_dt),
         ], order='scheduled_date asc, priority desc', limit=8)
         tasks_completed_month = DailyTask.search(task_scope_domain + module_task_domain + [
-            ('state', '=', 'completed'),
+            ('state', 'in', ('completed', 'confirmed')),
             ('completed_date', '>=', month_start_dt),
             ('completed_date', '<', next_month_dt),
         ])
         overdue_tasks = DailyTask.search(task_scope_domain + module_task_domain + [
-            ('state', 'not in', ('completed', 'cancelled')),
+            ('state', 'not in', FTIQ_DASHBOARD_TASK_TERMINAL_STATES),
             ('scheduled_date', '<', fields.Datetime.now()),
         ])
 
@@ -192,6 +192,7 @@ class FtiqDashboardController(http.Controller):
                 'orders_amount': sum(orders_month.mapped('amount_total')),
                 'collections_count': len(collections_month),
                 'collections_amount': sum(collections_month.mapped('amount')),
+                'stock_checks_count': len(stock_checks_month),
                 'collection_ratio': collection_ratio,
                 'open_invoice_count': len(open_invoices),
                 'open_invoice_amount': sum(open_invoices.mapped('amount_residual')),
@@ -200,6 +201,7 @@ class FtiqDashboardController(http.Controller):
                 'active_clients': len(active_partner_ids),
                 'new_clients': new_clients_month,
                 'overdue_tasks': len(overdue_tasks),
+                'pending_approvals': len(pending_visits),
                 'targets_active': len(active_targets),
                 'average_visit_duration': average_visit_duration,
                 'reviewed_stock_checks': len(reviewed_stock_checks),
@@ -280,25 +282,15 @@ class FtiqDashboardController(http.Controller):
                 {
                     'id': task.id,
                     'name': task.name,
-                    'partner_name': task.partner_id.display_name,
+                    'task_profile_name': task.task_profile_id.display_name or '',
+                    'partner_name': task.partner_id.display_name or 'No client',
                     'scheduled_date': str(task.scheduled_date),
                     'state': task.state,
                     'task_type': task.task_type,
                 }
                 for task in tasks_today
             ],
-            'recent_visits': [
-                {
-                    'id': visit.id,
-                    'name': visit.name,
-                    'partner_name': visit.partner_id.display_name,
-                    'user_name': visit.user_id.name,
-                    'area_name': visit.partner_area_id.name or 'Unassigned',
-                    'date': str(visit.visit_date),
-                    'state': visit.state,
-                }
-                for visit in recent_visits
-            ],
+            'activity_feed': ActivityFeed.build_feed(scope_user_ids, limit=12),
         }
 
     def _get_scope_users(self, user):
@@ -317,16 +309,7 @@ class FtiqDashboardController(http.Controller):
 
     @staticmethod
     def _module_task_domain():
-        return [
-            '|', '|', '|', '|', '|', '|',
-            ('plan_id', '!=', False),
-            ('plan_line_id', '!=', False),
-            ('visit_id', '!=', False),
-            ('sale_order_id', '!=', False),
-            ('payment_id', '!=', False),
-            ('stock_check_id', '!=', False),
-            ('project_task_id', '!=', False),
-        ]
+        return []
 
     @staticmethod
     def _area_key(record):

@@ -63,25 +63,25 @@
                     <strong t-esc="formatCurrency(dashboardKpis.collections_amount)"/>
                     <small><t t-esc="formatNumber(dashboardKpis.collections_count)"/> posted collections</small>
                 </button>
+                <button class="ftiq_metric_card" t-on-click="() => this.openStockChecks([['check_date', '&gt;=', dashboardData.month_start], ['check_date', '&lt;', dashboardData.next_month_start]])">
+                    <span class="ftiq_metric_label">Stock Checks</span>
+                    <strong t-esc="formatNumber(dashboardKpis.stock_checks_count)"/>
+                    <small><t t-esc="formatNumber(dashboardKpis.reviewed_stock_checks)"/> reviewed this month</small>
+                </button>
                 <button class="ftiq_metric_card" t-on-click="() => this.openInvoices([['state', '=', 'posted'], ['amount_residual', '&gt;', 0]])">
                     <span class="ftiq_metric_label">Outstanding Due</span>
                     <strong t-esc="formatCurrency(dashboardKpis.open_invoice_amount)"/>
                     <small><t t-esc="formatNumber(dashboardKpis.open_invoice_count)"/> open invoices</small>
-                </button>
-                <button class="ftiq_metric_card" t-on-click="() => this.openVisits([['visit_date', '&gt;=', dashboardData.month_start], ['visit_date', '&lt;=', dashboardData.month_end]])">
-                    <span class="ftiq_metric_label">Active Clients</span>
-                    <strong t-esc="formatNumber(dashboardKpis.active_clients)"/>
-                    <small><t t-esc="formatNumber(dashboardKpis.new_clients)"/> new this month</small>
                 </button>
                 <button class="ftiq_metric_card" t-on-click="openOverdueTasks">
                     <span class="ftiq_metric_label">Overdue Tasks</span>
                     <strong t-esc="formatNumber(dashboardKpis.overdue_tasks)"/>
                     <small>Needs immediate action</small>
                 </button>
-                <button class="ftiq_metric_card" t-on-click="openAttendance">
-                    <span class="ftiq_metric_label">Checked In Now</span>
-                    <strong t-esc="formatNumber(dashboardKpis.checked_in_now)"/>
-                    <small><t t-esc="formatNumber(dashboardKpis.team_size)"/> users in scope</small>
+                <button class="ftiq_metric_card" t-on-click="openPendingApprovals">
+                    <span class="ftiq_metric_label">Visit Approvals</span>
+                    <strong t-esc="formatNumber(dashboardKpis.pending_approvals)"/>
+                    <small>Submitted visits waiting review</small>
                 </button>
             </section>
 
@@ -233,7 +233,10 @@
                         <div class="ftiq_feed_item" t-foreach="dashboardData.today_tasks" t-as="task" t-key="task.id">
                             <div>
                                 <strong t-esc="task.name"/>
-                                <small class="d-block"><t t-esc="task.partner_name"/> - <t t-esc="getTaskTypeLabel(task.task_type)"/></small>
+                                <small class="d-block">
+                                    <t t-esc="task.partner_name"/> -
+                                    <t t-esc="task.task_profile_name || getTaskTypeLabel(task.task_type)"/>
+                                </small>
                             </div>
                             <div class="text-end">
                                 <span class="badge" t-att-class="getStateBadgeClass(task.state)" t-esc="getStateLabel(task.state)"/>
@@ -247,21 +250,23 @@
                     <div class="ftiq_panel_head">
                         <div>
                             <span class="ftiq_panel_tag">Activity</span>
-                            <h3>Recent Visits</h3>
+                            <h3>Unified Activity Feed</h3>
                         </div>
-                        <button class="btn ftiq_btn_secondary btn-sm" t-on-click="openVisits">Open Visits</button>
+                        <button class="btn ftiq_btn_secondary btn-sm" t-on-click="openTasks">Open Tasks</button>
                     </div>
-                    <div t-if="!dashboardData.recent_visits.length" class="ftiq_empty_state">No recent visits found.</div>
+                    <div t-if="!dashboardData.activity_feed.length" class="ftiq_empty_state">No recent operational activity found.</div>
                     <div t-else="" class="ftiq_feed">
-                        <button class="ftiq_feed_item ftiq_feed_item_button" t-foreach="dashboardData.recent_visits" t-as="visit" t-key="visit.id"
-                                t-on-click="() => this.openVisit(visit.id)">
+                        <button class="ftiq_feed_item ftiq_feed_item_button" t-foreach="dashboardData.activity_feed" t-as="item" t-key="item.record_model + '-' + item.record_id"
+                                t-on-click="() => this.openActivity(item)">
                             <div>
-                                <strong t-esc="visit.name"/>
-                                <small class="d-block"><t t-esc="visit.partner_name"/> - <t t-esc="visit.area_name"/></small>
+                                <strong><t t-esc="item.reference"/> <span class="text-muted">· <t t-esc="item.type_label"/></span></strong>
+                                <small class="d-block"><t t-esc="item.partner_name"/> - <t t-esc="item.user_name"/></small>
+                                <small class="d-block text-muted" t-if="item.secondary" t-esc="item.secondary"/>
                             </div>
                             <div class="text-end">
-                                <span class="badge" t-att-class="getStateBadgeClass(visit.state)" t-esc="getStateLabel(visit.state)"/>
-                                <small class="d-block mt-1"><t t-esc="visit.user_name"/> - <t t-esc="visit.date"/></small>
+                                <span class="badge" t-att-class="getStateBadgeClass(item.status)" t-esc="item.status_label"/>
+                                <small class="d-block mt-1" t-esc="item.datetime"/>
+                                <small class="d-block text-muted" t-if="item.amount" t-esc="formatCurrency(item.amount)"/>
                             </div>
                         </button>
                     </div>

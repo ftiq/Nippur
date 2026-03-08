@@ -45,8 +45,7 @@ Features:
         'security/rules.xml',
         'data/ir_sequence_data.xml',
         'data/client_category_data.xml',
-
-
+        'data/task_profile_data.xml',
 
         'views/dashboard_views.xml',
         'views/config_views.xml',
@@ -75,17 +74,18 @@ Features:
             'ftiq_pharma_sfa/static/src/xml/geolocation.xml',
             'ftiq_pharma_sfa/static/src/js/dashboard.js',
             'ftiq_pharma_sfa/static/src/xml/dashboard.xml',
+            'ftiq_pharma_sfa/static/src/js/mobile_client_search.js',
+            'ftiq_pharma_sfa/static/src/xml/mobile_client_search.xml',
+            'ftiq_pharma_sfa/static/src/css/mobile_shell.css',
+            'ftiq_pharma_sfa/static/src/css/mobile_client_search.css',
+            'ftiq_pharma_sfa/static/src/css/dashboard.css',
             'ftiq_pharma_sfa/static/src/js/plan_geo_map_field.js',
             'ftiq_pharma_sfa/static/src/xml/plan_geo_map_field.xml',
-            'ftiq_pharma_sfa/static/src/css/dashboard.css',
+            'ftiq_pharma_sfa/static/src/css/plan_wizard.css',
+            'ftiq_pharma_sfa/static/src/css/geo_map.css',
         ],
     },
     'demo': [
-        'demo/demo_data.xml',
-        'demo/demo_operational_data.xml',
-        'demo/demo_arabic_showcase.xml',
-
-
     ],
     'installable': True,
     'application': True,

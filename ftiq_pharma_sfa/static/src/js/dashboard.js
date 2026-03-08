@@ -57,16 +57,7 @@ class FtiqDashboard extends Component {
     }
 
     moduleTaskDomain() {
-        return [
-            "|", "|", "|", "|", "|", "|",
-            ["plan_id", "!=", false],
-            ["plan_line_id", "!=", false],
-            ["visit_id", "!=", false],
-            ["sale_order_id", "!=", false],
-            ["payment_id", "!=", false],
-            ["stock_check_id", "!=", false],
-            ["project_task_id", "!=", false],
-        ];
+        return [];
     }
 
     scopedDomain(fieldName, extraDomain = []) {
@@ -229,9 +220,22 @@ class FtiqDashboard extends Component {
         this.openVisits([["state", "=", "submitted"]]);
     }
 
+    openActivity(item) {
+        if (!item?.record_model || !item?.record_id) {
+            return;
+        }
+        this.action.doAction({
+            type: "ir.actions.act_window",
+            res_model: item.record_model,
+            res_id: item.record_id,
+            views: [[false, "form"]],
+            target: "current",
+        });
+    }
+
     openOverdueTasks() {
         this.openTasks([
-            ["state", "not in", ["completed", "cancelled"]],
+            ["state", "not in", ["completed", "confirmed", "cancelled"]],
             ["scheduled_date", "<", this.data.current_datetime],
         ]);
     }
@@ -276,6 +280,7 @@ class FtiqDashboard extends Component {
             draft: _t("Draft"),
             in_progress: _t("In Progress"),
             submitted: _t("Submitted"),
+            confirmed: _t("Confirmed"),
             approved: _t("Approved"),
             returned: _t("Returned"),
             pending: _t("Pending"),
@@ -290,6 +295,7 @@ class FtiqDashboard extends Component {
             draft: "text-bg-secondary",
             in_progress: "text-bg-info",
             submitted: "text-bg-warning",
+            confirmed: "text-bg-success",
             approved: "text-bg-success",
             returned: "text-bg-danger",
             pending: "text-bg-secondary",

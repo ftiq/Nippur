@@ -109,11 +109,19 @@ class AccountPayment(models.Model):
             if rec.currency_id.compare_amounts(total_allocated, rec.amount or 0.0) > 0:
                 raise ValidationError(_('Total allocated amount cannot exceed the payment amount.'))
 
+    @api.constrains('is_field_collection', 'ftiq_attendance_id', 'ftiq_visit_id', 'ftiq_daily_task_id')
+    def _check_ftiq_source_traceability(self):
+        for rec in self.filtered('is_field_collection'):
+            if not any((rec.ftiq_attendance_id, rec.ftiq_visit_id, rec.ftiq_daily_task_id)):
+                raise ValidationError(_('Field collections must stay linked to attendance, visit, or daily task source data.'))
+
     @api.model_create_multi
     def create(self, vals_list):
         for vals in vals_list:
             if vals.get('is_field_collection'):
                 visit = self.env['ftiq.visit'].browse(vals.get('ftiq_visit_id'))
+                if visit and visit.plan_line_id.daily_task_id and not vals.get('ftiq_daily_task_id'):
+                    vals['ftiq_daily_task_id'] = visit.plan_line_id.daily_task_id.id
                 vals.setdefault('ftiq_user_id', vals.get('user_id') or (visit.user_id.id if visit else self.env.uid))
                 if not vals.get('ftiq_attendance_id'):
                     attendance = self._find_ftiq_attendance(
@@ -123,6 +131,7 @@ class AccountPayment(models.Model):
                     if attendance:
                         vals['ftiq_attendance_id'] = attendance.id
         records = super().create(vals_list)
+        records.filtered('is_field_collection')._sync_ftiq_source_fields()
         for rec in records.filtered('is_field_collection'):
             if rec.partner_id and not rec.ftiq_collection_line_ids:
                 rec.action_ftiq_reload_invoices()
@@ -141,6 +150,8 @@ class AccountPayment(models.Model):
                     rec.action_ftiq_reload_invoices()
         if any(key in vals for key in ('is_field_collection', 'partner_id', 'ftiq_collection_line_ids')):
             self.filtered('is_field_collection')._sync_invoice_ids_from_collection_lines()
+        if any(key in vals for key in ('is_field_collection', 'ftiq_visit_id', 'ftiq_daily_task_id', 'ftiq_attendance_id')):
+            self.filtered('is_field_collection')._sync_ftiq_source_fields()
         return result
 
     def action_ftiq_reload_invoices(self):
@@ -212,15 +223,10 @@ class AccountPayment(models.Model):
 
     def _complete_ftiq_tasks(self):
         tasks = self.filtered(
-            lambda payment: payment.ftiq_daily_task_id
-            and payment.ftiq_daily_task_id.state not in ('completed', 'cancelled')
-            and payment.state in FTIQ_PAYMENT_POSTED_STATES
+            lambda payment: payment.ftiq_daily_task_id and payment.state in FTIQ_PAYMENT_POSTED_STATES
         ).mapped('ftiq_daily_task_id')
         if tasks:
-            tasks.write({
-                'state': 'completed',
-                'completed_date': fields.Datetime.now(),
-            })
+            tasks._mark_linked_execution_confirmed(fields.Datetime.now())
 
     @api.model
     def _find_ftiq_attendance(self, user_id, attendance_date):
@@ -268,6 +274,21 @@ class AccountPayment(models.Model):
                     entry_reference=f'{rec._name},{rec.id}',
                 )
             rec.ftiq_attendance_id = attendance.id
+
+    def _sync_ftiq_source_fields(self):
+        for rec in self.filtered('is_field_collection'):
+            source_visit = rec.ftiq_visit_id
+            source_task = rec.ftiq_daily_task_id or source_visit.plan_line_id.daily_task_id
+            source_attendance = rec.ftiq_attendance_id or source_visit.attendance_id
+            vals = {}
+            if source_task and rec.ftiq_daily_task_id != source_task:
+                vals['ftiq_daily_task_id'] = source_task.id
+            if source_attendance and rec.ftiq_attendance_id != source_attendance:
+                vals['ftiq_attendance_id'] = source_attendance.id
+            if source_visit and rec.ftiq_user_id != source_visit.user_id:
+                vals['ftiq_user_id'] = source_visit.user_id.id
+            if vals:
+                super(AccountPayment, rec).write(vals)
 
     def _get_ftiq_open_invoice_domain(self):
         self.ensure_one()

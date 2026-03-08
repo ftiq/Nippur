@@ -33,6 +33,8 @@
                             <field name="total_qty"/>
                             <field name="photo" widget="image" options="{'size': [200, 200]}"/>
                             <field name="ftiq_daily_task_id"/>
+                            <field name="reviewed_by_id" readonly="1"/>
+                            <field name="reviewed_on" readonly="1"/>
                         </group>
                     </group>
                     <notebook>

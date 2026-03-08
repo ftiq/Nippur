@@ -12,6 +12,13 @@
             </xpath>
             <xpath expr="//field[@name='date']" position="after">
                 <field name="ftiq_attendance_id" invisible="not is_field_expense"/>
+                <field name="ftiq_visit_id" invisible="not is_field_expense"/>
+                <field name="ftiq_daily_task_id" invisible="not is_field_expense"/>
+                <field name="ftiq_partner_id" invisible="not is_field_expense"/>
+                <field name="ftiq_user_id" invisible="not is_field_expense"/>
+                <field name="ftiq_team_id" invisible="not is_field_expense"/>
+                <field name="ftiq_latitude" invisible="not is_field_expense"/>
+                <field name="ftiq_longitude" invisible="not is_field_expense"/>
             </xpath>
         </field>
     </record>

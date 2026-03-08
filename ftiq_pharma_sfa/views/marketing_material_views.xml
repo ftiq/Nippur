@@ -11,6 +11,9 @@
                         <group>
                             <field name="name"/>
                             <field name="product_id"/>
+                            <field name="call_reason_id"/>
+                            <field name="material_scope"/>
+                            <field name="material_type"/>
                             <field name="sequence"/>
                         </group>
                         <group>
@@ -40,6 +43,9 @@
                 <field name="sequence" widget="handle"/>
                 <field name="name"/>
                 <field name="product_id"/>
+                <field name="call_reason_id" optional="show"/>
+                <field name="material_scope" widget="badge"/>
+                <field name="material_type" optional="show"/>
                 <field name="image" widget="image" options="{'size': [50, 50]}"/>
             </list>
         </field>
@@ -52,8 +58,13 @@
             <search>
                 <field name="name"/>
                 <field name="product_id"/>
+                <field name="call_reason_id"/>
+                <filter name="visit_scope" string="Visit Level" domain="[('material_scope', '=', 'visit')]"/>
+                <filter name="product_scope" string="Product Scope" domain="[('material_scope', '=', 'product')]"/>
                 <group expand="0" string="Group By">
                     <filter name="group_product" string="Product" context="{'group_by': 'product_id'}"/>
+                    <filter name="group_scope" string="Scope" context="{'group_by': 'material_scope'}"/>
+                    <filter name="group_type" string="Type" context="{'group_by': 'material_type'}"/>
                 </group>
             </search>
         </field>
@@ -67,6 +78,8 @@
                 <field name="name"/>
                 <field name="product_id"/>
                 <field name="image"/>
+                <field name="material_scope"/>
+                <field name="material_type"/>
                 <templates>
                     <t t-name="card">
                         <field name="image" widget="image" options="{'size': [120, 120]}"/>
@@ -75,6 +88,9 @@
                         </div>
                         <div>
                             <field name="product_id"/>
+                        </div>
+                        <div class="text-muted">
+                            <field name="material_scope"/> · <field name="material_type"/>
                         </div>
                     </t>
                 </templates>

@@ -7,16 +7,25 @@
         <field name="arch" type="xml">
             <form>
                 <header>
+                    <field name="confirmation_required" invisible="1"/>
                     <button name="action_start" type="object" string="Start"
-                            class="btn-primary" invisible="state != 'pending'"/>
+                            class="btn-primary" invisible="state not in ('draft', 'pending', 'returned')"/>
                     <button name="action_complete" type="object" string="Complete"
                             class="btn-success" invisible="state != 'in_progress'"/>
-                    <button name="action_cancel" type="object" string="Cancel"
-                            class="btn-danger" invisible="state in ('completed', 'cancelled')"/>
-                    <button name="action_reset" type="object" string="Reset"
-                            invisible="state not in ('completed', 'cancelled')"
+                    <button name="action_submit" type="object" string="Submit"
+                            class="btn-primary" invisible="state not in ('in_progress', 'completed', 'returned') or not confirmation_required"/>
+                    <button name="action_confirm" type="object" string="Confirm"
+                            class="btn-success" invisible="state != 'submitted' or not confirmation_required"
                             groups="ftiq_pharma_sfa.group_ftiq_supervisor"/>
-                    <field name="state" widget="statusbar" statusbar_visible="pending,in_progress,completed"/>
+                    <button name="action_return" type="object" string="Return"
+                            class="btn-warning" invisible="state != 'submitted' or not confirmation_required"
+                            groups="ftiq_pharma_sfa.group_ftiq_supervisor"/>
+                    <button name="action_cancel" type="object" string="Cancel"
+                            class="btn-danger" invisible="state in ('completed', 'confirmed', 'cancelled')"/>
+                    <button name="action_reset" type="object" string="Reset"
+                            invisible="state not in ('completed', 'submitted', 'confirmed', 'returned', 'cancelled')"
+                            groups="ftiq_pharma_sfa.group_ftiq_supervisor"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,pending,in_progress,submitted,confirmed,completed,returned,cancelled"/>
                 </header>
                 <sheet>
                     <div class="oe_title">
@@ -24,6 +33,7 @@
                     </div>
                     <group>
                         <group>
+                            <field name="task_profile_id"/>
                             <field name="task_type"/>
                             <field name="partner_id"/>
                             <field name="associated_partner_id"/>
@@ -113,10 +123,12 @@
         <field name="name">ftiq.daily.task.list</field>
         <field name="model">ftiq.daily.task</field>
         <field name="arch" type="xml">
-            <list decoration-success="state == 'completed'"
+            <list decoration-success="state in ('completed', 'confirmed')"
                   decoration-info="state == 'in_progress'"
-                  decoration-muted="state in ('pending', 'cancelled')">
+                  decoration-warning="state == 'returned'"
+                  decoration-muted="state in ('draft', 'pending', 'cancelled')">
                 <field name="name"/>
+                <field name="task_profile_id"/>
                 <field name="task_type"/>
                 <field name="partner_id"/>
                 <field name="team_id" optional="show"/>
@@ -125,9 +137,11 @@
                 <field name="scheduled_date"/>
                 <field name="priority" widget="priority"/>
                 <field name="state" widget="badge"
-                       decoration-success="state == 'completed'"
+                       decoration-success="state in ('completed', 'confirmed')"
                        decoration-info="state == 'in_progress'"
-                       decoration-muted="state == 'pending'"
+                       decoration-primary="state == 'submitted'"
+                       decoration-warning="state == 'returned'"
+                       decoration-muted="state in ('draft', 'pending')"
                        decoration-danger="state == 'cancelled'"/>
             </list>
         </field>
@@ -139,6 +153,7 @@
         <field name="arch" type="xml">
             <kanban default_group_by="state" class="o_kanban_small_column">
                 <field name="name"/>
+                <field name="task_profile_id"/>
                 <field name="task_type"/>
                 <field name="partner_id"/>
                 <field name="team_id"/>
@@ -159,7 +174,7 @@
                             </div>
                             <div class="o_kanban_record_body">
                                 <div>
-                                    <span class="badge text-bg-secondary"><field name="task_type"/></span>
+                                    <span class="badge text-bg-secondary"><field name="task_profile_id"/></span>
                                 </div>
                                 <div><strong><field name="partner_id"/></strong></div>
                                 <div><i class="fa fa-users me-1"/><field name="team_id"/></div>
@@ -203,6 +218,7 @@
         <field name="arch" type="xml">
             <search>
                 <field name="name"/>
+                <field name="task_profile_id"/>
                 <field name="partner_id"/>
                 <field name="team_id"/>
                 <field name="user_id"/>
@@ -210,8 +226,12 @@
                 <filter name="today" string="Today" domain="[('scheduled_date', '&gt;=', context_today().strftime('%Y-%m-%d')), ('scheduled_date', '&lt;', (context_today() + datetime.timedelta(days=1)).strftime('%Y-%m-%d'))]"/>
                 <filter name="this_week" string="This Week" domain="[('scheduled_date', '&gt;=', (context_today() - datetime.timedelta(days=context_today().weekday())).strftime('%Y-%m-%d'))]"/>
                 <separator/>
+                <filter name="draft" string="Draft" domain="[('state', '=', 'draft')]"/>
                 <filter name="pending" string="Pending" domain="[('state', '=', 'pending')]"/>
                 <filter name="in_progress" string="In Progress" domain="[('state', '=', 'in_progress')]"/>
+                <filter name="submitted" string="Submitted" domain="[('state', '=', 'submitted')]"/>
+                <filter name="confirmed" string="Confirmed" domain="[('state', '=', 'confirmed')]"/>
+                <filter name="returned" string="Returned" domain="[('state', '=', 'returned')]"/>
                 <filter name="completed" string="Completed" domain="[('state', '=', 'completed')]"/>
                 <separator/>
                 <filter name="type_visit" string="Visit Tasks" domain="[('task_type', '=', 'visit')]"/>
@@ -222,6 +242,7 @@
                 <group expand="0" string="Group By">
                     <filter name="group_user" string="Representative" context="{'group_by': 'user_id'}"/>
                     <filter name="group_team" string="Sales Team" context="{'group_by': 'team_id'}"/>
+                    <filter name="group_profile" string="Task Profile" context="{'group_by': 'task_profile_id'}"/>
                     <filter name="group_type" string="Task Type" context="{'group_by': 'task_type'}"/>
                     <filter name="group_partner" string="Client" context="{'group_by': 'partner_id'}"/>
                     <filter name="group_project" string="Project" context="{'group_by': 'project_id'}"/>

@@ -1,5 +1,5 @@
 from odoo import _, api, fields, models
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, ValidationError
 
 
 class FtiqStockCheck(models.Model):
@@ -22,6 +22,8 @@ class FtiqStockCheck(models.Model):
     notes = fields.Text(string='Notes')
     photo = fields.Binary(string='Shelf Photo', attachment=True)
     photo_name = fields.Char(string='Photo Name')
+    reviewed_by_id = fields.Many2one('res.users', string='Reviewed By', readonly=True)
+    reviewed_on = fields.Datetime(string='Reviewed On', readonly=True)
     state = fields.Selection([
         ('draft', 'Draft'),
         ('submitted', 'Submitted'),
@@ -105,20 +107,18 @@ class FtiqStockCheck(models.Model):
             if not (rec.latitude and rec.longitude):
                 raise UserError(_('GPS coordinates are required before submitting the stock check.'))
         self.write({'state': 'submitted'})
+        self.filtered('ftiq_daily_task_id').mapped('ftiq_daily_task_id')._mark_linked_execution_submitted(fields.Datetime.now())
 
     def action_review(self):
         for rec in self:
             if rec.state != 'submitted':
                 raise UserError(_('Only submitted stock checks can be reviewed.'))
-        self.write({'state': 'reviewed'})
-        completed_tasks = self.filtered(
-            lambda check: check.ftiq_daily_task_id and check.ftiq_daily_task_id.state not in ('completed', 'cancelled')
-        )
-        if completed_tasks:
-            completed_tasks.mapped('ftiq_daily_task_id').write({
-                'state': 'completed',
-                'completed_date': fields.Datetime.now(),
-            })
+        self.write({
+            'state': 'reviewed',
+            'reviewed_by_id': self.env.user.id,
+            'reviewed_on': fields.Datetime.now(),
+        })
+        self.filtered('ftiq_daily_task_id').mapped('ftiq_daily_task_id')._mark_linked_execution_confirmed(fields.Datetime.now())
 
     def action_reset_draft(self):
         for rec in self:
@@ -153,3 +153,18 @@ class FtiqStockCheckLine(models.Model):
     competitor_product = fields.Char(string='Competitor Product')
     competitor_qty = fields.Float(string='Competitor Qty')
     note = fields.Char(string='Note')
+
+    @api.constrains('stock_qty', 'competitor_qty')
+    def _check_non_negative_quantities(self):
+        for rec in self:
+            if rec.stock_qty < 0 or rec.competitor_qty < 0:
+                raise ValidationError(_('Stock quantities cannot be negative.'))
+
+    @api.constrains('check_id', 'product_id')
+    def _check_unique_product_per_check(self):
+        for rec in self:
+            if not rec.check_id or not rec.product_id:
+                continue
+            duplicates = rec.check_id.line_ids.filtered(lambda line: line.product_id == rec.product_id and line != rec)
+            if duplicates:
+                raise ValidationError(_('Each product can only appear once per stock check.'))

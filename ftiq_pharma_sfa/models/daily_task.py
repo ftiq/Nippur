@@ -278,7 +278,7 @@ class FtiqDailyTask(models.Model):
             if not rec.project_id:
                 continue
             vals = {
-                'name': rec.name if rec.name and rec.name != 'New' else _('%s Task') % rec.task_type,
+                'name': rec.name if rec.name and rec.name != 'New' else _('%s Task') % (rec.task_profile_id.display_name or rec.task_type),
                 'project_id': rec.project_id.id,
                 'partner_id': rec.partner_id.id,
                 'date_deadline': self._task_deadline_datetime(rec.scheduled_date),

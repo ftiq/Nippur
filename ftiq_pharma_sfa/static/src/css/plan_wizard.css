@@ -1,0 +1,333 @@
+.o_dialog .modal-dialog:has(.ftiq_plan_wizard_form) {
+    width: min(92vw, 1440px);
+    max-width: 92vw;
+    margin: 1rem auto;
+}
+
+.o_dialog .modal-dialog:has(.ftiq_plan_wizard_form) .modal-content {
+    min-height: calc(100vh - 2rem);
+    border-radius: 24px;
+    overflow: hidden;
+}
+
+.o_dialog .modal-dialog:has(.ftiq_plan_wizard_form) .modal-body {
+    padding: 0;
+    background: #f8fbff;
+}
+
+.ftiq_plan_wizard_form {
+    display: flex;
+    flex-direction: column;
+    min-height: calc(100vh - 2rem);
+}
+
+.ftiq_plan_wizard_shell {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 18px 18px 88px;
+    background: linear-gradient(180deg, #f7fafc 0%, #edf4f9 100%);
+}
+
+.ftiq_plan_wizard_hero,
+.ftiq_plan_wizard_card,
+.ftiq_plan_wizard_filter_card {
+    border: 1px solid var(--ftiq-border);
+    box-shadow: var(--ftiq-shadow-soft);
+}
+
+.ftiq_plan_wizard_hero {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    padding: 18px 22px;
+    border-radius: 22px;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(245, 249, 252, 0.94));
+}
+
+.ftiq_plan_wizard_intro {
+    max-width: 460px;
+}
+
+.ftiq_plan_wizard_intro h2 {
+    margin: 6px 0 8px;
+    font-size: 32px;
+    line-height: 1.15;
+    font-weight: 800;
+    color: #0a2439;
+}
+
+.ftiq_plan_wizard_intro p,
+.ftiq_plan_wizard_mode_text,
+.ftiq_plan_wizard_field > label,
+.ftiq_plan_wizard_toggle_item > label {
+    color: var(--ftiq-text-soft);
+}
+
+.ftiq_plan_wizard_progress {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(92px, 1fr));
+    gap: 12px;
+    width: min(640px, 100%);
+}
+
+.ftiq_plan_wizard_progress_step {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    color: #64748b;
+    font-weight: 700;
+    font-size: 13px;
+}
+
+.ftiq_plan_wizard_progress_step::before {
+    content: "";
+    position: absolute;
+    top: 17px;
+    inset-inline-start: calc(50% + 22px);
+    width: calc(100% - 44px);
+    height: 2px;
+    background: #cbd5e1;
+}
+
+.ftiq_plan_wizard_progress_step:last-child::before {
+    display: none;
+}
+
+.ftiq_plan_wizard_progress_index {
+    width: 36px;
+    height: 36px;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #cbd5e1;
+    background: #ffffff;
+    font-size: 15px;
+    font-weight: 800;
+}
+
+.ftiq_plan_wizard_progress_step.is-current,
+.ftiq_plan_wizard_progress_step.is-done {
+    color: var(--ftiq-primary-strong);
+}
+
+.ftiq_plan_wizard_progress_step.is-current .ftiq_plan_wizard_progress_index,
+.ftiq_plan_wizard_progress_step.is-done .ftiq_plan_wizard_progress_index {
+    background: var(--ftiq-primary);
+    border-color: var(--ftiq-primary);
+    color: #ffffff;
+}
+
+.ftiq_plan_wizard_progress_step.is-done::before {
+    background: var(--ftiq-primary);
+}
+
+.ftiq_plan_wizard_stage,
+.ftiq_plan_wizard_toggle_list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.ftiq_plan_wizard_stage .alert-info {
+    margin: 0;
+    padding: 12px 16px;
+    border: 1px solid rgba(44, 132, 184, 0.14);
+    border-radius: 16px;
+    background: rgba(225, 244, 252, 0.86);
+    color: #27506f;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.ftiq_plan_wizard_filter_cards,
+.ftiq_plan_wizard_mode_grid,
+.ftiq_plan_wizard_field_grid,
+.ftiq_plan_wizard_grid_2 {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.ftiq_plan_wizard_filter_card,
+.ftiq_plan_wizard_card {
+    padding: 18px;
+    border-radius: 20px;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(246, 249, 252, 0.96));
+}
+
+.ftiq_plan_wizard_filter_card_head,
+.ftiq_plan_wizard_card_head {
+    margin-bottom: 14px;
+}
+
+.ftiq_plan_wizard_card_head_inline,
+.ftiq_plan_wizard_toolbar,
+.ftiq_plan_wizard_result_meta,
+.ftiq_plan_wizard_footer,
+.ftiq_plan_wizard_footer_group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.ftiq_plan_wizard_card_head_inline,
+.ftiq_plan_wizard_footer {
+    justify-content: space-between;
+}
+
+.ftiq_plan_wizard_mode_card {
+    display: flex !important;
+    align-items: center;
+    gap: 16px;
+    width: 100%;
+    min-height: 94px;
+    padding: 16px 18px !important;
+    border-radius: 18px !important;
+    border: 1px solid rgba(14, 45, 73, 0.1) !important;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(247, 250, 252, 0.96)) !important;
+    box-shadow: 0 10px 24px rgba(18, 44, 66, 0.06);
+    color: var(--ftiq-text) !important;
+    text-align: start;
+}
+
+.ftiq_plan_wizard_mode_card_active {
+    background: linear-gradient(180deg, rgba(240, 251, 248, 0.98), rgba(255, 255, 255, 0.98)) !important;
+    border-color: rgba(15, 122, 120, 0.28) !important;
+}
+
+.ftiq_plan_wizard_mode_icon {
+    width: 46px;
+    height: 46px;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #0f7a78 0%, #0a5e70 100%);
+    color: #ffffff;
+}
+
+.ftiq_plan_wizard_mode_body,
+.ftiq_plan_wizard_field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+}
+
+.ftiq_plan_wizard_field_span_2 {
+    grid-column: span 2;
+}
+
+.ftiq_plan_wizard_result_chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border-radius: 999px;
+    padding: 6px 12px;
+    background: rgba(226, 232, 240, 0.9);
+    color: #334155;
+    font-weight: 800;
+    font-size: 13px;
+}
+
+.ftiq_plan_wizard_client_search,
+.ftiq_plan_wizard_clients {
+    margin-top: 16px;
+}
+
+.ftiq_plan_wizard_clients .o_field_many2many_checkboxes {
+    columns: 2;
+    column-gap: 20px;
+    max-height: 34vh;
+    overflow: auto;
+    padding-inline-end: 8px;
+}
+
+.ftiq_plan_wizard_clients .o_checkbox {
+    break-inside: avoid;
+    margin-bottom: 12px;
+}
+
+.ftiq_plan_wizard_geo_card {
+    padding: 18px;
+}
+
+.ftiq_plan_wizard_footer {
+    position: sticky;
+    bottom: 0;
+    z-index: 20;
+    flex-wrap: nowrap;
+    padding: 14px 18px;
+    background: rgba(255, 255, 255, 0.96);
+    border-top: 1px solid rgba(219, 228, 238, 0.95);
+    backdrop-filter: blur(10px);
+}
+
+.ftiq_plan_wizard_footer_group_end {
+    margin-inline-start: auto;
+}
+
+.ftiq_plan_wizard_footer .btn,
+.ftiq_plan_wizard_footer button,
+.ftiq_plan_wizard_toolbar .btn {
+    min-width: 108px;
+    padding: 9px 14px !important;
+    font-size: 13px;
+    font-weight: 700;
+    margin: 0 !important;
+}
+
+@media (max-width: 1200px) {
+    .ftiq_plan_wizard_grid_2,
+    .ftiq_plan_wizard_mode_grid,
+    .ftiq_plan_wizard_filter_cards,
+    .ftiq_plan_wizard_field_grid {
+        grid-template-columns: 1fr;
+    }
+
+    .ftiq_plan_wizard_hero {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .ftiq_plan_wizard_progress {
+        width: 100%;
+    }
+
+    .ftiq_plan_wizard_field_span_2 {
+        grid-column: span 1;
+    }
+}
+
+@media (max-width: 768px) {
+    .ftiq_plan_wizard_shell {
+        padding: 16px 16px 96px;
+    }
+
+    .ftiq_plan_wizard_progress {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .ftiq_plan_wizard_clients .o_field_many2many_checkboxes {
+        columns: 1;
+    }
+
+    .ftiq_plan_wizard_footer {
+        gap: 8px;
+    }
+
+    .ftiq_plan_wizard_footer_group {
+        gap: 8px;
+    }
+
+    .ftiq_plan_wizard_footer .btn,
+    .ftiq_plan_wizard_footer button {
+        min-width: 96px;
+    }
+}

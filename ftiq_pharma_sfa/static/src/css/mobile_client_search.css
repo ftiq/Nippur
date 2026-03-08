@@ -1,0 +1,229 @@
+.ftiq_client_search_page {
+    min-height: calc(100vh - 116px);
+    height: calc(100vh - 116px);
+    max-height: calc(100vh - 116px);
+    padding: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scroll-padding-bottom: 48px;
+    overscroll-behavior-y: contain;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(19, 72, 112, 0.28) transparent;
+}
+
+.ftiq_client_search_shell {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    width: 100%;
+    max-width: 1520px;
+    margin: 0 auto;
+    padding: 24px 24px 96px;
+}
+
+.ftiq_client_search_page::-webkit-scrollbar,
+.ftiq_client_search_results_body::-webkit-scrollbar {
+    width: 10px;
+}
+
+.ftiq_client_search_page::-webkit-scrollbar-thumb,
+.ftiq_client_search_results_body::-webkit-scrollbar-thumb {
+    border-radius: 999px;
+    background: rgba(19, 72, 112, 0.22);
+}
+
+.ftiq_client_search_header,
+.ftiq_client_search_filters,
+.ftiq_client_search_layout,
+.ftiq_client_search_actions,
+.ftiq_client_result_top,
+.ftiq_client_result_metrics,
+.ftiq_client_card_head,
+.ftiq_client_card_grid,
+.ftiq_client_card_metrics,
+.ftiq_client_search_results_head {
+    display: flex;
+    gap: 1rem;
+}
+
+.ftiq_client_search_header,
+.ftiq_client_search_results_head,
+.ftiq_client_card_head {
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.ftiq_client_search_actions {
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+
+.ftiq_client_search_filters {
+    flex-wrap: wrap;
+    align-items: end;
+}
+
+.ftiq_client_search_field {
+    min-width: 180px;
+    flex: 1 1 220px;
+}
+
+.ftiq_client_search_field label {
+    display: block;
+    margin-bottom: 0.35rem;
+    font-size: 0.85rem;
+    color: var(--ftiq-text-muted, #6b7280);
+}
+
+.ftiq_client_search_layout {
+    align-items: stretch;
+    min-height: 0;
+    flex: 0 0 auto;
+}
+
+.ftiq_client_search_results,
+.ftiq_client_search_card {
+    background: #fff;
+    border: 1px solid rgba(15, 23, 42, 0.08);
+    border-radius: 20px;
+    padding: 1rem;
+    box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
+}
+
+.ftiq_client_search_results {
+    width: min(360px, 100%);
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    flex: 0 0 360px;
+    min-height: 0;
+    max-width: 100%;
+}
+
+.ftiq_client_search_card {
+    flex: 1 1 auto;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.ftiq_client_search_results_body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    overflow-y: auto;
+    overflow-x: hidden;
+    min-height: 0;
+    max-height: 24rem;
+    padding-right: 0.3rem;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(19, 72, 112, 0.28) transparent;
+}
+
+.ftiq_client_result_card,
+.ftiq_client_card_metric,
+.ftiq_client_recent_item {
+    border: 1px solid rgba(15, 23, 42, 0.08);
+    border-radius: 16px;
+    background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+    padding: 0.9rem 1rem;
+    text-align: left;
+}
+
+.ftiq_client_result_card:hover,
+.ftiq_client_card_metric:hover,
+.ftiq_client_recent_item:hover {
+    border-color: rgba(14, 116, 144, 0.28);
+    box-shadow: 0 10px 26px rgba(14, 116, 144, 0.12);
+}
+
+.ftiq_client_result_card,
+.ftiq_client_recent_item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+}
+
+.ftiq_client_result_top {
+    align-items: center;
+    justify-content: space-between;
+}
+
+.ftiq_client_result_meta,
+.ftiq_client_card_body,
+.ftiq_client_recent_stack {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.ftiq_client_result_meta,
+.ftiq_client_result_metrics {
+    flex-wrap: wrap;
+    font-size: 0.82rem;
+    color: var(--ftiq-text-muted, #6b7280);
+}
+
+.ftiq_client_card_grid,
+.ftiq_client_card_metrics {
+    flex-wrap: wrap;
+}
+
+.ftiq_client_card_stat,
+.ftiq_client_card_metric {
+    flex: 1 1 160px;
+}
+
+.ftiq_client_card_stat span,
+.ftiq_client_card_row span,
+.ftiq_client_card_metric span {
+    display: block;
+    font-size: 0.82rem;
+    color: var(--ftiq-text-muted, #6b7280);
+}
+
+.ftiq_client_card_row {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    border-bottom: 1px solid rgba(15, 23, 42, 0.06);
+    padding-bottom: 0.45rem;
+}
+
+.ftiq_client_card_footer {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.ftiq_client_search_empty {
+    padding: 1.5rem 1rem;
+    text-align: center;
+    color: var(--ftiq-text-muted, #6b7280);
+}
+
+@media (max-width: 992px) {
+    .ftiq_client_search_page {
+        min-height: calc(100vh - 96px);
+        height: calc(100vh - 96px);
+        max-height: calc(100vh - 96px);
+    }
+
+    .ftiq_client_search_shell {
+        padding: 20px 16px 80px;
+    }
+
+    .ftiq_client_search_layout {
+        flex-direction: column;
+    }
+
+    .ftiq_client_search_results {
+        width: 100%;
+        flex-basis: auto;
+    }
+
+    .ftiq_client_search_results_body {
+        max-height: 20rem;
+    }
+}

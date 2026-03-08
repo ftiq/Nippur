@@ -39,7 +39,9 @@
                             <field name="team_id" required="1" options="{'no_create': True}"/>
                             <field name="user_id" readonly="1"/>
                             <field name="supervisor_id"/>
-                            <field name="task_type_id"/>
+                            <field name="task_profile_id"/>
+                            <field name="task_type_id" invisible="1"/>
+                            <field name="task_generation_policy"/>
                             <field name="project_id" readonly="1"/>
                         </group>
                         <group>
@@ -75,6 +77,13 @@
                                     <field name="note" optional="hide"/>
                                     <field name="visit_id" optional="show"/>
                                     <field name="daily_task_id" optional="show"/>
+                                    <field name="execution_state" widget="badge"
+                                           decoration-info="execution_state == 'in_progress'"
+                                           decoration-primary="execution_state == 'submitted'"
+                                           decoration-success="execution_state in ('approved', 'confirmed', 'completed')"
+                                           decoration-warning="execution_state == 'returned'"
+                                           decoration-muted="execution_state in ('not_ready', 'pending')"
+                                           optional="show"/>
                                     <field name="project_task_id" optional="show"/>
                                     <field name="state" widget="badge"
                                            decoration-success="state == 'completed'"
@@ -105,7 +114,8 @@
                 <field name="team_id"/>
                 <field name="user_id"/>
                 <field name="supervisor_id" optional="show"/>
-                <field name="task_type_id"/>
+                <field name="task_profile_id"/>
+                <field name="task_generation_policy" optional="show"/>
                 <field name="week_start"/>
                 <field name="week_end"/>
                 <field name="planned_count"/>
@@ -128,7 +138,8 @@
                 <field name="name"/>
                 <field name="team_id"/>
                 <field name="user_id"/>
-                <field name="task_type_id"/>
+                <field name="task_profile_id"/>
+                <field name="task_generation_policy"/>
                 <field name="week_start"/>
                 <field name="week_end"/>
                 <field name="planned_count"/>
@@ -156,8 +167,8 @@
                                 <div>
                                     <i class="fa fa-user me-1"/><field name="user_id"/>
                                 </div>
-                                <div t-if="record.task_type_id.raw_value">
-                                    <i class="fa fa-tasks me-1"/><field name="task_type_id"/>
+                                <div t-if="record.task_profile_id.raw_value">
+                                    <i class="fa fa-tasks me-1"/><field name="task_profile_id"/>
                                 </div>
                                 <div>
                                     <i class="fa fa-calendar me-1"/>
@@ -241,6 +252,12 @@
                 <field name="partner_specialty_id"/>
                 <field name="partner_classification_id"/>
                 <field name="partner_area_id"/>
+                <field name="execution_state" widget="badge"
+                       decoration-info="execution_state == 'in_progress'"
+                       decoration-primary="execution_state == 'submitted'"
+                       decoration-success="execution_state in ('approved', 'confirmed', 'completed')"
+                       decoration-warning="execution_state == 'returned'"
+                       decoration-muted="execution_state in ('not_ready', 'pending')"/>
                 <field name="state" widget="badge"
                        decoration-success="state == 'completed'"
                        decoration-danger="state == 'missed'"
