@@ -73,6 +73,8 @@ class FtiqTeamMessage(models.Model):
     )
 
     def _ensure_current_user_can_manage_team(self, team):
+        if self.env.context.get("skip_team_message_authorization") or self.env.is_superuser():
+            return
         current_user = self.env.user
         if current_user.has_group("ftiq_pharma_sfa.group_ftiq_manager"):
             return
@@ -84,6 +86,10 @@ class FtiqTeamMessage(models.Model):
             raise AccessError(
                 _("You can only publish team messages for the teams you supervise.")
             )
+
+    @api.model
+    def create_system_messages(self, vals_list):
+        return self.with_context(skip_team_message_authorization=True).create(vals_list)
 
     def _validate_payload(self, vals):
         team = self.env["crm.team"].browse(vals.get("team_id"))

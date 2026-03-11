@@ -244,16 +244,17 @@ class FtiqDailyTask(models.Model):
 
     def _notify_assignment(self, reassigned=False):
         activity_type = self.env.ref('mail.mail_activity_data_todo', raise_if_not_found=False)
+        team_messages = []
         for rec in self.filtered('user_id'):
             if not rec.user_id.partner_id:
                 continue
             if reassigned:
                 body = _(
-                    'Task <b>%s</b> was reassigned to you for %s.'
+                    'Task %s was reassigned to you for %s.'
                 ) % (rec.name, rec.scheduled_date or '')
             else:
                 body = _(
-                    'New task assigned to you: <b>%s</b> scheduled on %s.'
+                    'New task assigned to you: %s scheduled on %s.'
                 ) % (rec.name, rec.scheduled_date or '')
             rec.message_post(
                 body=body,
@@ -269,6 +270,21 @@ class FtiqDailyTask(models.Model):
                     note=body,
                     date_deadline=fields.Date.to_date(rec.scheduled_date) or fields.Date.today(),
                 )
+            team = rec.team_id or rec.user_id.sale_team_id
+            if team:
+                team_messages.append({
+                    'subject': rec.name or _('Task Assignment'),
+                    'body': body,
+                    'message_type': 'note',
+                    'priority': 'urgent' if rec.priority == '2' else 'normal',
+                    'team_id': team.id,
+                    'target_user_id': rec.user_id.id,
+                    'task_id': rec.id,
+                    'is_team_wide': False,
+                    'company_id': rec.company_id.id if hasattr(rec, 'company_id') and rec.company_id else self.env.company.id,
+                })
+        if team_messages:
+            self.env['ftiq.team.message'].create_system_messages(team_messages)
 
     def _sync_project_task(self, create_missing=False):
         Task = self.env['project.task']

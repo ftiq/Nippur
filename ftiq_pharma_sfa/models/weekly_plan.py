@@ -272,18 +272,19 @@ class FtiqWeeklyPlan(models.Model):
 
     def _notify_assignment(self, reassigned=False):
         activity_type = self.env.ref('mail.mail_activity_data_todo', raise_if_not_found=False)
+        team_messages = []
         for rec in self.filtered('team_id'):
             assigned_users = rec.line_ids.mapped('user_id').filtered('partner_id')
             if not assigned_users:
                 continue
             if reassigned:
                 body = _(
-                    'You have been assigned plan lines in <b>%s</b> for team <b>%s</b> '
+                    'You have been assigned plan lines in %s for team %s '
                     '(week starting %s).'
                 ) % (rec.name, rec.team_id.display_name, rec.week_start or '')
             else:
                 body = _(
-                    'New team plan assigned to you: <b>%s</b> for <b>%s</b> '
+                    'New team plan assigned to you: %s for %s '
                     '(week starting %s).'
                 ) % (rec.name, rec.team_id.display_name, rec.week_start or '')
             rec.message_post(
@@ -301,6 +302,19 @@ class FtiqWeeklyPlan(models.Model):
                         note=body,
                         date_deadline=rec.week_start or fields.Date.today(),
                     )
+            for assigned_user in assigned_users:
+                team_messages.append({
+                    'subject': rec.name or _('Weekly Plan Assignment'),
+                    'body': body,
+                    'message_type': 'note',
+                    'priority': 'normal',
+                    'team_id': rec.team_id.id,
+                    'target_user_id': assigned_user.id,
+                    'is_team_wide': False,
+                    'company_id': rec.company_id.id if hasattr(rec, 'company_id') and rec.company_id else self.env.company.id,
+                })
+        if team_messages:
+            self.env['ftiq.team.message'].create_system_messages(team_messages)
 
     def _sync_project_and_tasks(self, create_project=True, create_daily_tasks=True):
         Project = self.env['project.project'].with_context(

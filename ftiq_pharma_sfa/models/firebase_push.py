@@ -193,6 +193,12 @@ class FtiqFirebasePushService(models.AbstractModel):
             "invalidated": len(invalid_devices),
         }
 
+    def _message_deep_link(self, message):
+        message.ensure_one()
+        if message.task_id:
+            return f"ftiq://task?id={message.task_id.id}&message_id={message.id}"
+        return f"ftiq://notifications?message_id={message.id}"
+
     def send_team_message_push(self, message):
         message.ensure_one()
         recipient_users = message._push_recipient_users()
@@ -208,7 +214,7 @@ class FtiqFirebasePushService(models.AbstractModel):
             body=message.body,
             priority=message.priority or "normal",
             data={
-                "deep_link": "ftiq://team-hub",
+                "deep_link": self._message_deep_link(message),
                 "message_id": message.id,
                 "message_type": message.message_type or "",
                 "task_id": message.task_id.id if message.task_id else "",
