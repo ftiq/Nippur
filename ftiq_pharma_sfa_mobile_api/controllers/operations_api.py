@@ -433,6 +433,12 @@ class FtiqMobileOperationsApi(FtiqMobileApiBase):
             order="create_date desc, id desc",
             limit=notification_limit,
         )
+        schedule_items = []
+        for task in schedules:
+            try:
+                schedule_items.append(self._serialize_task(task))
+            except AccessError:
+                continue
 
         data = {
             "role": role,
@@ -461,7 +467,7 @@ class FtiqMobileOperationsApi(FtiqMobileApiBase):
             },
             "collections": [self._serialize_collection(payment) for payment in collections],
             "invoices": [self._serialize_invoice(invoice) for invoice in open_invoices],
-            "schedules": [self._serialize_task(task) for task in schedules],
+            "schedules": schedule_items,
             "notifications": [self._serialize_mobile_notification(notification) for notification in notifications],
         }
         return self._ok(data)
