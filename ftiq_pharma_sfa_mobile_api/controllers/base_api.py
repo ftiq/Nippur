@@ -428,8 +428,25 @@ class FtiqMobileApiBase(http.Controller):
         scoped_record = self._safe_scoped_record(model_name, record)
         return scoped_record.id if scoped_record else False
 
+    def _safe_related_record(self, record, field_name, model_name):
+        if not record:
+            return request.env[model_name]
+        try:
+            related_record = getattr(record, field_name)
+        except AccessError:
+            return request.env[model_name]
+        return self._safe_scoped_record(model_name, related_record)
+
+    def _safe_related_scoped_id(self, record, field_name, model_name):
+        scoped_record = self._safe_related_record(record, field_name, model_name)
+        return scoped_record.id if scoped_record else False
+
     def _message_deep_link(self, message, task_record=None):
-        task = task_record if task_record is not None else self._safe_scoped_record("ftiq.daily.task", message.task_id)
+        task = task_record if task_record is not None else self._safe_related_record(
+            message,
+            "task_id",
+            "ftiq.daily.task",
+        )
         if task:
             return f"ftiq://task?id={task.id}&message_id={message.id}"
         return f"ftiq://notifications?message_id={message.id}"
@@ -769,7 +786,11 @@ class FtiqMobileApiBase(http.Controller):
                 },
                 "note": line.note or "",
                 "visit_id": line.visit_id.id if line.visit_id else False,
-                "task_id": self._safe_scoped_id("ftiq.daily.task", line.daily_task_id),
+                "task_id": self._safe_related_scoped_id(
+                    line,
+                    "daily_task_id",
+                    "ftiq.daily.task",
+                ),
             } for line in plan.line_ids.sorted(key=lambda item: ((item.scheduled_date or fields.Date.today()), item.sequence, item.id))]
         return data
 
@@ -825,7 +846,7 @@ class FtiqMobileApiBase(http.Controller):
         }
 
     def _serialize_team_message(self, message):
-        task = self._safe_scoped_record("ftiq.daily.task", message.task_id)
+        task = self._safe_related_record(message, "task_id", "ftiq.daily.task")
         return {
             "id": message.id,
             "subject": message.subject or "",
@@ -872,7 +893,11 @@ class FtiqMobileApiBase(http.Controller):
             "linked_records": {
                 "visit_id": order.ftiq_visit_id.id if order.ftiq_visit_id else False,
                 "attendance_id": order.ftiq_attendance_id.id if order.ftiq_attendance_id else False,
-                "task_id": self._safe_scoped_id("ftiq.daily.task", order.ftiq_daily_task_id),
+                "task_id": self._safe_related_scoped_id(
+                    order,
+                    "ftiq_daily_task_id",
+                    "ftiq.daily.task",
+                ),
             },
             "available_actions": {
                 "edit": is_owner and order.state in {"draft", "sent"},
@@ -949,7 +974,11 @@ class FtiqMobileApiBase(http.Controller):
                     "linked_records": {
                         "visit_id": invoice.ftiq_visit_id.id if invoice.ftiq_visit_id else False,
                         "attendance_id": invoice.ftiq_attendance_id.id if invoice.ftiq_attendance_id else False,
-                        "task_id": self._safe_scoped_id("ftiq.daily.task", invoice.ftiq_daily_task_id),
+                        "task_id": self._safe_related_scoped_id(
+                            invoice,
+                            "ftiq_daily_task_id",
+                            "ftiq.daily.task",
+                        ),
                     },
                     "lines": [
                         {
@@ -988,7 +1017,11 @@ class FtiqMobileApiBase(http.Controller):
                             "linked_records": {
                                 "visit_id": line.payment_id.ftiq_visit_id.id if line.payment_id.ftiq_visit_id else False,
                                 "attendance_id": line.payment_id.ftiq_attendance_id.id if line.payment_id.ftiq_attendance_id else False,
-                                "task_id": self._safe_scoped_id("ftiq.daily.task", line.payment_id.ftiq_daily_task_id),
+                                "task_id": self._safe_related_scoped_id(
+                                    line.payment_id,
+                                    "ftiq_daily_task_id",
+                                    "ftiq.daily.task",
+                                ),
                             },
                             "available_actions": {
                                 "open_collection": bool(line.payment_id),
@@ -1038,7 +1071,11 @@ class FtiqMobileApiBase(http.Controller):
             "linked_records": {
                 "visit_id": expense.ftiq_visit_id.id if expense.ftiq_visit_id else False,
                 "attendance_id": expense.ftiq_attendance_id.id if expense.ftiq_attendance_id else False,
-                "task_id": self._safe_scoped_id("ftiq.daily.task", expense.ftiq_daily_task_id),
+                "task_id": self._safe_related_scoped_id(
+                    expense,
+                    "ftiq_daily_task_id",
+                    "ftiq.daily.task",
+                ),
             },
             "geo": {
                 "latitude": expense.ftiq_latitude,
@@ -1087,7 +1124,11 @@ class FtiqMobileApiBase(http.Controller):
             "linked_records": {
                 "visit_id": payment.ftiq_visit_id.id if payment.ftiq_visit_id else False,
                 "attendance_id": payment.ftiq_attendance_id.id if payment.ftiq_attendance_id else False,
-                "task_id": self._safe_scoped_id("ftiq.daily.task", payment.ftiq_daily_task_id),
+                "task_id": self._safe_related_scoped_id(
+                    payment,
+                    "ftiq_daily_task_id",
+                    "ftiq.daily.task",
+                ),
             },
             "receipt_image_url": self._image_url("account.payment", payment.id, "ftiq_receipt_image") if payment.ftiq_receipt_image else "",
             "available_actions": {
@@ -1135,7 +1176,11 @@ class FtiqMobileApiBase(http.Controller):
             "linked_records": {
                 "visit_id": stock_check.visit_id.id if stock_check.visit_id else False,
                 "attendance_id": stock_check.attendance_id.id if stock_check.attendance_id else False,
-                "task_id": self._safe_scoped_id("ftiq.daily.task", stock_check.ftiq_daily_task_id),
+                "task_id": self._safe_related_scoped_id(
+                    stock_check,
+                    "ftiq_daily_task_id",
+                    "ftiq.daily.task",
+                ),
             },
             "available_actions": {
                 "edit": is_owner and stock_check.state == "draft",
