@@ -19,6 +19,8 @@ class FtiqFirebasePushService(models.AbstractModel):
 
     _SCOPES = ("https://www.googleapis.com/auth/firebase.messaging",)
     _PLACEHOLDER_PREFIX = "REPLACE_WITH_"
+    _RESERVED_DATA_KEYS = {"from", "message_type", "collapse_key"}
+    _RESERVED_DATA_PREFIXES = ("google.", "gcm.", "gcm.notification.")
 
     def _is_placeholder(self, value):
         normalized = (value or "").strip()
@@ -97,6 +99,23 @@ class FtiqFirebasePushService(models.AbstractModel):
         credentials.refresh(Request())
         return credentials.token or "", project_id
 
+    def _normalize_data_payload(self, data):
+        normalized = {}
+        for key, value in (data or {}).items():
+            if value in (None, False):
+                continue
+            normalized_key = str(key or "").strip()
+            if not normalized_key:
+                continue
+            lowered_key = normalized_key.lower()
+            if (
+                lowered_key in self._RESERVED_DATA_KEYS
+                or lowered_key.startswith(self._RESERVED_DATA_PREFIXES)
+            ):
+                normalized_key = f"ftiq_{normalized_key.replace('.', '_')}"
+            normalized[normalized_key] = str(value)
+        return normalized
+
     def send_to_devices(self, devices, *, title, body, data=None, priority="normal"):
         active_devices = devices.filtered(
             lambda device: device.state == "active" and (device.push_token or "").strip()
@@ -113,11 +132,7 @@ class FtiqFirebasePushService(models.AbstractModel):
             "Authorization": f"Bearer {access_token}",
             "Content-Type": "application/json; charset=utf-8",
         }
-        normalized_data = {
-            str(key): str(value)
-            for key, value in (data or {}).items()
-            if value not in (None, False)
-        }
+        normalized_data = self._normalize_data_payload(data)
         invalid_devices = self.env["ftiq.mobile.device"]
         sent = 0
         failed = 0
