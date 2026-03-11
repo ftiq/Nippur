@@ -1,7 +1,7 @@
 from datetime import timedelta
 
 from odoo import _, fields, http
-from odoo.exceptions import ValidationError
+from odoo.exceptions import AccessError, ValidationError
 from odoo.fields import Command
 from odoo.http import request
 from odoo.osv import expression
@@ -55,6 +55,18 @@ class FtiqMobileOperationsApi(FtiqMobileApiBase):
     @http.route("/ftiq_mobile_api/v1/notifications", type="http", auth="user", methods=["GET"], csrf=False)
     def notifications(self, **kwargs):
         return self._dispatch(self._notifications)
+
+    @http.route("/ftiq_mobile_api/v1/notifications/read", type="http", auth="user", methods=["POST"], csrf=False)
+    def notifications_read(self, **kwargs):
+        return self._dispatch(self._notifications_read)
+
+    @http.route("/ftiq_mobile_api/v1/activities", type="http", auth="user", methods=["GET"], csrf=False)
+    def activities(self, **kwargs):
+        return self._dispatch(self._activities)
+
+    @http.route("/ftiq_mobile_api/v1/activities/<int:activity_id>/done", type="http", auth="user", methods=["POST"], csrf=False)
+    def activity_done(self, activity_id, **kwargs):
+        return self._dispatch(lambda: self._activity_done(activity_id))
 
     @http.route("/ftiq_mobile_api/v1/attendance/active", type="http", auth="user", methods=["GET"], csrf=False)
     def active_attendance(self, **kwargs):
@@ -355,6 +367,7 @@ class FtiqMobileOperationsApi(FtiqMobileApiBase):
         return self._ok(self._serialize_invoice(invoice, detailed=True))
 
     def _finance_workspace(self):
+        self._sync_live_activity_notifications()
         user = self._current_user()
         role = self._current_role()
         invoice_limit = self._args_int("invoice_limit", 8)
@@ -370,7 +383,15 @@ class FtiqMobileOperationsApi(FtiqMobileApiBase):
             ("payment_id", "!=", False),
         ]
         pending_collection_domain = [("ftiq_collection_state", "in", ("draft", "collected", "deposited"))]
-        alert_message_domain = [("message_type", "=", "alert")]
+        finance_notification_domain = [("category", "in", ("collection", "invoice", "finance", "system"))]
+        unread_finance_notification_domain = expression.AND([
+            finance_notification_domain,
+            [("is_read", "=", False)],
+        ])
+        overdue_schedule_domain = expression.AND([
+            collection_schedule_domain,
+            [("scheduled_date", "<", fields.Datetime.now())],
+        ])
 
         open_invoices = self._search_scoped(
             "account.move",
@@ -407,15 +428,11 @@ class FtiqMobileOperationsApi(FtiqMobileApiBase):
             schedule_count = 0
             overdue_schedule_count = 0
         notifications = self._search_scoped(
-            "ftiq.team.message",
+            "ftiq.mobile.notification",
+            finance_notification_domain,
             order="create_date desc, id desc",
             limit=notification_limit,
         )
-
-        overdue_schedule_domain = expression.AND([
-            collection_schedule_domain,
-            [("scheduled_date", "<", fields.Datetime.now())],
-        ])
 
         data = {
             "role": role,
@@ -434,32 +451,107 @@ class FtiqMobileOperationsApi(FtiqMobileApiBase):
                 "schedule_count": schedule_count,
                 "overdue_schedule_count": overdue_schedule_count,
                 "notification_count": self._search_scoped(
-                    "ftiq.team.message",
+                    "ftiq.mobile.notification",
+                    finance_notification_domain,
                 ).__len__(),
                 "alert_count": self._search_scoped(
-                    "ftiq.team.message",
-                    alert_message_domain,
+                    "ftiq.mobile.notification",
+                    unread_finance_notification_domain,
                 ).__len__(),
             },
             "collections": [self._serialize_collection(payment) for payment in collections],
             "invoices": [self._serialize_invoice(invoice) for invoice in open_invoices],
             "schedules": [self._serialize_task(task) for task in schedules],
-            "notifications": [self._serialize_team_message(message) for message in notifications],
+            "notifications": [self._serialize_mobile_notification(notification) for notification in notifications],
         }
         return self._ok(data)
 
     def _notifications(self):
+        self._sync_live_activity_notifications()
         limit = self._args_int("limit", 40)
-        messages = self._search_scoped(
-            "ftiq.team.message",
+        unread_only = self._args_bool("unread_only", False)
+        category = (request.httprequest.args.get("category") or "").strip()
+        domain = []
+        if unread_only:
+            domain.append(("is_read", "=", False))
+        if category:
+            domain.append(("category", "=", category))
+        notifications = self._search_scoped(
+            "ftiq.mobile.notification",
+            domain,
             order="create_date desc, id desc",
             limit=limit,
         )
-        items = [self._serialize_team_message(message) for message in messages]
+        items = [self._serialize_mobile_notification(notification) for notification in notifications]
         return self._ok(
             {
                 "items": items,
                 "count": len(items),
+                "unread_count": self._search_scoped(
+                    "ftiq.mobile.notification",
+                    expression.AND([domain, [("is_read", "=", False)]]) if domain else [("is_read", "=", False)],
+                ).__len__(),
+            }
+        )
+
+    def _notifications_read(self):
+        payload = self._json_body()
+        mark_all = self._payload_bool(payload, "mark_all", False)
+        ids = [
+            int(item)
+            for item in (payload.get("ids") or [])
+            if str(item).strip().isdigit()
+        ]
+        if mark_all:
+            notifications = self._search_scoped(
+                "ftiq.mobile.notification",
+                [("is_read", "=", False)],
+            )
+        else:
+            notifications = self._search_scoped(
+                "ftiq.mobile.notification",
+                [("id", "in", ids)] if ids else [("id", "=", 0)],
+            )
+        notifications.action_mark_read()
+        return self._ok(
+            {
+                "updated": len(notifications),
+                "summary": self._notification_summary(),
+            }
+        )
+
+    def _activities(self):
+        limit = self._args_int("limit", 40)
+        state = (request.httprequest.args.get("state") or "").strip()
+        model_name = (request.httprequest.args.get("model") or "").strip()
+        domain = []
+        if state:
+            domain.append(("state", "=", state))
+        if model_name:
+            domain.append(("res_model", "=", model_name))
+        activities = self._search_scoped(
+            "mail.activity",
+            domain,
+            order="date_deadline asc, id asc",
+            limit=limit,
+        )
+        items = [self._serialize_activity(activity) for activity in activities]
+        return self._ok({"items": items}, meta={"count": len(items)})
+
+    def _activity_done(self, activity_id):
+        payload = self._json_body()
+        activity = self._browse_scoped("mail.activity", activity_id).exists()
+        if not activity:
+            return self._error(_("Activity not found."), status=404, code="not_found")
+        feedback = (payload.get("feedback") or "").strip()
+        if feedback:
+            activity.action_feedback(feedback=feedback)
+        else:
+            activity.action_done()
+        return self._ok(
+            {
+                "activity_id": activity_id,
+                "summary": self._notification_summary(),
             }
         )
 
@@ -635,7 +727,7 @@ class FtiqMobileOperationsApi(FtiqMobileApiBase):
         task = self._browse_scoped("ftiq.daily.task", task_id).exists()
         if not task:
             return self._error(_("Task not found."), status=404, code="not_found")
-        return self._ok(self._serialize_task(task))
+        return self._ok(self._serialize_task(task, detailed=True))
 
     def _task_save(self, task_id):
         payload = self._json_body()
@@ -666,7 +758,7 @@ class FtiqMobileOperationsApi(FtiqMobileApiBase):
         if values:
             task.write(values)
         self._remember_mobile_request(payload, task)
-        return self._ok(self._serialize_task(task))
+        return self._ok(self._serialize_task(task, detailed=True))
 
     def _task_action(self, task_id, method_name):
         payload = self._json_body()
@@ -686,7 +778,7 @@ class FtiqMobileOperationsApi(FtiqMobileApiBase):
             self._ensure_current_user_owns(task, "change this task")
         getattr(task.with_context(**self._geo_context_from_payload(payload)), method_name)()
         self._remember_mobile_request(payload, task)
-        return self._ok(self._serialize_task(task))
+        return self._ok(self._serialize_task(task, detailed=True))
 
     def _expenses(self):
         limit = self._args_int("limit", 20)

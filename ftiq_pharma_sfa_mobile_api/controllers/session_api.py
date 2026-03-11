@@ -140,6 +140,7 @@ class FtiqMobileSessionApi(FtiqMobileApiBase):
             "company": self._serialize_company(user.company_id),
             "active_attendance": self._serialize_attendance(attendance),
             "today_tasks": [self._serialize_task(task) for task in today_tasks],
+            "notification_summary": self._notification_summary(),
             "mobile_runtime": self._serialize_mobile_runtime(
                 platform=platform,
                 app_version=app_version,

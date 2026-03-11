@@ -5,6 +5,7 @@ from odoo import _, fields, http
 from odoo.exceptions import AccessDenied, AccessError, UserError, ValidationError
 from odoo.http import request
 from odoo.osv import expression
+from odoo.tools.mail import html2plaintext
 
 
 _logger = logging.getLogger(__name__)
@@ -398,6 +399,16 @@ class FtiqMobileApiBase(http.Controller):
                     ]),
                 ])
             return [("user_id", "=", user.id)]
+        if model_name == "ftiq.mobile.notification":
+            return [
+                ("company_id", "=", user.company_id.id),
+                ("user_id", "=", user.id),
+            ]
+        if model_name == "mail.activity":
+            return [
+                ("user_id", "=", user.id),
+                ("active", "=", True),
+            ]
         if model_name == "ftiq.mobile.runtime.policy":
             return [("company_id", "=", user.company_id.id)]
         return []
@@ -451,9 +462,27 @@ class FtiqMobileApiBase(http.Controller):
             return f"ftiq://task?id={task.id}&message_id={message.id}"
         return f"ftiq://notifications?message_id={message.id}"
 
+    def _notification_summary(self):
+        self._sync_live_activity_notifications()
+        unread_domain = [("is_read", "=", False)]
+        return {
+            "unread_count": self._search_scoped(
+                "ftiq.mobile.notification",
+                unread_domain,
+            ).__len__(),
+            "total_count": self._search_scoped(
+                "ftiq.mobile.notification",
+            ).__len__(),
+        }
+
     def _owner_field_for(self, record_or_model):
         model_name = record_or_model if isinstance(record_or_model, str) else getattr(record_or_model, "_name", "")
         return self._OWNER_FIELD_BY_MODEL.get(model_name)
+
+    def _sync_live_activity_notifications(self):
+        request.env["ftiq.mobile.notification"].sync_live_activities_for_user(
+            self._current_user()
+        )
 
     def _record_owner(self, record):
         field_name = self._owner_field_for(record)
@@ -748,6 +777,7 @@ class FtiqMobileApiBase(http.Controller):
             data["linked_orders"] = [self._serialize_order(order) for order in visit.sale_order_ids]
             data["linked_collections"] = [self._serialize_collection(payment) for payment in visit.payment_ids]
             data["linked_stock_checks"] = [self._serialize_stock_check(check) for check in visit.stock_check_ids]
+            data["activities"] = self._serialize_activities_for_record(visit)
         return data
 
     def _serialize_plan(self, plan, detailed=False):
@@ -794,10 +824,10 @@ class FtiqMobileApiBase(http.Controller):
             } for line in plan.line_ids.sorted(key=lambda item: ((item.scheduled_date or fields.Date.today()), item.sequence, item.id))]
         return data
 
-    def _serialize_task(self, task):
+    def _serialize_task(self, task, detailed=False):
         is_owner = self._is_current_user_owner(task)
         role = self._current_role()
-        return {
+        data = {
             "id": task.id,
             "name": task.display_name,
             "state": task.state,
@@ -844,6 +874,9 @@ class FtiqMobileApiBase(http.Controller):
                 "return": task.state == "submitted" and role in {"supervisor", "manager"},
             },
         }
+        if detailed:
+            data["activities"] = self._serialize_activities_for_record(task)
+        return data
 
     def _serialize_team_message(self, message):
         task = self._safe_related_record(message, "task_id", "ftiq.daily.task")
@@ -868,6 +901,93 @@ class FtiqMobileApiBase(http.Controller):
             "deep_link": self._message_deep_link(message, task_record=task),
             "is_team_wide": bool(message.is_team_wide),
         }
+
+    def _serialize_mobile_notification(self, notification):
+        payload = {}
+        try:
+            payload = json.loads(notification.payload_json or "{}")
+            if not isinstance(payload, dict):
+                payload = {}
+        except Exception:
+            payload = {}
+        task = request.env["ftiq.daily.task"]
+        if notification.target_model == "ftiq.daily.task" and notification.target_res_id:
+            task = self._browse_scoped("ftiq.daily.task", notification.target_res_id).exists()
+        message_type = payload.get("message_type") or ("alert" if notification.priority == "urgent" else "note")
+        return {
+            "id": notification.id,
+            "subject": notification.name or "",
+            "title": notification.name or "",
+            "body": notification.body or "",
+            "message_type": message_type,
+            "category": notification.category or "system",
+            "priority": notification.priority or "normal",
+            "create_date": fields.Datetime.to_string(notification.create_date) if notification.create_date else None,
+            "read_date": fields.Datetime.to_string(notification.read_date) if notification.read_date else None,
+            "is_read": bool(notification.is_read),
+            "author": self._serialize_user(notification.author_id) if notification.author_id else {},
+            "target": {
+                "model": notification.target_model or "",
+                "id": notification.target_res_id or False,
+                "name": notification.target_name or "",
+            },
+            "task": {
+                "id": task.id if task else False,
+                "name": task.display_name if task else "",
+                "state": task.state if task else "",
+            },
+            "source_model": notification.source_model or "",
+            "source_res_id": notification.source_res_id or False,
+            "deep_link": notification.deep_link or "",
+            "payload": payload,
+        }
+
+    def _serialize_activity(self, activity):
+        target = activity._mobile_target_record()
+        scoped_target = self._safe_scoped_record(activity.res_model, target)
+        target_id = scoped_target.id if scoped_target else False
+        target_name = scoped_target.display_name if scoped_target else activity.res_name or ""
+        deep_link = request.env["ftiq.mobile.notification"].build_target_deep_link(
+            target_model=activity.res_model,
+            target_res_id=target_id,
+        )
+        return {
+            "id": activity.id,
+            "summary": activity.summary or activity.activity_type_id.display_name or "",
+            "note": html2plaintext(activity.note or "").strip(),
+            "state": activity.state or "",
+            "date_deadline": str(activity.date_deadline or ""),
+            "activity_type": {
+                "id": activity.activity_type_id.id if activity.activity_type_id else False,
+                "name": activity.activity_type_id.display_name if activity.activity_type_id else "",
+                "icon": activity.icon or "",
+                "category": activity.activity_category or "",
+            },
+            "assigned_user": self._serialize_user(activity.user_id) if activity.user_id else {},
+            "target": {
+                "model": activity.res_model or "",
+                "id": target_id,
+                "name": target_name,
+            },
+            "deep_link": deep_link,
+            "available_actions": {
+                "mark_done": bool(activity.can_write),
+            },
+        }
+
+    def _serialize_activities_for_record(self, record):
+        if not record or not getattr(record, "activity_ids", False):
+            return []
+        activities = request.env["mail.activity"].search(
+            [
+                ("res_model", "=", record._name),
+                ("res_id", "=", record.id),
+                ("user_id", "=", self._current_user().id),
+                ("active", "=", True),
+            ],
+            order="date_deadline asc, id asc",
+        )
+        return [self._serialize_activity(activity) for activity in activities]
 
     def _serialize_order(self, order, detailed=False):
         is_owner = self._is_current_user_owner(order)
@@ -916,6 +1036,7 @@ class FtiqMobileApiBase(http.Controller):
                 "subtotal": line.price_subtotal,
                 "total": line.price_total,
             } for line in order.order_line.filtered(lambda line: not line.display_type)]
+            data["activities"] = self._serialize_activities_for_record(order)
         return data
 
     def _serialize_invoice(self, invoice, detailed=False):
@@ -1029,6 +1150,7 @@ class FtiqMobileApiBase(http.Controller):
                         }
                         for line in collection_lines
                     ],
+                    "activities": self._serialize_activities_for_record(invoice),
                 }
             )
         return data
@@ -1088,6 +1210,7 @@ class FtiqMobileApiBase(http.Controller):
         }
         if detailed:
             data["attachment_count"] = max(expense.nb_attachment, 1 if expense.ftiq_receipt_image else 0)
+            data["activities"] = self._serialize_activities_for_record(expense)
         return data
 
     def _serialize_collection(self, payment, detailed=False):
@@ -1152,6 +1275,7 @@ class FtiqMobileApiBase(http.Controller):
                 "remaining_amount": line.remaining_amount,
             } for line in payment.ftiq_collection_line_ids]
             data["open_invoices"] = [self._serialize_invoice(invoice) for invoice in payment._get_ftiq_open_invoices()]
+            data["activities"] = self._serialize_activities_for_record(payment)
         return data
 
     def _serialize_stock_check(self, stock_check, detailed=False):
@@ -1203,6 +1327,7 @@ class FtiqMobileApiBase(http.Controller):
                 "note": line.note or "",
                 "sequence": line.sequence,
             } for line in stock_check.line_ids.sorted(key=lambda line: (line.sequence, line.id))]
+            data["activities"] = self._serialize_activities_for_record(stock_check)
         return data
 
     def _serialize_product(self, product):
