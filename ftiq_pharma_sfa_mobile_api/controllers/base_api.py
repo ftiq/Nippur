@@ -153,6 +153,54 @@ class FtiqMobileApiBase(http.Controller):
             "user_agent": user_agent[:512],
         }
 
+    def _mobile_request_uid(self, payload):
+        value = ""
+        if isinstance(payload, dict):
+            value = payload.get("mobile_request_uid") or payload.get("request_uid") or ""
+        return str(value).strip()[:128]
+
+    def _mobile_request_log(self, request_uid):
+        if not request_uid:
+            return request.env["ftiq.mobile.request.log"]
+        return request.env["ftiq.mobile.request.log"].search([
+            ("request_uid", "=", request_uid),
+            ("user_id", "=", self._current_user().id),
+            ("company_id", "=", self._current_user().company_id.id),
+            ("request_path", "=", request.httprequest.path),
+        ], limit=1)
+
+    def _replay_mobile_request(self, payload, serializer, *, detailed=True):
+        request_uid = self._mobile_request_uid(payload)
+        if not request_uid:
+            return None
+        request_log = self._mobile_request_log(request_uid)
+        if not request_log:
+            return None
+        record = request.env[request_log.res_model].browse(request_log.res_id).exists()
+        if not record:
+            return self._error(
+                _("The queued mobile request no longer points to an available record."),
+                status=409,
+                code="stale_mobile_request",
+            )
+        return self._ok(serializer(record, detailed=detailed))
+
+    def _remember_mobile_request(self, payload, record):
+        request_uid = self._mobile_request_uid(payload)
+        if not request_uid or not record:
+            return
+        request_log = self._mobile_request_log(request_uid)
+        if request_log:
+            return
+        request.env["ftiq.mobile.request.log"].create({
+            "request_uid": request_uid,
+            "request_path": request.httprequest.path,
+            "user_id": self._current_user().id,
+            "company_id": self._current_user().company_id.id,
+            "res_model": record._name,
+            "res_id": record.id,
+        })
+
     def _image_url(self, model, record_id, field_name):
         if not record_id:
             return ""
