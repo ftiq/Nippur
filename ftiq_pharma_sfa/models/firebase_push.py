@@ -216,7 +216,7 @@ class FtiqFirebasePushService(models.AbstractModel):
             data={
                 "deep_link": self._message_deep_link(message),
                 "message_id": message.id,
-                "message_type": message.message_type or "",
+                "notification_type": message.message_type or "",
                 "task_id": message.task_id.id if message.task_id else "",
             },
         )
