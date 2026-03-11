@@ -52,6 +52,10 @@ class FtiqMobileOperationsApi(FtiqMobileApiBase):
     def finance_workspace(self, **kwargs):
         return self._dispatch(self._finance_workspace)
 
+    @http.route("/ftiq_mobile_api/v1/notifications", type="http", auth="user", methods=["GET"], csrf=False)
+    def notifications(self, **kwargs):
+        return self._dispatch(self._notifications)
+
     @http.route("/ftiq_mobile_api/v1/attendance/active", type="http", auth="user", methods=["GET"], csrf=False)
     def active_attendance(self, **kwargs):
         return self._dispatch(self._active_attendance)
@@ -443,6 +447,21 @@ class FtiqMobileOperationsApi(FtiqMobileApiBase):
             "notifications": [self._serialize_team_message(message) for message in notifications],
         }
         return self._ok(data)
+
+    def _notifications(self):
+        limit = self._args_int("limit", 40)
+        messages = self._search_scoped(
+            "ftiq.team.message",
+            order="create_date desc, id desc",
+            limit=limit,
+        )
+        items = [self._serialize_team_message(message) for message in messages]
+        return self._ok(
+            {
+                "items": items,
+                "count": len(items),
+            }
+        )
 
     def _active_attendance(self):
         user = self._current_user()

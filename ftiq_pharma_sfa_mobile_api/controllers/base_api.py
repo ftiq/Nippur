@@ -428,6 +428,12 @@ class FtiqMobileApiBase(http.Controller):
         scoped_record = self._safe_scoped_record(model_name, record)
         return scoped_record.id if scoped_record else False
 
+    def _message_deep_link(self, message, task_record=None):
+        task = task_record if task_record is not None else self._safe_scoped_record("ftiq.daily.task", message.task_id)
+        if task:
+            return f"ftiq://task?id={task.id}&message_id={message.id}"
+        return f"ftiq://notifications?message_id={message.id}"
+
     def _owner_field_for(self, record_or_model):
         model_name = record_or_model if isinstance(record_or_model, str) else getattr(record_or_model, "_name", "")
         return self._OWNER_FIELD_BY_MODEL.get(model_name)
@@ -838,6 +844,7 @@ class FtiqMobileApiBase(http.Controller):
                 "name": task.display_name if task else "",
                 "state": task.state if task else "",
             },
+            "deep_link": self._message_deep_link(message, task_record=task),
             "is_team_wide": bool(message.is_team_wide),
         }
 
