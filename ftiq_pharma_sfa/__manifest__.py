@@ -47,8 +47,10 @@ Features:
         'data/client_category_data.xml',
         'data/task_profile_data.xml',
 
+
         'views/dashboard_views.xml',
         'views/config_views.xml',
+        'views/mobile_runtime_views.xml',
         'views/client_question_views.xml',
         'views/res_partner_views.xml',
         'views/field_attendance_views.xml',
@@ -64,6 +66,7 @@ Features:
         'views/visit_views.xml',
         'views/weekly_plan_views.xml',
         'views/plan_wizard_views.xml',
+        'views/team_message_views.xml',
         'views/menu_views.xml',
         'report/visit_report.xml',
         'report/visit_report_templates.xml',
@@ -85,8 +88,6 @@ Features:
             'ftiq_pharma_sfa/static/src/css/geo_map.css',
         ],
     },
-    'demo': [
-    ],
     'installable': True,
     'application': True,
     'license': 'LGPL-3',
