@@ -1,5 +1,10 @@
+import logging
+
 from odoo import _, api, fields, models
 from odoo.exceptions import AccessError, ValidationError
+
+
+_logger = logging.getLogger(__name__)
 
 
 class FtiqTeamMessage(models.Model):
@@ -105,6 +110,16 @@ class FtiqTeamMessage(models.Model):
             recipients |= self.team_id.user_id.partner_id
         return (recipients - self.author_id.partner_id).filtered(lambda partner: partner)
 
+    def _push_recipient_users(self):
+        self.ensure_one()
+        if self.target_user_id:
+            recipients = self.target_user_id | self.team_id.user_id
+        else:
+            recipients = self.team_id.member_ids | self.team_id.user_id
+        return (recipients - self.author_id).filtered(
+            lambda user: not user.share and user.company_id == self.company_id
+        )
+
     def _post_initial_chatter_message(self):
         for record in self:
             recipients = record._recipient_partners()
@@ -116,6 +131,17 @@ class FtiqTeamMessage(models.Model):
                 partner_ids=recipients.ids,
                 subtype_xmlid="mail.mt_note",
             )
+
+    def _dispatch_push_notifications(self):
+        push_service = self.env["ftiq.firebase.push.service"]
+        for record in self:
+            try:
+                push_service.send_team_message_push(record)
+            except Exception:
+                _logger.exception(
+                    "FTIQ team message push delivery failed for message %s",
+                    record.id,
+                )
 
     @api.model_create_multi
     def create(self, vals_list):
@@ -132,4 +158,5 @@ class FtiqTeamMessage(models.Model):
             self._validate_payload(vals)
         records = super().create(vals_list)
         records._post_initial_chatter_message()
+        records._dispatch_push_notifications()
         return records

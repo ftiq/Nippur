@@ -46,6 +46,11 @@ Features:
         'data/ir_sequence_data.xml',
         'data/client_category_data.xml',
         'data/task_profile_data.xml',
+        'data/firebase_config_data.xml',
+        'demo/demo_data.xml',
+        'demo/demo_operational_data.xml',
+        'demo/demo_arabic_showcase.xml',
+
 
 
         'views/dashboard_views.xml',

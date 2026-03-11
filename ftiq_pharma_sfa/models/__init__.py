@@ -22,4 +22,6 @@ from . import daily_task_refactor
 from . import project
 from . import activity_feed
 from . import team_message
+from . import firebase_push
+from . import mobile_request_log
 from . import res_config_settings

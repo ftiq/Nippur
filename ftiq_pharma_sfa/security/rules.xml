@@ -382,6 +382,33 @@
         <field name="groups" eval="[(4, ref('group_ftiq_manager'))]"/>
     </record>
 
+    <record id="ftiq_mobile_request_log_rule_rep" model="ir.rule">
+        <field name="name">Mobile Request Log: Rep sees own requests</field>
+        <field name="model_id" ref="model_ftiq_mobile_request_log"/>
+        <field name="domain_force">[('company_id', '=', user.company_id.id), ('user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_rep'))]"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="ftiq_mobile_request_log_rule_supervisor" model="ir.rule">
+        <field name="name">Mobile Request Log: Supervisor sees own requests</field>
+        <field name="model_id" ref="model_ftiq_mobile_request_log"/>
+        <field name="domain_force">[('company_id', '=', user.company_id.id), ('user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_supervisor'))]"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="ftiq_mobile_request_log_rule_manager" model="ir.rule">
+        <field name="name">Mobile Request Log: Manager sees own requests</field>
+        <field name="model_id" ref="model_ftiq_mobile_request_log"/>
+        <field name="domain_force">[('company_id', '=', user.company_id.id), ('user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_manager'))]"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
     <record id="ftiq_sale_order_rule_rep" model="ir.rule">
         <field name="name">Sale Order: Rep sees own field orders</field>
         <field name="model_id" ref="sale.model_sale_order"/>
