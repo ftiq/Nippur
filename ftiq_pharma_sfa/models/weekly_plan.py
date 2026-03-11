@@ -59,7 +59,7 @@ class FtiqWeeklyPlan(models.Model):
 
     @api.model
     def _get_plannable_teams(self):
-        Team = self.env['crm.team'].sudo()
+        Team = self.env['crm.team']
         user = self.env.user
         if self.env.su or user.has_group('ftiq_pharma_sfa.group_ftiq_manager'):
             return Team.search([])

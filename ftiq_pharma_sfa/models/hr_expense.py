@@ -23,6 +23,8 @@ class HrExpense(models.Model):
         ('parking', 'Parking'),
         ('other', 'Other'),
     ], string='Field Expense Type')
+    ftiq_receipt_image = fields.Binary(string='Receipt Image', attachment=True)
+    ftiq_receipt_image_name = fields.Char(string='Receipt Image Name')
 
     @api.model_create_multi
     def create(self, vals_list):

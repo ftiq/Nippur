@@ -24,16 +24,16 @@ class FtiqDashboardController(http.Controller):
         role, scope_users = self._get_scope_users(user)
         scope_user_ids = scope_users.ids or [user.id]
 
-        Visit = env['ftiq.visit'].sudo()
-        PlanLine = env['ftiq.weekly.plan.line'].sudo()
-        SaleOrder = env['sale.order'].sudo()
-        Payment = env['account.payment'].sudo()
-        Attendance = env['ftiq.field.attendance'].sudo()
-        DailyTask = env['ftiq.daily.task'].sudo()
-        StockCheck = env['ftiq.stock.check'].sudo()
-        Invoice = env['account.move'].sudo()
-        Partner = env['res.partner'].sudo()
-        Target = env['ftiq.sales.target'].sudo()
+        Visit = env['ftiq.visit']
+        PlanLine = env['ftiq.weekly.plan.line']
+        SaleOrder = env['sale.order']
+        Payment = env['account.payment']
+        Attendance = env['ftiq.field.attendance']
+        DailyTask = env['ftiq.daily.task']
+        StockCheck = env['ftiq.stock.check']
+        Invoice = env['account.move']
+        Partner = env['res.partner']
+        Target = env['ftiq.sales.target']
         ActivityFeed = env['ftiq.activity.feed']
 
         visit_scope_domain = [('user_id', 'in', scope_user_ids)]
@@ -42,7 +42,7 @@ class FtiqDashboardController(http.Controller):
         payment_scope_domain = [('ftiq_user_id', 'in', scope_user_ids), ('is_field_collection', '=', True)]
         attendance_scope_domain = [('user_id', 'in', scope_user_ids)]
         task_scope_domain = [('user_id', 'in', scope_user_ids)]
-        invoice_scope_domain = [('invoice_user_id', 'in', scope_user_ids), ('move_type', '=', 'out_invoice')]
+        invoice_scope_domain = [('ftiq_access_user_id', 'in', scope_user_ids), ('is_field_invoice', '=', True)]
 
         month_start_dt = fields.Datetime.to_datetime(month_start)
         next_month_dt = fields.Datetime.to_datetime(next_month_start)
@@ -294,7 +294,7 @@ class FtiqDashboardController(http.Controller):
         }
 
     def _get_scope_users(self, user):
-        Teams = request.env['crm.team'].sudo()
+        Teams = request.env['crm.team']
         is_manager = user.has_group('ftiq_pharma_sfa.group_ftiq_manager')
         is_supervisor = user.has_group('ftiq_pharma_sfa.group_ftiq_supervisor')
         if is_manager:

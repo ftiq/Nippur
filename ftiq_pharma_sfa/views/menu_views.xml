@@ -2,7 +2,7 @@
 <odoo>
 
     <menuitem id="menu_ftiq_pharma_sfa_root"
-              name="Pharma SFA"
+              name="Sales automation"
               web_icon="ftiq_pharma_sfa,static/description/logo.png"
               sequence="45"/>
 
@@ -117,6 +117,12 @@
               parent="menu_ftiq_operations"
               action="action_ftiq_daily_task"
               sequence="35"/>
+    <menuitem id="menu_ftiq_team_messages"
+              name="Team Messages"
+              parent="menu_ftiq_operations"
+              action="action_ftiq_team_message"
+              groups="ftiq_pharma_sfa.group_ftiq_supervisor,ftiq_pharma_sfa.group_ftiq_manager"
+              sequence="37"/>
     <menuitem id="menu_ftiq_field_orders"
               name="Field Orders"
               parent="menu_ftiq_operations"
@@ -286,6 +292,16 @@
               parent="menu_ftiq_config"
               action="action_ftiq_color_code"
               sequence="100"/>
+    <menuitem id="menu_ftiq_config_mobile_runtime"
+              name="Mobile Runtime Policy"
+              parent="menu_ftiq_config"
+              action="action_ftiq_mobile_runtime_policy"
+              sequence="110"/>
+    <menuitem id="menu_ftiq_config_mobile_devices"
+              name="Mobile Devices"
+              parent="menu_ftiq_config"
+              action="action_ftiq_mobile_device"
+              sequence="120"/>
 
     <record id="menu_ftiq_attendance" model="ir.ui.menu">
         <field name="active" eval="False"/>

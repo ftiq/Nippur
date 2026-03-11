@@ -6,14 +6,20 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 18.0+e-20250101\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-03-07 16:56+0000\n"
-"PO-Revision-Date: 2026-03-07 16:56+0000\n"
+"POT-Creation-Date: 2026-03-08 16:49+0000\n"
+"PO-Revision-Date: 2026-03-08 16:49+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: \n"
+
+#. module: ftiq_pharma_sfa
+#. odoo-python
+#: code:addons/ftiq_pharma_sfa/models/weekly_plan.py:0
+msgid "%(team)s (%(date)s)"
+msgstr "%(team)s (%(date)s)"
 
 #. module: ftiq_pharma_sfa
 #. odoo-python
@@ -25,6 +31,7 @@ msgstr "%s (نسخة)"
 #. module: ftiq_pharma_sfa
 #. odoo-python
 #: code:addons/ftiq_pharma_sfa/models/weekly_plan.py:0
+#: code:addons/ftiq_pharma_sfa/models/weekly_plan_refactor.py:0
 msgid "%s - %s"
 msgstr "%s - %s"
 
@@ -35,19 +42,40 @@ msgid "%s Task"
 msgstr "مهمة %s"
 
 #. module: ftiq_pharma_sfa
-#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_plan_wizard_form
-msgid "01 Type"
-msgstr "01 النوع"
+#. odoo-python
+#: code:addons/ftiq_pharma_sfa/models/activity_feed.py:0
+msgid "%s collection(s)"
+msgstr "%s عملية تحصيل"
 
 #. module: ftiq_pharma_sfa
-#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_plan_wizard_form
-msgid "02 Configure"
-msgstr "02 التهيئة"
+#. odoo-python
+#: code:addons/ftiq_pharma_sfa/models/activity_feed.py:0
+msgid "%s line(s)"
+msgstr "%s بند"
 
 #. module: ftiq_pharma_sfa
-#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_plan_wizard_form
-msgid "03 Clients"
-msgstr "03 العملاء"
+#. odoo-python
+#: code:addons/ftiq_pharma_sfa/models/activity_feed.py:0
+msgid "%s open invoice(s)"
+msgstr "%s فاتورة مفتوحة"
+
+#. module: ftiq_pharma_sfa
+#. odoo-python
+#: code:addons/ftiq_pharma_sfa/models/activity_feed.py:0
+msgid "%s order(s)"
+msgstr "%s طلب"
+
+#. module: ftiq_pharma_sfa
+#. odoo-python
+#: code:addons/ftiq_pharma_sfa/models/activity_feed.py:0
+msgid "%s profile"
+msgstr "ملف %s"
+
+#. module: ftiq_pharma_sfa
+#. odoo-python
+#: code:addons/ftiq_pharma_sfa/models/activity_feed.py:0
+msgid "%s stock check(s)"
+msgstr "%s جرد مخزون"
 
 #. module: ftiq_pharma_sfa
 #: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.report_visit_template
@@ -105,8 +133,18 @@ msgstr ""
 
 #. module: ftiq_pharma_sfa
 #: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_plan_wizard_form
-msgid "<span class=\"ftiq_eyebrow\">Client Search</span>"
-msgstr "<span class=\"ftiq_eyebrow\">بحث عن العملاء</span>"
+msgid "<span class=\"ftiq_eyebrow\">Activity</span>"
+msgstr "<span class=\"ftiq_eyebrow\">النشاط</span>"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_plan_wizard_form
+msgid "<span class=\"ftiq_eyebrow\">Classification</span>"
+msgstr "<span class=\"ftiq_eyebrow\">التصنيف</span>"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_plan_wizard_form
+msgid "<span class=\"ftiq_eyebrow\">Client Filters</span>"
+msgstr "<span class=\"ftiq_eyebrow\">مرشحات العملاء</span>"
 
 #. module: ftiq_pharma_sfa
 #: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_plan_wizard_form
@@ -115,13 +153,13 @@ msgstr "<span class=\"ftiq_eyebrow\">اختيار العملاء</span>"
 
 #. module: ftiq_pharma_sfa
 #: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_plan_wizard_form
-msgid "<span class=\"ftiq_eyebrow\">Data Quality</span>"
-msgstr "<span class=\"ftiq_eyebrow\">جودة البيانات</span>"
+msgid "<span class=\"ftiq_eyebrow\">Client</span>"
+msgstr "<span class=\"ftiq_eyebrow\">العميل</span>"
 
 #. module: ftiq_pharma_sfa
 #: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_plan_wizard_form
-msgid "<span class=\"ftiq_eyebrow\">Execution Notes</span>"
-msgstr "<span class=\"ftiq_eyebrow\">ملاحظات التنفيذ</span>"
+msgid "<span class=\"ftiq_eyebrow\">Execution Note</span>"
+msgstr "<span class=\"ftiq_eyebrow\">ملاحظة التنفيذ</span>"
 
 #. module: ftiq_pharma_sfa
 #: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_plan_wizard_form
@@ -130,23 +168,116 @@ msgstr "<span class=\"ftiq_eyebrow\">مخطط التنفيذ</span>"
 
 #. module: ftiq_pharma_sfa
 #: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_plan_wizard_form
-msgid "<span class=\"ftiq_eyebrow\">Plan Identity</span>"
-msgstr "<span class=\"ftiq_eyebrow\">هوية الخطة</span>"
+msgid "<span class=\"ftiq_eyebrow\">Plan Setup</span>"
+msgstr "<span class=\"ftiq_eyebrow\">إعداد الخطة</span>"
 
 #. module: ftiq_pharma_sfa
 #: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_plan_wizard_form
-msgid "<span class=\"ftiq_eyebrow\">Segmentation</span>"
-msgstr "<span class=\"ftiq_eyebrow\">التقسيم</span>"
+msgid "<span class=\"ftiq_eyebrow\">Verification</span>"
+msgstr "<span class=\"ftiq_eyebrow\">التحقق</span>"
 
 #. module: ftiq_pharma_sfa
 #: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_plan_wizard_form
-msgid "<span class=\"ftiq_eyebrow\">Team Scope</span>"
-msgstr "<span class=\"ftiq_eyebrow\">نطاق الفريق</span>"
+msgid ""
+"<span class=\"ftiq_plan_wizard_mode_icon\">\n"
+"                                    <i class=\"fa fa-map-marker\"/>\n"
+"                                </span>\n"
+"                                <span class=\"ftiq_plan_wizard_mode_body\">\n"
+"                                    <span class=\"ftiq_plan_wizard_mode_title\">Clients GEO</span>\n"
+"                                    <span class=\"ftiq_plan_wizard_mode_text\">Open the map, draw an area, and review only the clients located inside that zone.</span>\n"
+"                                </span>"
+msgstr ""
+"<span class=\"ftiq_plan_wizard_mode_icon\">\n"
+"                                    <i class=\"fa fa-map-marker\"/>\n"
+"                                </span>\n"
+"                                <span class=\"ftiq_plan_wizard_mode_body\">\n"
+"                                    <span class=\"ftiq_plan_wizard_mode_title\">عملاء GEO</span>\n"
+"                                    <span class=\"ftiq_plan_wizard_mode_text\">افتح الخريطة وارسم منطقة، ثم راجع العملاء الموجودين داخل تلك المنطقة فقط.</span>\n"
+"                                </span>"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_plan_wizard_form
+msgid ""
+"<span class=\"ftiq_plan_wizard_mode_icon\">\n"
+"                                    <i class=\"fa fa-sliders\"/>\n"
+"                                </span>\n"
+"                                <span class=\"ftiq_plan_wizard_mode_body\">\n"
+"                                    <span class=\"ftiq_plan_wizard_mode_title\">Clients Select</span>\n"
+"                                    <span class=\"ftiq_plan_wizard_mode_text\">Filter by country, city, area, category, specialty, and other client attributes.</span>\n"
+"                                </span>"
+msgstr ""
+"<span class=\"ftiq_plan_wizard_mode_icon\">\n"
+"                                    <i class=\"fa fa-sliders\"/>\n"
+"                                </span>\n"
+"                                <span class=\"ftiq_plan_wizard_mode_body\">\n"
+"                                    <span class=\"ftiq_plan_wizard_mode_title\">اختيار العملاء</span>\n"
+"                                    <span class=\"ftiq_plan_wizard_mode_text\">رشِّح حسب الدولة والمدينة والمنطقة والفئة والتخصص وغيرها من خصائص العميل.</span>\n"
+"                                </span>"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_plan_wizard_form
+msgid ""
+"<span class=\"ftiq_plan_wizard_progress_index\">1</span>\n"
+"                                <span class=\"ftiq_plan_wizard_progress_label\">Type</span>"
+msgstr ""
+"<span class=\"ftiq_plan_wizard_progress_index\">1</span>\n"
+"                                <span class=\"ftiq_plan_wizard_progress_label\">النوع</span>"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_plan_wizard_form
+msgid ""
+"<span class=\"ftiq_plan_wizard_progress_index\">2</span>\n"
+"                                <span class=\"ftiq_plan_wizard_progress_label\">Configure</span>"
+msgstr ""
+"<span class=\"ftiq_plan_wizard_progress_index\">2</span>\n"
+"                                <span class=\"ftiq_plan_wizard_progress_label\">الإعداد</span>"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_plan_wizard_form
+msgid ""
+"<span class=\"ftiq_plan_wizard_progress_index\">3</span>\n"
+"                                <span class=\"ftiq_plan_wizard_progress_label\">Clients</span>"
+msgstr ""
+"<span class=\"ftiq_plan_wizard_progress_index\">3</span>\n"
+"                                <span class=\"ftiq_plan_wizard_progress_label\">العملاء</span>"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_plan_wizard_form
+msgid ""
+"<span class=\"ftiq_plan_wizard_progress_index\">4</span>\n"
+"                                <span class=\"ftiq_plan_wizard_progress_label\">Set</span>"
+msgstr ""
+"<span class=\"ftiq_plan_wizard_progress_index\">4</span>\n"
+"                                <span class=\"ftiq_plan_wizard_progress_label\">الضبط</span>"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_plan_wizard_form
+msgid ""
+"<span class=\"ftiq_plan_wizard_result_chip\" invisible=\"selection_mode == 'geo'\">Mode: Clients Select</span>\n"
+"                                        <span class=\"ftiq_plan_wizard_result_chip\" invisible=\"selection_mode != 'geo'\">Mode: Clients GEO</span>"
+msgstr ""
+"<span class=\"ftiq_plan_wizard_result_chip\" invisible=\"selection_mode == 'geo'\">الوضع: اختيار العملاء</span>\n"
+"                                        <span class=\"ftiq_plan_wizard_result_chip\" invisible=\"selection_mode != 'geo'\">الوضع: عملاء GEO</span>"
 
 #. module: ftiq_pharma_sfa
 #: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_field_attendance_form
 msgid "<span class=\"o_stat_text\">Entry Document</span>"
 msgstr "<span class=\"o_stat_text\">مستند الدخول</span>"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_plan_wizard_form
+msgid "<span>Available:</span>"
+msgstr "<span>المتاح:</span>"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_res_partner_form_inherit
+msgid "<span>Client Search</span>"
+msgstr "<span>بحث العملاء</span>"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_plan_wizard_form
+msgid "<span>Inside map:</span>"
+msgstr "<span>داخل الخريطة:</span>"
 
 #. module: ftiq_pharma_sfa
 #: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_res_partner_form_inherit
@@ -160,8 +291,23 @@ msgstr "<strong>العميل:</strong>"
 
 #. module: ftiq_pharma_sfa
 #: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.report_visit_template
+msgid "<strong>Detail Lines:</strong>"
+msgstr "<strong>سطور التفاصيل:</strong>"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.report_visit_template
 msgid "<strong>End GPS:</strong>"
 msgstr "<strong>إحداثيات النهاية:</strong>"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.report_visit_template
+msgid "<strong>Material Minutes:</strong>"
+msgstr "<strong>دقائق المواد:</strong>"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.report_visit_template
+msgid "<strong>Materials Logged:</strong>"
+msgstr "<strong>المواد المسجلة:</strong>"
 
 #. module: ftiq_pharma_sfa
 #: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.report_visit_template
@@ -170,14 +316,50 @@ msgstr "<strong>المندوب:</strong>"
 
 #. module: ftiq_pharma_sfa
 #: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.report_visit_template
+msgid "<strong>Samples:</strong>"
+msgstr "<strong>العينات:</strong>"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.report_visit_template
 msgid "<strong>Start GPS:</strong>"
 msgstr "<strong>إحداثيات البداية:</strong>"
+
+#. module: ftiq_pharma_sfa
+#. odoo-python
+#: code:addons/ftiq_pharma_sfa/models/daily_task_refactor.py:0
+msgid "A client is required before starting this task."
+msgstr "يلزم تحديد عميل قبل بدء هذه المهمة."
+
+#. module: ftiq_pharma_sfa
+#. odoo-python
+#: code:addons/ftiq_pharma_sfa/models/daily_task_refactor.py:0
+msgid "A client is required for this task profile."
+msgstr "يلزم تحديد عميل لملف المهمة هذا."
 
 #. module: ftiq_pharma_sfa
 #. odoo-python
 #: code:addons/ftiq_pharma_sfa/models/account_payment.py:0
 msgid "A customer is required before posting a field collection."
 msgstr "يلزم تحديد العميل قبل ترحيل تحصيل ميداني."
+
+#. module: ftiq_pharma_sfa
+#. odoo-python
+#: code:addons/ftiq_pharma_sfa/models/daily_task_refactor.py:0
+msgid "A representative is required before starting this task."
+msgstr "يلزم تعيين مندوب قبل بدء هذه المهمة."
+
+#. module: ftiq_pharma_sfa
+#. odoo-python
+#: code:addons/ftiq_pharma_sfa/models/daily_task_refactor.py:0
+msgid "A representative is required for this task profile."
+msgstr "يلزم تعيين مندوب لملف المهمة هذا."
+
+#. module: ftiq_pharma_sfa
+#. odoo-python
+#: code:addons/ftiq_pharma_sfa/models/task_profile.py:0
+msgid ""
+"A required photo count can only be set when the profile requires photos."
+msgstr "يمكن تحديد عدد الصور المطلوب فقط عندما يتطلب الملف الصور."
 
 #. module: ftiq_pharma_sfa
 #: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__hr_expense__ftiq_expense_type__accommodation
@@ -229,6 +411,7 @@ msgstr "تفعيل"
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_area__active
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_call_reason__active
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_city__active
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_client_category__active
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_client_classification__active
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_client_question__active
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_color_code__active
@@ -240,18 +423,13 @@ msgstr "تفعيل"
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_speaker_level__active
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_specialty__active
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_subspecialty__active
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_task_profile__active
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_task_type__active
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_workplace_type__active
 #: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_sales_target__state__active
 #: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_sales_target_search
 msgid "Active"
 msgstr "نشط"
-
-#. module: ftiq_pharma_sfa
-#. odoo-javascript
-#: code:addons/ftiq_pharma_sfa/static/src/xml/dashboard.xml:0
-msgid "Active Clients"
-msgstr "العملاء النشطون"
 
 #. module: ftiq_pharma_sfa
 #. odoo-javascript
@@ -314,12 +492,32 @@ msgid "Add at least one stock line before submitting the stock check."
 msgstr "أضف بند مخزون واحدًا على الأقل قبل تقديم جرد المخزون."
 
 #. module: ftiq_pharma_sfa
-#. odoo-python
-#: code:addons/ftiq_pharma_sfa/models/visit.py:0
-msgid "Add execution evidence before submission. Use feedback, product details, linked operations, photos, or a signature."
-msgstr "أضف أدلة التنفيذ قبل الإرسال. استخدم التغذية الراجعة أو تفاصيل المنتجات أو العمليات المرتبطة أو الصور أو التوقيع."
+#. odoo-javascript
+#: code:addons/ftiq_pharma_sfa/static/src/js/plan_geo_map_field.js:0
+msgid "Add at least three points before finishing the area."
+msgstr "أضف ثلاث نقاط على الأقل قبل إنهاء تحديد المنطقة."
 
 #. module: ftiq_pharma_sfa
+#. odoo-python
+#: code:addons/ftiq_pharma_sfa/models/visit.py:0
+msgid ""
+"Add execution evidence before submission. Use feedback, product details, "
+"linked operations, photos, or a signature."
+msgstr ""
+"أضف أدلة التنفيذ قبل الإرسال. استخدم التغذية الراجعة أو تفاصيل المنتجات أو "
+"العمليات المرتبطة أو الصور أو التوقيع."
+
+#. module: ftiq_pharma_sfa
+#. odoo-javascript
+#: code:addons/ftiq_pharma_sfa/static/src/js/plan_geo_map_field.js:0
+msgid ""
+"Add up to four points. The fourth point closes the area automatically, or "
+"use Finish Area."
+msgstr "أضف ما يصل إلى أربع نقاط. تغلق النقطة الرابعة المنطقة تلقائيًا، أو استخدم خيار إنهاء المنطقة."
+
+#. module: ftiq_pharma_sfa
+#. odoo-javascript
+#: code:addons/ftiq_pharma_sfa/static/src/xml/mobile_client_search.xml:0
 #: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_plan_wizard_form
 msgid "Address"
 msgstr "العنوان"
@@ -339,6 +537,11 @@ msgstr "جميع المهام"
 #: model:ir.ui.menu,name:ftiq_pharma_sfa.menu_ftiq_visits
 msgid "All Visits"
 msgstr "جميع الزيارات"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_plan_wizard_form
+msgid "All categories"
+msgstr "كل الفئات"
 
 #. module: ftiq_pharma_sfa
 #. odoo-python
@@ -371,10 +574,20 @@ msgid "Allocated invoice amounts cannot exceed the collection amount."
 msgstr "لا يجوز أن تتجاوز مبالغ الفواتير المخصصة قيمة التحصيل."
 
 #. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_daily_task__allow_manual_completion
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_task_profile__allow_manual_completion
+msgid "Allow Manual Completion"
+msgstr "السماح بالإكمال اليدوي"
+
+#. module: ftiq_pharma_sfa
 #. odoo-javascript
 #: code:addons/ftiq_pharma_sfa/static/src/js/geolocation.js:0
-msgid "Allow location access for this website in your browser settings, then tap Retry."
-msgstr "اسمح بالوصول إلى الموقع لهذا الموقع الإلكتروني من إعدادات المتصفح، ثم اضغط إعادة المحاولة."
+msgid ""
+"Allow location access for this website in your browser settings, then tap "
+"Retry."
+msgstr ""
+"اسمح بالوصول إلى الموقع لهذا الموقع الإلكتروني من إعدادات المتصفح، ثم اضغط "
+"إعادة المحاولة."
 
 #. module: ftiq_pharma_sfa
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_plan_wizard__allowed_team_ids
@@ -387,6 +600,18 @@ msgstr "الفريق المسموح به"
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_weekly_plan__allowed_user_ids
 msgid "Allowed User"
 msgstr "المستخدم المسموح له"
+
+#. module: ftiq_pharma_sfa
+#. odoo-python
+#: code:addons/ftiq_pharma_sfa/models/daily_task_refactor.py:0
+msgid "An associated client is required before starting this task."
+msgstr "يلزم عميل مرتبط قبل بدء هذه المهمة."
+
+#. module: ftiq_pharma_sfa
+#. odoo-python
+#: code:addons/ftiq_pharma_sfa/models/daily_task_refactor.py:0
+msgid "An associated client is required for this task profile."
+msgstr "يلزم عميل مرتبط لملف المهمة هذا."
 
 #. module: ftiq_pharma_sfa
 #. odoo-python
@@ -417,9 +642,12 @@ msgstr "اعتماد"
 
 #. module: ftiq_pharma_sfa
 #. odoo-javascript
+#. odoo-python
+#: code:addons/ftiq_pharma_sfa/models/activity_feed.py:0
 #: code:addons/ftiq_pharma_sfa/static/src/js/dashboard.js:0
 #: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_visit__state__approved
 #: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_weekly_plan__state__approved
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_weekly_plan_line__execution_state__approved
 #: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_visit_search
 #: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_weekly_plan_search
 msgid "Approved"
@@ -459,11 +687,6 @@ msgid "Assign a representative on the plan line before creating the visit."
 msgstr "عيّن مندوبًا على سطر الخطة قبل إنشاء الزيارة."
 
 #. module: ftiq_pharma_sfa
-#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_plan_wizard_form
-msgid "Assignments"
-msgstr "التعيينات"
-
-#. module: ftiq_pharma_sfa
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_daily_task__associated_partner_id
 msgid "Associated Client"
 msgstr "العميل المرتبط"
@@ -482,6 +705,8 @@ msgstr "عدد المرفقات"
 #. odoo-javascript
 #: code:addons/ftiq_pharma_sfa/static/src/js/dashboard.js:0
 #: code:addons/ftiq_pharma_sfa/static/src/xml/dashboard.xml:0
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_account_bank_statement_line__ftiq_attendance_id
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_account_move__ftiq_attendance_id
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_account_payment__ftiq_attendance_id
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_stock_check__attendance_id
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_visit__attendance_id
@@ -496,14 +721,14 @@ msgstr "الحضور"
 msgid ""
 "Attendance check-in starts automatically from a visit, field order, "
 "collection, or stock check."
-msgstr ""
+msgstr "يبدأ تسجيل الحضور تلقائيًا من زيارة أو أمر ميداني أو تحصيل أو جرد للمخزون."
 
 #. module: ftiq_pharma_sfa
 #: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_field_attendance_form
 msgid ""
 "Attendance starts automatically from a visit, field order, collection, or "
 "stock check."
-msgstr ""
+msgstr "يبدأ الحضور تلقائيًا من زيارة أو أمر ميداني أو تحصيل أو فحص للمخزون."
 
 #. module: ftiq_pharma_sfa
 #: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_plan_wizard_form
@@ -514,6 +739,11 @@ msgstr "رجوع"
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_account_payment__ftiq_bank_name
 msgid "Bank Name"
 msgstr "اسم البنك"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_plan_wizard_form
+msgid "Basic Details"
+msgstr "التفاصيل الأساسية"
 
 #. module: ftiq_pharma_sfa
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_stock_check_line__batch_number
@@ -537,12 +767,13 @@ msgid "Both start and end GPS coordinates are required before submission."
 msgstr "يلزم إدخال إحداثيات البداية والنهاية قبل الإرسال."
 
 #. module: ftiq_pharma_sfa
-#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_plan_wizard_form
-msgid "Build a Weekly Team Plan"
-msgstr "أنشئ خطة أسبوعية للفريق"
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_marketing_material__material_type__brochure
+msgid "Brochure"
+msgstr "مطوية"
 
 #. module: ftiq_pharma_sfa
 #: model:ir.model,name:ftiq_pharma_sfa.model_ftiq_call_reason
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_marketing_material__call_reason_id
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_visit_product_line__call_reason_id
 #: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_visit_product_line_search
 #: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.report_visit_template
@@ -577,16 +808,39 @@ msgstr "إلغاء"
 
 #. module: ftiq_pharma_sfa
 #. odoo-javascript
+#: code:addons/ftiq_pharma_sfa/static/src/xml/plan_geo_map_field.xml:0
+msgid "Cancel Edit"
+msgstr "إلغاء التعديل"
+
+#. module: ftiq_pharma_sfa
+#. odoo-javascript
+#. odoo-python
+#: code:addons/ftiq_pharma_sfa/models/activity_feed.py:0
 #: code:addons/ftiq_pharma_sfa/static/src/js/dashboard.js:0
 #: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_daily_task__state__cancelled
 msgid "Cancelled"
 msgstr "ملغي"
 
 #. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_plan_wizard__candidate_partner_ids
+msgid "Candidate Partner"
+msgstr "شريك محتمل"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_plan_wizard__candidate_partner_count
+msgid "Candidate Partner Count"
+msgstr "عدد الشركاء المحتملين"
+
+#. module: ftiq_pharma_sfa
 #. odoo-python
 #: code:addons/ftiq_pharma_sfa/models/visit.py:0
 msgid "Cannot submit from current state."
 msgstr "لا يمكن التقديم من الحالة الحالية."
+
+#. module: ftiq_pharma_sfa
+#: model:ftiq.task.profile,description:ftiq_pharma_sfa.ftiq_task_profile_stock
+msgid "Capture stock and shelf evidence for a field client."
+msgstr "التقط أدلة المخزون والرفوف لعميل ميداني."
 
 #. module: ftiq_pharma_sfa
 #. odoo-python
@@ -599,18 +853,22 @@ msgstr "تحصيل نقدي"
 #. odoo-python
 #: code:addons/ftiq_pharma_sfa/models/res_partner.py:0
 #: code:addons/ftiq_pharma_sfa/static/src/js/dashboard.js:0
+#: code:addons/ftiq_pharma_sfa/static/src/js/mobile_client_search.js:0
 #: model:ir.actions.act_window,name:ftiq_pharma_sfa.action_ftiq_field_collections
 #: model:ir.ui.menu,name:ftiq_pharma_sfa.menu_ftiq_cash_collections
 msgid "Cash Collections"
 msgstr "التحصيلات النقدية"
 
 #. module: ftiq_pharma_sfa
+#. odoo-javascript
+#: code:addons/ftiq_pharma_sfa/static/src/xml/mobile_client_search.xml:0
 #: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_plan_wizard_form
 msgid "Category"
 msgstr "الفئة"
 
 #. module: ftiq_pharma_sfa
 #: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_client_question__applies_to__center
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__res_partner__ftiq_client_type__center
 msgid "Center"
 msgstr "مركز"
 
@@ -701,12 +959,6 @@ msgid "Checked In"
 msgstr "مسجل الحضور"
 
 #. module: ftiq_pharma_sfa
-#. odoo-javascript
-#: code:addons/ftiq_pharma_sfa/static/src/xml/dashboard.xml:0
-msgid "Checked In Now"
-msgstr "مسجل الحضور حالياً"
-
-#. module: ftiq_pharma_sfa
 #: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_field_attendance__state__checked_out
 msgid "Checked Out"
 msgstr "مسجل الانصراف"
@@ -715,6 +967,18 @@ msgstr "مسجل الانصراف"
 #: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_res_partner_form_inherit
 msgid "Children"
 msgstr "الأطفال"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_plan_wizard_form
+msgid "Choose how the target clients should be gathered for this plan."
+msgstr "اختر كيفية جمع العملاء المستهدفين لهذه الخطة."
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_plan_wizard_form
+msgid ""
+"Choose the client source, review the matching list, then create the final "
+"weekly plan."
+msgstr "اختر مصدر العملاء، وراجع القائمة المطابقة، ثم أنشئ الخطة الأسبوعية النهائية."
 
 #. module: ftiq_pharma_sfa
 #: model:ir.actions.act_window,name:ftiq_pharma_sfa.action_ftiq_city
@@ -730,6 +994,8 @@ msgid "City"
 msgstr "المدينة"
 
 #. module: ftiq_pharma_sfa
+#. odoo-javascript
+#: code:addons/ftiq_pharma_sfa/static/src/xml/mobile_client_search.xml:0
 #: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_plan_wizard_form
 #: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_res_partner_search_inherit
 #: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_visit_search
@@ -743,9 +1009,27 @@ msgid "Classifications"
 msgstr "التصنيفات"
 
 #. module: ftiq_pharma_sfa
+#. odoo-javascript
+#: code:addons/ftiq_pharma_sfa/static/src/xml/plan_geo_map_field.xml:0
+msgid "Clear"
+msgstr "مسح"
+
+#. module: ftiq_pharma_sfa
+#. odoo-javascript
+#: code:addons/ftiq_pharma_sfa/static/src/xml/mobile_client_search.xml:0
+msgid "Clear Nearby"
+msgstr "مسح القريب"
+
+#. module: ftiq_pharma_sfa
+#. odoo-python
+#: code:addons/ftiq_pharma_sfa/models/client_search_service.py:0
+#: code:addons/ftiq_pharma_sfa/models/res_partner.py:0
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_daily_task__partner_id
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_stock_check__partner_id
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_hr_expense__ftiq_partner_id
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__res_partner__ftiq_client_type__client
 #: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_daily_task_search
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_plan_wizard_form
 #: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_stock_check_search
 #: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_visit_search
 msgid "Client"
@@ -757,9 +1041,29 @@ msgid "Client Answer"
 msgstr "إجابة العميل"
 
 #. module: ftiq_pharma_sfa
+#: model:ir.actions.act_window,name:ftiq_pharma_sfa.action_ftiq_client_category
+#: model:ir.ui.menu,name:ftiq_pharma_sfa.menu_ftiq_config_client_categories
+msgid "Client Categories"
+msgstr "فئات العملاء"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model,name:ftiq_pharma_sfa.model_ftiq_client_category
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_partner__ftiq_client_category_id
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_users__ftiq_client_category_id
+msgid "Client Category"
+msgstr "فئة العميل"
+
+#. module: ftiq_pharma_sfa
 #: model:ir.model,name:ftiq_pharma_sfa.model_ftiq_client_classification
 msgid "Client Classification"
 msgstr "تصنيف العميل"
+
+#. module: ftiq_pharma_sfa
+#. odoo-javascript
+#: code:addons/ftiq_pharma_sfa/static/src/xml/mobile_client_search.xml:0
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_plan_wizard_form
+msgid "Client Code"
+msgstr "رمز العميل"
 
 #. module: ftiq_pharma_sfa
 #: model:ir.actions.act_window,name:ftiq_pharma_sfa.action_ftiq_client_invoices
@@ -769,8 +1073,8 @@ msgstr "فواتير العملاء"
 
 #. module: ftiq_pharma_sfa
 #: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_plan_wizard_form
-msgid "Client Name"
-msgstr "اسم العميل"
+msgid "Client Keyword"
+msgstr "كلمة مفتاحية للعميل"
 
 #. module: ftiq_pharma_sfa
 #: model:ir.model,name:ftiq_pharma_sfa.model_ftiq_client_question
@@ -784,15 +1088,51 @@ msgid "Client Questions"
 msgstr "أسئلة العملاء"
 
 #. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_plan_wizard__client_review_name
+msgid "Client Review Name"
+msgstr "اسم مراجعة العميل"
+
+#. module: ftiq_pharma_sfa
+#. odoo-javascript
+#. odoo-python
+#: code:addons/ftiq_pharma_sfa/models/res_partner.py:0
+#: code:addons/ftiq_pharma_sfa/static/src/xml/mobile_client_search.xml:0
+#: model:ir.actions.client,name:ftiq_pharma_sfa.action_ftiq_client_search
+#: model:ir.ui.menu,name:ftiq_pharma_sfa.menu_ftiq_client_search
+msgid "Client Search"
+msgstr "بحث العملاء"
+
+#. module: ftiq_pharma_sfa
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_visit__signature
 msgid "Client Signature"
 msgstr "توقيع العميل"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.constraint,message:ftiq_pharma_sfa.constraint_ftiq_client_category_ftiq_client_category_code_unique
+msgid "Client category code must be unique."
+msgstr "يجب أن يكون رمز فئة العميل فريدًا."
 
 #. module: ftiq_pharma_sfa
 #: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_plan_wizard__step__clients
 #: model:ir.ui.menu,name:ftiq_pharma_sfa.menu_ftiq_clients
 msgid "Clients"
 msgstr "العملاء"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_plan_wizard__selection_mode__geo
+msgid "Clients GEO"
+msgstr "عملاء GEO"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_plan_wizard__selection_mode__filter
+msgid "Clients Select"
+msgstr "اختيار العملاء"
+
+#. module: ftiq_pharma_sfa
+#. odoo-javascript
+#: code:addons/ftiq_pharma_sfa/static/src/xml/plan_geo_map_field.xml:0
+msgid "Clients:"
+msgstr "العملاء:"
 
 #. module: ftiq_pharma_sfa
 #: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_sales_target_form
@@ -805,18 +1145,39 @@ msgid "Closed"
 msgstr "مغلق"
 
 #. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_client_category__code
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_task_profile__code
+msgid "Code"
+msgstr "الرمز"
+
+#. module: ftiq_pharma_sfa
+#: model:ftiq.task.profile,description:ftiq_pharma_sfa.ftiq_task_profile_collection
+msgid "Collect and allocate customer payment in the field."
+msgstr "قم بتحصيل دفعة العميل في الميدان وتوزيعها."
+
+#. module: ftiq_pharma_sfa
+#. odoo-python
+#: code:addons/ftiq_pharma_sfa/models/activity_feed.py:0
 #: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__account_payment__ftiq_collection_state__collected
 msgid "Collected"
 msgstr "محصّل"
 
 #. module: ftiq_pharma_sfa
 #. odoo-javascript
+#. odoo-python
+#: code:addons/ftiq_pharma_sfa/models/activity_feed.py:0
 #: code:addons/ftiq_pharma_sfa/static/src/js/dashboard.js:0
 #: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_daily_task__task_type__collection
 #: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_field_attendance__entry_reference__account_payment
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_task_profile__code__collection
 #: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_daily_task_kanban
 msgid "Collection"
 msgstr "تحصيل"
+
+#. module: ftiq_pharma_sfa
+#: model:ftiq.task.profile,name:ftiq_pharma_sfa.ftiq_task_profile_collection
+msgid "Collection Run"
+msgstr "جولة التحصيل"
 
 #. module: ftiq_pharma_sfa
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_account_payment__ftiq_collection_state
@@ -837,10 +1198,11 @@ msgstr "يجب أن يكون مبلغ التحصيل أكبر من الصفر."
 #. module: ftiq_pharma_sfa
 #. odoo-python
 #: code:addons/ftiq_pharma_sfa/models/daily_task.py:0
+#: code:addons/ftiq_pharma_sfa/models/daily_task_refactor.py:0
 msgid ""
 "Collection tasks can only be completed after the linked collection is "
 "posted."
-msgstr ""
+msgstr "لا يمكن إكمال مهام التحصيل إلا بعد ترحيل عملية التحصيل المرتبطة."
 
 #. module: ftiq_pharma_sfa
 #. odoo-javascript
@@ -849,6 +1211,7 @@ msgstr ""
 #: code:addons/ftiq_pharma_sfa/models/visit.py:0
 #: code:addons/ftiq_pharma_sfa/static/src/js/dashboard.js:0
 #: code:addons/ftiq_pharma_sfa/static/src/xml/dashboard.xml:0
+#: code:addons/ftiq_pharma_sfa/static/src/xml/mobile_client_search.xml:0
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_visit__payment_ids
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_partner__ftiq_collection_count
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_users__ftiq_collection_count
@@ -862,6 +1225,11 @@ msgstr "التحصيلات"
 #: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_sales_target__target_type__collections
 msgid "Collections Amount"
 msgstr "مبلغ التحصيلات"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.report_visit_template
+msgid "Collections:"
+msgstr "التحصيلات:"
 
 #. module: ftiq_pharma_sfa
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_color_code__color
@@ -896,8 +1264,11 @@ msgstr "إكمال"
 
 #. module: ftiq_pharma_sfa
 #. odoo-javascript
+#. odoo-python
+#: code:addons/ftiq_pharma_sfa/models/activity_feed.py:0
 #: code:addons/ftiq_pharma_sfa/static/src/js/dashboard.js:0
 #: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_daily_task__state__completed
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_weekly_plan_line__execution_state__completed
 #: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_weekly_plan_line__state__completed
 #: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_daily_task_search
 msgid "Completed"
@@ -936,6 +1307,27 @@ msgstr "إعداد"
 
 #. module: ftiq_pharma_sfa
 #: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_plan_wizard_form
+msgid "Configure how clients are gathered for this plan."
+msgstr "اضبط كيفية تجميع العملاء لهذه الخطة."
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_daily_task_form
+msgid "Confirm"
+msgstr "تأكيد"
+
+#. module: ftiq_pharma_sfa
+#. odoo-javascript
+#. odoo-python
+#: code:addons/ftiq_pharma_sfa/models/activity_feed.py:0
+#: code:addons/ftiq_pharma_sfa/static/src/js/dashboard.js:0
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_daily_task__state__confirmed
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_weekly_plan_line__execution_state__confirmed
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_daily_task_search
+msgid "Confirmed"
+msgstr "مؤكّدة"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_plan_wizard_form
 msgid "Confirmed GEO"
 msgstr "إحداثيات مؤكدة"
 
@@ -943,16 +1335,6 @@ msgstr "إحداثيات مؤكدة"
 #: model:ir.model,name:ftiq_pharma_sfa.model_res_partner
 msgid "Contact"
 msgstr "جهة الاتصال"
-
-#. module: ftiq_pharma_sfa
-#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_plan_wizard_form
-msgid "Context"
-msgstr "السياق"
-
-#. module: ftiq_pharma_sfa
-#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_plan_wizard_form
-msgid "Core Setup"
-msgstr "الإعداد الأساسي"
 
 #. module: ftiq_pharma_sfa
 #: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_visit_graph
@@ -1009,6 +1391,11 @@ msgid "Create Visit"
 msgstr "إنشاء زيارة"
 
 #. module: ftiq_pharma_sfa
+#: model:ftiq.task.profile,description:ftiq_pharma_sfa.ftiq_task_profile_order
+msgid "Create and confirm a field sales order during execution."
+msgstr "أنشئ أمر بيع ميدانيًا وصدّقه أثناء التنفيذ."
+
+#. module: ftiq_pharma_sfa
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_daily_task__payment_id
 msgid "Created Payment"
 msgstr "الدفعة المُنشأة"
@@ -1033,6 +1420,7 @@ msgstr "الزيارة المُنشأة"
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_call_reason__create_uid
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_city__create_uid
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_client_answer__create_uid
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_client_category__create_uid
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_client_classification__create_uid
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_client_question__create_uid
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_client_question_option__create_uid
@@ -1054,6 +1442,7 @@ msgstr "الزيارة المُنشأة"
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_stock_check__create_uid
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_stock_check_line__create_uid
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_subspecialty__create_uid
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_task_profile__create_uid
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_task_type__create_uid
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_visit__create_uid
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_visit_product_line__create_uid
@@ -1068,6 +1457,7 @@ msgstr "أنشأه"
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_call_reason__create_date
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_city__create_date
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_client_answer__create_date
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_client_category__create_date
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_client_classification__create_date
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_client_question__create_date
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_client_question_option__create_date
@@ -1089,6 +1479,7 @@ msgstr "أنشأه"
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_stock_check__create_date
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_stock_check_line__create_date
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_subspecialty__create_date
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_task_profile__create_date
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_task_type__create_date
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_visit__create_date
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_visit_product_line__create_date
@@ -1112,9 +1503,12 @@ msgstr "عميل/مورد"
 
 #. module: ftiq_pharma_sfa
 #: model:ir.model,name:ftiq_pharma_sfa.model_ftiq_daily_task
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_account_bank_statement_line__ftiq_daily_task_id
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_account_move__ftiq_daily_task_id
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_account_payment__ftiq_daily_task_id
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_stock_check__ftiq_daily_task_id
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_weekly_plan_line__daily_task_id
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_hr_expense__ftiq_daily_task_id
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_sale_order__ftiq_daily_task_id
 msgid "Daily Task"
 msgstr "المهمة اليومية"
@@ -1138,6 +1532,8 @@ msgid "Daily Tasks"
 msgstr "المهام اليومية"
 
 #. module: ftiq_pharma_sfa
+#. odoo-javascript
+#: code:addons/ftiq_pharma_sfa/static/src/xml/dashboard.xml:0
 #: model:ir.ui.menu,name:ftiq_pharma_sfa.menu_ftiq_dashboard
 msgid "Dashboard"
 msgstr "لوحة المعلومات"
@@ -1167,18 +1563,16 @@ msgid "Debt Classifications"
 msgstr "تصنيفات الديون"
 
 #. module: ftiq_pharma_sfa
-#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_plan_wizard_form
-msgid "Default Representative"
-msgstr "المندوب الافتراضي"
-
-#. module: ftiq_pharma_sfa
 #. odoo-javascript
 #: code:addons/ftiq_pharma_sfa/static/src/js/dashboard.js:0
 #: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_daily_task__task_type__delivery
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_task_profile__code__delivery
 msgid "Delivery"
 msgstr "تسليم"
 
 #. module: ftiq_pharma_sfa
+#. odoo-python
+#: code:addons/ftiq_pharma_sfa/models/activity_feed.py:0
 #: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__account_payment__ftiq_collection_state__deposited
 msgid "Deposited"
 msgstr "مودع"
@@ -1186,6 +1580,8 @@ msgstr "مودع"
 #. module: ftiq_pharma_sfa
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_daily_task__description
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_marketing_material__description
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_task_profile__description
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_task_profile_form
 msgid "Description"
 msgstr "الوصف"
 
@@ -1193,6 +1589,16 @@ msgstr "الوصف"
 #: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_plan_wizard_form
 msgid "Deselect All"
 msgstr "إلغاء تحديد الكل"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.report_visit_template
+msgid "Detail Line"
+msgstr "سطر تفصيلي"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_visit__detail_line_count
+msgid "Detail Line Count"
+msgstr "عدد السطور التفصيلية"
 
 #. module: ftiq_pharma_sfa
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_visit_product_line__detail_notes
@@ -1209,6 +1615,7 @@ msgstr "التفاصيل"
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_call_reason__display_name
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_city__display_name
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_client_answer__display_name
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_client_category__display_name
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_client_classification__display_name
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_client_question__display_name
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_client_question_option__display_name
@@ -1230,6 +1637,7 @@ msgstr "التفاصيل"
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_stock_check__display_name
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_stock_check_line__display_name
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_subspecialty__display_name
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_task_profile__display_name
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_task_type__display_name
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_visit__display_name
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_visit_product_line__display_name
@@ -1240,12 +1648,19 @@ msgid "Display Name"
 msgstr "الاسم المعروض"
 
 #. module: ftiq_pharma_sfa
+#. odoo-javascript
+#: code:addons/ftiq_pharma_sfa/static/src/xml/mobile_client_search.xml:0
+msgid "Distance"
+msgstr "المسافة"
+
+#. module: ftiq_pharma_sfa
 #: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_account_payment_form_inherit
 msgid "Distribute Amount"
 msgstr "توزيع المبلغ"
 
 #. module: ftiq_pharma_sfa
 #: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_client_question__applies_to__doctor
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__res_partner__ftiq_client_type__doctor
 msgid "Doctor"
 msgstr "طبيب"
 
@@ -1263,17 +1678,46 @@ msgstr "الأطباء"
 
 #. module: ftiq_pharma_sfa
 #. odoo-javascript
+#. odoo-python
+#: code:addons/ftiq_pharma_sfa/models/activity_feed.py:0
 #: code:addons/ftiq_pharma_sfa/static/src/js/dashboard.js:0
 #: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__account_payment__ftiq_collection_state__draft
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_daily_task__state__draft
 #: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_field_attendance__state__draft
 #: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_sales_target__state__draft
 #: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_stock_check__state__draft
 #: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_visit__state__draft
 #: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_weekly_plan__state__draft
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_daily_task_search
 #: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_visit_search
 #: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_weekly_plan_search
 msgid "Draft"
 msgstr "مسودة"
+
+#. module: ftiq_pharma_sfa
+#. odoo-javascript
+#: code:addons/ftiq_pharma_sfa/static/src/xml/plan_geo_map_field.xml:0
+msgid "Draw"
+msgstr "ارسم"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_plan_wizard_form
+msgid ""
+"Draw a closed area on the map, then continue to review the clients inside "
+"it."
+msgstr "ارسم منطقة مغلقة على الخريطة، ثم واصل مراجعة العملاء الموجودين داخلها."
+
+#. module: ftiq_pharma_sfa
+#. odoo-javascript
+#: code:addons/ftiq_pharma_sfa/static/src/js/plan_geo_map_field.js:0
+msgid "Draw an area first."
+msgstr "ارسم منطقة أولًا."
+
+#. module: ftiq_pharma_sfa
+#. odoo-python
+#: code:addons/ftiq_pharma_sfa/models/plan_candidate_service.py:0
+msgid "Draw an area on the map before continuing."
+msgstr "ارسم منطقة على الخريطة قبل المتابعة."
 
 #. module: ftiq_pharma_sfa
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_collection_line__due_date
@@ -1295,15 +1739,45 @@ msgstr "المدة (دقيقة)"
 
 #. module: ftiq_pharma_sfa
 #. odoo-python
+#: code:addons/ftiq_pharma_sfa/models/visit.py:0
+msgid ""
+"Each material log must have both start and end timestamps before submission."
+msgstr "يجب أن يتضمن كل سجل مواد وقتي البدء والانتهاء قبل الإرسال."
+
+#. module: ftiq_pharma_sfa
+#. odoo-python
 #: code:addons/ftiq_pharma_sfa/models/weekly_plan.py:0
 msgid "Each plan line must have a representative from the selected team."
 msgstr "يجب أن يحتوي كل سطر في الخطة على مندوب من الفريق المحدد."
 
 #. module: ftiq_pharma_sfa
+#. odoo-python
+#: code:addons/ftiq_pharma_sfa/models/stock_check.py:0
+msgid "Each product can only appear once per stock check."
+msgstr "يمكن أن يظهر كل منتج مرة واحدة فقط في جرد المخزون."
+
+#. module: ftiq_pharma_sfa
+#. odoo-python
+#: code:addons/ftiq_pharma_sfa/models/visit.py:0
+msgid ""
+"Each product detailing line must contain execution output such as call "
+"reason, outcome, feedback, notes, samples, or stock on hand."
+msgstr "يجب أن يحتوي كل سطر تفصيلي للمنتج على ناتج تنفيذي مثل سبب الاتصال أو النتيجة أو الملاحظات أو التغذية الراجعة أو العينات أو المخزون المتاح."
+
+#. module: ftiq_pharma_sfa
+#. odoo-javascript
+#: code:addons/ftiq_pharma_sfa/static/src/xml/plan_geo_map_field.xml:0
+msgid "Edit"
+msgstr "تحرير"
+
+#. module: ftiq_pharma_sfa
 #. odoo-javascript
 #: code:addons/ftiq_pharma_sfa/static/src/js/geolocation.js:0
-msgid "Enable location services for this device and this website, then tap Retry."
-msgstr "فعّل خدمات الموقع لهذا الجهاز ولهذا الموقع الإلكتروني ثم اضغط إعادة المحاولة."
+msgid ""
+"Enable location services for this device and this website, then tap Retry."
+msgstr ""
+"فعّل خدمات الموقع لهذا الجهاز ولهذا الموقع الإلكتروني ثم اضغط إعادة "
+"المحاولة."
 
 #. module: ftiq_pharma_sfa
 #: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.report_visit_template
@@ -1360,6 +1834,34 @@ msgid "Every plan line representative must belong to the selected sales team."
 msgstr "يجب أن يكون مندوب كل سطر في الخطة من فريق المبيعات المحدد."
 
 #. module: ftiq_pharma_sfa
+#. odoo-javascript
+#: code:addons/ftiq_pharma_sfa/static/src/xml/mobile_client_search.xml:0
+msgid "Execution Card"
+msgstr "بطاقة التنفيذ"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_weekly_plan_line__execution_reference
+msgid "Execution Reference"
+msgstr "مرجع التنفيذ"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_task_profile_form
+msgid "Execution Rules"
+msgstr "قواعد التنفيذ"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_weekly_plan_line__execution_state
+msgid "Execution State"
+msgstr "حالة التنفيذ"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_res_partner_form_inherit
+msgid "Execution summary..."
+msgstr "ملخص التنفيذ..."
+
+#. module: ftiq_pharma_sfa
+#. odoo-python
+#: code:addons/ftiq_pharma_sfa/models/activity_feed.py:0
 #: model:ir.model,name:ftiq_pharma_sfa.model_hr_expense
 msgid "Expense"
 msgstr "النفقة "
@@ -1370,59 +1872,50 @@ msgid "Expiry Date"
 msgstr "تاريخ الصلاحية"
 
 #. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_task_profile_form
+msgid "Explain how this profile should execute in the field..."
+msgstr "اشرح كيفية تنفيذ هذا الملف في الميدان..."
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model,name:ftiq_pharma_sfa.model_ftiq_client_search_service
+msgid "FTIQ Client Search Service"
+msgstr "خدمة بحث عملاء FTIQ"
+
+#. module: ftiq_pharma_sfa
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_project_task__ftiq_daily_task_id
-msgid "Daily Task"
+msgid "FTIQ Daily Task"
 msgstr "مهمة اليومية"
 
 #. module: ftiq_pharma_sfa
-#: model:account.account,name:ftiq_pharma_sfa.demo_account_cash_ftiq
-msgid "Demo Cash"
-msgstr "نقد التجريبي"
-
-#. module: ftiq_pharma_sfa
-#: model:account.journal,name:ftiq_pharma_sfa.demo_journal_cash_ftiq
-msgid "Demo Cash Journal"
-msgstr "دفتر يومية النقد التجريبي "
-
-#. module: ftiq_pharma_sfa
-#: model:account.account,name:ftiq_pharma_sfa.demo_account_receivable_ftiq
-msgid "Demo Receivable"
-msgstr "ذمم مدينة التجريبي"
-
-#. module: ftiq_pharma_sfa
-#: model:account.account,name:ftiq_pharma_sfa.demo_account_income_ftiq
-msgid "Demo Revenue"
-msgstr "إيرادات التجريبي"
-
-#. module: ftiq_pharma_sfa
-#: model:account.journal,name:ftiq_pharma_sfa.demo_journal_sale_ftiq
-msgid "Demo Sales Journal"
-msgstr "دفتر يومية المبيعات التجريبي "
-
-#. module: ftiq_pharma_sfa
-#: model:project.project,name:ftiq_pharma_sfa.demo_project_plan_rep1_week10
-msgid "Plan - Rep1 Week 10"
-msgstr "خطة مندوب1 - الأسبوع 10 (2026-03-02)"
-
-#. module: ftiq_pharma_sfa
-#: model:project.project,name:ftiq_pharma_sfa.demo_project_plan_rep2_week10
-msgid "Plan - Rep2 Week 10"
-msgstr "خطة مندوب2 - الأسبوع 10 (2026-03-02)"
+#: model:ir.model,name:ftiq_pharma_sfa.model_ftiq_plan_candidate_service
+msgid "FTIQ Plan Candidate Service"
+msgstr "خدمة مرشحي خطط FTIQ"
 
 #. module: ftiq_pharma_sfa
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_project_task__ftiq_plan_line_id
-msgid "Plan Line"
+msgid "FTIQ Plan Line"
 msgstr "سطر خطة "
 
 #. module: ftiq_pharma_sfa
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_project_project__ftiq_plan_ids
-msgid "Plans"
+msgid "FTIQ Plans"
 msgstr "خطط "
 
 #. module: ftiq_pharma_sfa
+#: model:ir.model,name:ftiq_pharma_sfa.model_ftiq_activity_feed
+msgid "FTIQ Unified Activity Feed"
+msgstr "موجز نشاط FTIQ الموحد"
+
+#. module: ftiq_pharma_sfa
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_project_task__ftiq_plan_id
-msgid "Weekly Plan"
+msgid "FTIQ Weekly Plan"
 msgstr "الخطة الأسبوعية "
+
+#. module: ftiq_pharma_sfa
+#: model:ftiq.task.profile,description:ftiq_pharma_sfa.ftiq_task_profile_other
+msgid ""
+"Fallback profile for tasks that do not match a dedicated execution flow."
+msgstr "ملف احتياطي للمهام التي لا تتوافق مع سير تنفيذ مخصص."
 
 #. module: ftiq_pharma_sfa
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_visit_product_line__feedback
@@ -1437,6 +1930,12 @@ msgstr "ملاحظات"
 #: model:ir.ui.menu,name:ftiq_pharma_sfa.menu_ftiq_attendance
 msgid "Field Attendance"
 msgstr "الحضور الميداني"
+
+#. module: ftiq_pharma_sfa
+#. odoo-javascript
+#: code:addons/ftiq_pharma_sfa/static/src/xml/mobile_client_search.xml:0
+msgid "Field Client Search"
+msgstr "بحث العملاء الميداني"
 
 #. module: ftiq_pharma_sfa
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_account_payment__is_field_collection
@@ -1477,8 +1976,8 @@ msgstr "المصروفات الميدانية"
 #. module: ftiq_pharma_sfa
 #. odoo-javascript
 #: code:addons/ftiq_pharma_sfa/static/src/xml/dashboard.xml:0
-msgid "Control Center"
-msgstr "Control Center"
+msgid "Field Force Control Center"
+msgstr "مركز التحكم بالقوة الميدانية"
 
 #. module: ftiq_pharma_sfa
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_account_bank_statement_line__ftiq_field_notes
@@ -1489,6 +1988,7 @@ msgstr "ملاحظات ميدانية"
 #. module: ftiq_pharma_sfa
 #. odoo-python
 #: code:addons/ftiq_pharma_sfa/models/visit.py:0
+#: model:ftiq.task.profile,name:ftiq_pharma_sfa.ftiq_task_profile_order
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_sale_order__is_field_order
 #: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_field_attendance__entry_reference__sale_order
 msgid "Field Order"
@@ -1501,6 +2001,7 @@ msgstr "أمر ميداني"
 #: code:addons/ftiq_pharma_sfa/models/sales_target.py:0
 #: code:addons/ftiq_pharma_sfa/models/visit.py:0
 #: code:addons/ftiq_pharma_sfa/static/src/js/dashboard.js:0
+#: code:addons/ftiq_pharma_sfa/static/src/js/mobile_client_search.js:0
 #: model:ir.actions.act_window,name:ftiq_pharma_sfa.action_ftiq_field_orders
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_visit__sale_order_ids
 #: model:ir.ui.menu,name:ftiq_pharma_sfa.menu_ftiq_field_orders
@@ -1514,15 +2015,46 @@ msgid "Field Priority"
 msgstr "الأولوية الميدانية"
 
 #. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_plan_wizard_form
+msgid "Field Readiness"
+msgstr "جاهزية الميدان"
+
+#. module: ftiq_pharma_sfa
+#: model:ftiq.task.profile,name:ftiq_pharma_sfa.ftiq_task_profile_report
+msgid "Field Report"
+msgstr "تقرير ميداني"
+
+#. module: ftiq_pharma_sfa
 #. odoo-python
 #: code:addons/ftiq_pharma_sfa/models/account_payment.py:0
 msgid "Field collections must be inbound customer payments."
 msgstr "يجب أن تكون التحصيلات الميدانية مدفوعات واردة من العملاء."
 
 #. module: ftiq_pharma_sfa
+#. odoo-python
+#: code:addons/ftiq_pharma_sfa/models/account_payment.py:0
+msgid ""
+"Field collections must stay linked to attendance, visit, or daily task "
+"source data."
+msgstr "يجب أن تبقى التحصيلات الميدانية مرتبطة ببيانات المصدر للحضور أو الزيارة أو المهمة اليومية."
+
+#. module: ftiq_pharma_sfa
 #: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_sale_order_form_inherit
 msgid "Field delivery notes..."
 msgstr "ملاحظات التسليم الميداني..."
+
+#. module: ftiq_pharma_sfa
+#. odoo-python
+#: code:addons/ftiq_pharma_sfa/models/hr_expense.py:0
+msgid ""
+"Field expense must be linked to a daily task, a visit, or a valid attendance"
+" day."
+msgstr "يجب ربط المصروف الميداني بمهمة يومية أو زيارة أو يوم حضور صالح."
+
+#. module: ftiq_pharma_sfa
+#: model:ftiq.task.profile,description:ftiq_pharma_sfa.ftiq_task_profile_visit
+msgid "Field visit that requires check-in and supervisor confirmation."
+msgstr "زيارة ميدانية تتطلب تسجيل الحضور وتأكيد المشرف."
 
 #. module: ftiq_pharma_sfa
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_marketing_material__file
@@ -1560,6 +2092,16 @@ msgid "Filter Classification"
 msgstr "تصفية التصنيف"
 
 #. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_plan_wizard__filter_client_category_id
+msgid "Filter Client Category"
+msgstr "تصفية فئة العميل"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_plan_wizard__filter_client_code
+msgid "Filter Client Code"
+msgstr "تصفية رمز العميل"
+
+#. module: ftiq_pharma_sfa
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_plan_wizard__filter_country_id
 msgid "Filter Country"
 msgstr "تصفية البلد"
@@ -1585,9 +2127,19 @@ msgid "Filter License Attached"
 msgstr "تصفية الرخصة مرفقة"
 
 #. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_plan_wizard_form
+msgid "Filter Matching Clients"
+msgstr "تصفية العملاء المتطابقين"
+
+#. module: ftiq_pharma_sfa
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_plan_wizard__filter_name
 msgid "Filter Name"
 msgstr "تصفية الاسم"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_plan_wizard__filter_partner_id
+msgid "Filter Partner"
+msgstr "تصفية الشريك"
 
 #. module: ftiq_pharma_sfa
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_plan_wizard__filter_specialty_id
@@ -1600,9 +2152,28 @@ msgid "Filter Subspecialty"
 msgstr "تصفية التخصص الفرعي"
 
 #. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_plan_wizard_form
+msgid "Filter by client name"
+msgstr "تصفية حسب اسم العميل"
+
+#. module: ftiq_pharma_sfa
 #: model:ir.ui.menu,name:ftiq_pharma_sfa.menu_ftiq_finance
 msgid "Finance"
 msgstr "المالية"
+
+#. module: ftiq_pharma_sfa
+#. odoo-javascript
+#: code:addons/ftiq_pharma_sfa/static/src/xml/mobile_client_search.xml:0
+msgid ""
+"Find the right client by name, code, or current location, then open the "
+"execution record directly."
+msgstr "اعثر على العميل المناسب بالاسم أو الرمز أو الموقع الحالي، ثم افتح سجل التنفيذ مباشرة."
+
+#. module: ftiq_pharma_sfa
+#. odoo-javascript
+#: code:addons/ftiq_pharma_sfa/static/src/xml/plan_geo_map_field.xml:0
+msgid "Finish Area"
+msgstr "إنهاء المنطقة"
 
 #. module: ftiq_pharma_sfa
 #: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_client_question__question_type__float
@@ -1662,34 +2233,36 @@ msgstr "الجمعة"
 #. module: ftiq_pharma_sfa
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_partner__ftiq_answer_ids
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_users__ftiq_answer_ids
-msgid "Answer"
+msgid "Ftiq Answer"
 msgstr "إجابة "
 
 #. module: ftiq_pharma_sfa
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_partner__ftiq_app_verified
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_users__ftiq_app_verified
-msgid "App Verified"
+msgid "Ftiq App Verified"
 msgstr "موثق بالتطبيق"
 
 #. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_account_bank_statement_line__ftiq_partner_area_id
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_account_move__ftiq_partner_area_id
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_account_payment__ftiq_partner_area_id
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_visit__partner_area_id
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_weekly_plan_line__partner_area_id
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_partner__ftiq_area_id
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_users__ftiq_area_id
-msgid "Area"
+msgid "Ftiq Area"
 msgstr "المنطقة"
 
 #. module: ftiq_pharma_sfa
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_partner__ftiq_birthday
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_users__ftiq_birthday
-msgid "Birthday"
+msgid "Ftiq Birthday"
 msgstr "تاريخ الميلاد"
 
 #. module: ftiq_pharma_sfa
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_partner__ftiq_city_id
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_users__ftiq_city_id
-msgid "City"
+msgid "Ftiq City"
 msgstr "المدينة"
 
 #. module: ftiq_pharma_sfa
@@ -1697,114 +2270,150 @@ msgstr "المدينة"
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_weekly_plan_line__partner_classification_id
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_partner__ftiq_classification_id
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_users__ftiq_classification_id
-msgid "Classification"
+msgid "Ftiq Classification"
 msgstr "تصنيف "
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_partner__ftiq_client_code
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_users__ftiq_client_code
+msgid "Ftiq Client Code"
+msgstr "رمز عميل FTIQ"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_partner__ftiq_client_type
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_users__ftiq_client_type
+msgid "Ftiq Client Type"
+msgstr "نوع عميل FTIQ"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_partner__ftiq_client_type_label
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_users__ftiq_client_type_label
+msgid "Ftiq Client Type Label"
+msgstr "تسمية نوع عميل FTIQ"
 
 #. module: ftiq_pharma_sfa
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_partner__ftiq_color_code_id
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_users__ftiq_color_code_id
-msgid "Color Code"
+msgid "Ftiq Color Code"
 msgstr "رمز لون "
 
 #. module: ftiq_pharma_sfa
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_partner__ftiq_debt_classification_id
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_users__ftiq_debt_classification_id
-msgid "Debt Classification"
+msgid "Ftiq Debt Classification"
 msgstr "تصنيف ديون "
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_partner__ftiq_execution_address
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_users__ftiq_execution_address
+msgid "Ftiq Execution Address"
+msgstr "عنوان تنفيذ FTIQ"
 
 #. module: ftiq_pharma_sfa
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_partner__ftiq_general_note
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_users__ftiq_general_note
-msgid "General Note"
+msgid "Ftiq General Note"
 msgstr "ملاحظة عامة"
 
 #. module: ftiq_pharma_sfa
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_partner__ftiq_geo_confirmed
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_users__ftiq_geo_confirmed
-msgid "Geo Confirmed"
+msgid "Ftiq Geo Confirmed"
 msgstr "الموقع مؤكد"
 
 #. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_partner__ftiq_geo_ready
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_users__ftiq_geo_ready
+msgid "Ftiq Geo Ready"
+msgstr "جاهزية الموقع FTIQ"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_partner__ftiq_is_field_client
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_users__ftiq_is_field_client
+msgid "Ftiq Is Field Client"
+msgstr "عميل ميداني FTIQ"
+
+#. module: ftiq_pharma_sfa
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_users__ftiq_is_medical_rep
-msgid "Is Medical Rep"
+msgid "Ftiq Is Medical Rep"
 msgstr "مندوب طبي"
 
 #. module: ftiq_pharma_sfa
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_partner__ftiq_kid1_birthday
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_users__ftiq_kid1_birthday
-msgid "Kid1 Birthday"
+msgid "Ftiq Kid1 Birthday"
 msgstr "ميلاد الطفل الأول"
 
 #. module: ftiq_pharma_sfa
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_partner__ftiq_kid1_name
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_users__ftiq_kid1_name
-msgid "Kid1 Name"
+msgid "Ftiq Kid1 Name"
 msgstr "اسم الطفل الأول"
 
 #. module: ftiq_pharma_sfa
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_partner__ftiq_kid2_birthday
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_users__ftiq_kid2_birthday
-msgid "Kid2 Birthday"
+msgid "Ftiq Kid2 Birthday"
 msgstr "ميلاد الطفل الثاني"
 
 #. module: ftiq_pharma_sfa
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_partner__ftiq_kid2_name
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_users__ftiq_kid2_name
-msgid "Kid2 Name"
+msgid "Ftiq Kid2 Name"
 msgstr "اسم الطفل الثاني"
 
 #. module: ftiq_pharma_sfa
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_partner__ftiq_kid3_birthday
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_users__ftiq_kid3_birthday
-msgid "Kid3 Birthday"
+msgid "Ftiq Kid3 Birthday"
 msgstr "ميلاد الطفل الثالث"
 
 #. module: ftiq_pharma_sfa
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_partner__ftiq_kid3_name
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_users__ftiq_kid3_name
-msgid "Kid3 Name"
+msgid "Ftiq Kid3 Name"
 msgstr "اسم الطفل الثالث"
 
 #. module: ftiq_pharma_sfa
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_partner__ftiq_last_visit_date
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_users__ftiq_last_visit_date
-msgid "Last Visit Date"
+msgid "Ftiq Last Visit Date"
 msgstr "تاريخ آخر زيارة"
 
 #. module: ftiq_pharma_sfa
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_partner__ftiq_leadership_level_id
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_users__ftiq_leadership_level_id
-msgid "Leadership Level"
+msgid "Ftiq Leadership Level"
 msgstr "مستوى قيادة "
 
 #. module: ftiq_pharma_sfa
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_partner__ftiq_license_attached
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_users__ftiq_license_attached
-msgid "License Attached"
+msgid "Ftiq License Attached"
 msgstr "الرخصة مرفقة"
 
 #. module: ftiq_pharma_sfa
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_partner__ftiq_nickname
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_users__ftiq_nickname
-msgid "Nickname"
+msgid "Ftiq Nickname"
 msgstr "الكنية"
 
 #. module: ftiq_pharma_sfa
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_partner__ftiq_official_type_id
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_users__ftiq_official_type_id
-msgid "Official Type"
+msgid "Ftiq Official Type"
 msgstr "نوع رسمي "
 
 #. module: ftiq_pharma_sfa
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_partner__ftiq_prescriber_status_id
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_users__ftiq_prescriber_status_id
-msgid "Prescriber Status"
+msgid "Ftiq Prescriber Status"
 msgstr "حالة واصف "
 
 #. module: ftiq_pharma_sfa
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_partner__ftiq_speaker_level_id
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_users__ftiq_speaker_level_id
-msgid "Speaker Level"
+msgid "Ftiq Speaker Level"
 msgstr "مستوى متحدث "
 
 #. module: ftiq_pharma_sfa
@@ -1812,48 +2421,48 @@ msgstr "مستوى متحدث "
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_weekly_plan_line__partner_specialty_id
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_partner__ftiq_specialty_id
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_users__ftiq_specialty_id
-msgid "Specialty"
+msgid "Ftiq Specialty"
 msgstr "تخصص "
 
 #. module: ftiq_pharma_sfa
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_partner__ftiq_spouse_birthday
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_users__ftiq_spouse_birthday
-msgid "Spouse Birthday"
+msgid "Ftiq Spouse Birthday"
 msgstr "ميلاد الزوج/الزوجة"
 
 #. module: ftiq_pharma_sfa
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_partner__ftiq_spouse_name
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_users__ftiq_spouse_name
-msgid "Spouse Name"
+msgid "Ftiq Spouse Name"
 msgstr "اسم الزوج/الزوجة"
 
 #. module: ftiq_pharma_sfa
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_partner__ftiq_subspecialty_id
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_users__ftiq_subspecialty_id
-msgid "Subspecialty"
+msgid "Ftiq Subspecialty"
 msgstr "تخصص فرعي "
 
 #. module: ftiq_pharma_sfa
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_users__ftiq_supervisor_id
-msgid "Supervisor"
+msgid "Ftiq Supervisor"
 msgstr "المشرف"
 
 #. module: ftiq_pharma_sfa
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_partner__ftiq_total_visits
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_users__ftiq_total_visits
-msgid "Total Visits"
+msgid "Ftiq Total Visits"
 msgstr "إجمالي الزيارات"
 
 #. module: ftiq_pharma_sfa
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_partner__ftiq_visit_ids
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_users__ftiq_visit_ids
-msgid "Visit"
+msgid "Ftiq Visit"
 msgstr "زيارة "
 
 #. module: ftiq_pharma_sfa
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_partner__ftiq_workplace_type_id
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_users__ftiq_workplace_type_id
-msgid "Workplace Type"
+msgid "Ftiq Workplace Type"
 msgstr "نوع مكان عمل "
 
 #. module: ftiq_pharma_sfa
@@ -1912,9 +2521,46 @@ msgid "General visit feedback..."
 msgstr "ملاحظات عامة عن الزيارة..."
 
 #. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_plan_wizard_form
+msgid "Generation Policy"
+msgstr "سياسة التوليد"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_plan_wizard__geo_client_count
+msgid "Geo Client Count"
+msgstr "عدد العملاء الجغرافي"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_plan_wizard__geo_map_field
+msgid "Geo Map Field"
+msgstr "حقل خريطة جغرافية"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_plan_wizard__geo_polygon
+msgid "Geo Polygon"
+msgstr "مضلع جغرافي"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_res_partner_search_inherit
+msgid "Geo Ready"
+msgstr "جاهز جغرافيًا"
+
+#. module: ftiq_pharma_sfa
 #: model:ir.model,name:ftiq_pharma_sfa.model_ftiq_area
 msgid "Geographic Area"
 msgstr "المنطقة الجغرافية"
+
+#. module: ftiq_pharma_sfa
+#. odoo-javascript
+#: code:addons/ftiq_pharma_sfa/static/src/js/mobile_client_search.js:0
+msgid "Geolocation is not available in this browser."
+msgstr "خدمة تحديد الموقع غير متاحة في هذا المتصفح."
+
+#. module: ftiq_pharma_sfa
+#. odoo-javascript
+#: code:addons/ftiq_pharma_sfa/static/src/js/plan_geo_map_field.js:0
+msgid "Geolocation is not supported by this browser."
+msgstr "خدمة تحديد الموقع غير مدعومة في هذا المتصفح."
 
 #. module: ftiq_pharma_sfa
 #. odoo-javascript
@@ -1923,6 +2569,7 @@ msgid ""
 "Geolocation is not supported by this browser. Use a browser with GPS "
 "support."
 msgstr ""
+"خدمة تحديد الموقع غير مدعومة في هذا المتصفح. استخدم متصفحًا يدعم GPS."
 
 #. module: ftiq_pharma_sfa
 #: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_daily_task_search
@@ -1940,6 +2587,11 @@ msgstr "تجميع حسب"
 #: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_plan_wizard_form
 msgid "Has Cashed"
 msgstr "لديه تحصيلات"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_visit__has_linked_operations
+msgid "Has Linked Operations"
+msgstr "يحتوي على عمليات مرتبطة"
 
 #. module: ftiq_pharma_sfa
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_daily_task__has_message
@@ -1961,6 +2613,7 @@ msgstr "لديه مهام"
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_call_reason__id
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_city__id
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_client_answer__id
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_client_category__id
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_client_classification__id
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_client_question__id
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_client_question_option__id
@@ -1982,6 +2635,7 @@ msgstr "لديه مهام"
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_stock_check__id
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_stock_check_line__id
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_subspecialty__id
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_task_profile__id
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_task_type__id
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_visit__id
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_visit_product_line__id
@@ -2008,6 +2662,11 @@ msgstr "الأيقونة"
 #: model:ir.model.fields,help:ftiq_pharma_sfa.field_ftiq_weekly_plan__activity_exception_icon
 msgid "Icon to indicate an exception activity."
 msgstr "أيقونة لتمييز نشاط استثنائي."
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_plan_wizard_form
+msgid "Identity &amp; Location"
+msgstr "الهوية والموقع"
 
 #. module: ftiq_pharma_sfa
 #: model:ir.model.fields,help:ftiq_pharma_sfa.field_ftiq_daily_task__message_needaction
@@ -2046,13 +2705,28 @@ msgid "Important"
 msgstr "مهم"
 
 #. module: ftiq_pharma_sfa
+#. odoo-python
+#: code:addons/ftiq_pharma_sfa/models/activity_feed.py:0
+msgid "In Payment"
+msgstr "جارٍ الدفع"
+
+#. module: ftiq_pharma_sfa
 #. odoo-javascript
+#. odoo-python
+#: code:addons/ftiq_pharma_sfa/models/activity_feed.py:0
 #: code:addons/ftiq_pharma_sfa/static/src/js/dashboard.js:0
 #: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_daily_task__state__in_progress
 #: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_visit__state__in_progress
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_weekly_plan_line__execution_state__in_progress
 #: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_daily_task_search
 msgid "In Progress"
 msgstr "قيد التنفيذ"
+
+#. module: ftiq_pharma_sfa
+#. odoo-javascript
+#: code:addons/ftiq_pharma_sfa/static/src/xml/plan_geo_map_field.xml:0
+msgid "Inside Area:"
+msgstr "داخل المنطقة:"
 
 #. module: ftiq_pharma_sfa
 #: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_client_question__question_type__integer
@@ -2076,6 +2750,8 @@ msgid "Internal notes..."
 msgstr "ملاحظات داخلية..."
 
 #. module: ftiq_pharma_sfa
+#. odoo-python
+#: code:addons/ftiq_pharma_sfa/models/activity_feed.py:0
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_collection_line__invoice_id
 msgid "Invoice"
 msgstr "فاتورة"
@@ -2091,6 +2767,11 @@ msgid "Invoice Allocations"
 msgstr "توزيعات الفواتير"
 
 #. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_visit__invoice_count
+msgid "Invoice Count"
+msgstr "عدد الفواتير"
+
+#. module: ftiq_pharma_sfa
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_collection_line__invoice_residual
 msgid "Invoice Residual"
 msgstr "الرصيد المتبقي للفاتورة"
@@ -2101,14 +2782,29 @@ msgid "Invoice/Bill Date"
 msgstr "تاريخ الفاتورة/السند"
 
 #. module: ftiq_pharma_sfa
+#. odoo-javascript
 #. odoo-python
 #: code:addons/ftiq_pharma_sfa/models/res_partner.py:0
+#: code:addons/ftiq_pharma_sfa/models/visit.py:0
+#: code:addons/ftiq_pharma_sfa/static/src/js/mobile_client_search.js:0
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_visit__invoice_ids
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_partner__ftiq_invoice_count
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_users__ftiq_invoice_count
 #: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_res_partner_form_inherit
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_visit_form
 msgid "Invoices"
 msgstr "الفواتير"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.report_visit_template
+msgid "Invoices:"
+msgstr "الفواتير:"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_account_bank_statement_line__is_field_invoice
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_account_move__is_field_invoice
+msgid "Is Field Invoice"
+msgstr "فاتورة ميدانية"
 
 #. module: ftiq_pharma_sfa
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_daily_task__message_is_follower
@@ -2123,19 +2819,19 @@ msgstr "متابع"
 #. module: ftiq_pharma_sfa
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_partner__is_ftiq_center
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_users__is_ftiq_center
-msgid "Is Center"
+msgid "Is Ftiq Center"
 msgstr "مركز طبي"
 
 #. module: ftiq_pharma_sfa
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_partner__is_ftiq_doctor
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_users__is_ftiq_doctor
-msgid "Is Doctor"
+msgid "Is Ftiq Doctor"
 msgstr "طبيب"
 
 #. module: ftiq_pharma_sfa
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_partner__is_ftiq_pharmacy
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_users__is_ftiq_pharmacy
-msgid "Is Pharmacy"
+msgid "Is Ftiq Pharmacy"
 msgstr "صيدلية"
 
 #. module: ftiq_pharma_sfa
@@ -2149,10 +2845,16 @@ msgid "Journal Entry"
 msgstr "قيد اليومية"
 
 #. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_plan_wizard_form
+msgid "Keyword"
+msgstr "كلمة مفتاحية"
+
+#. module: ftiq_pharma_sfa
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_area__write_uid
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_call_reason__write_uid
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_city__write_uid
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_client_answer__write_uid
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_client_category__write_uid
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_client_classification__write_uid
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_client_question__write_uid
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_client_question_option__write_uid
@@ -2174,6 +2876,7 @@ msgstr "قيد اليومية"
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_stock_check__write_uid
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_stock_check_line__write_uid
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_subspecialty__write_uid
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_task_profile__write_uid
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_task_type__write_uid
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_visit__write_uid
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_visit_product_line__write_uid
@@ -2188,6 +2891,7 @@ msgstr "آخر تحديث بواسطة"
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_call_reason__write_date
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_city__write_date
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_client_answer__write_date
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_client_category__write_date
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_client_classification__write_date
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_client_question__write_date
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_client_question_option__write_date
@@ -2209,6 +2913,7 @@ msgstr "آخر تحديث بواسطة"
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_stock_check__write_date
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_stock_check_line__write_date
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_subspecialty__write_date
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_task_profile__write_date
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_task_type__write_date
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_visit__write_date
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_visit_product_line__write_date
@@ -2219,9 +2924,16 @@ msgid "Last Updated on"
 msgstr "آخر تحديث في"
 
 #. module: ftiq_pharma_sfa
+#. odoo-javascript
+#: code:addons/ftiq_pharma_sfa/static/src/xml/mobile_client_search.xml:0
+msgid "Last Visit"
+msgstr "آخر زيارة"
+
+#. module: ftiq_pharma_sfa
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_account_payment__ftiq_latitude
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_daily_task__latitude
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_stock_check__latitude
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_hr_expense__ftiq_latitude
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_sale_order__ftiq_latitude
 msgid "Latitude"
 msgstr "خط العرض"
@@ -2239,6 +2951,17 @@ msgstr "مستويات القيادة"
 
 #. module: ftiq_pharma_sfa
 #: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_plan_wizard_form
+msgid "Leave empty for all"
+msgstr "اتركه فارغًا للجميع"
+
+#. module: ftiq_pharma_sfa
+#. odoo-python
+#: code:addons/ftiq_pharma_sfa/models/activity_feed.py:0
+msgid "Legacy"
+msgstr "قديم"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_plan_wizard_form
 msgid "License Attached"
 msgstr "الرخصة مرفقة"
 
@@ -2251,6 +2974,11 @@ msgstr "سطر"
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_sales_target__linked_client_count
 msgid "Linked Client Count"
 msgstr "عدد العملاء المرتبطين"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.report_visit_template
+msgid "Linked Operations"
+msgstr "العمليات المرتبطة"
 
 #. module: ftiq_pharma_sfa
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_sales_target__linked_order_amount
@@ -2297,14 +3025,22 @@ msgstr "تحميل الفواتير المفتوحة"
 
 #. module: ftiq_pharma_sfa
 #. odoo-javascript
-#: code:addons/ftiq_pharma_sfa/static/src/xml/dashboard.xml:0
-msgid "Loading..."
-msgstr "جاري التحميل..."
+#: code:addons/ftiq_pharma_sfa/static/src/js/plan_geo_map_field.js:0
+msgid "Loading map data..."
+msgstr "جارٍ تحميل بيانات الخريطة..."
 
 #. module: ftiq_pharma_sfa
-#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_plan_wizard_form
-msgid "Location Filters"
-msgstr "مرشحات الموقع"
+#. odoo-javascript
+#: code:addons/ftiq_pharma_sfa/static/src/xml/plan_geo_map_field.xml:0
+msgid "Loading map..."
+msgstr "جارٍ تحميل الخريطة..."
+
+#. module: ftiq_pharma_sfa
+#. odoo-javascript
+#: code:addons/ftiq_pharma_sfa/static/src/xml/dashboard.xml:0
+#: code:addons/ftiq_pharma_sfa/static/src/xml/mobile_client_search.xml:0
+msgid "Loading..."
+msgstr "جاري التحميل..."
 
 #. module: ftiq_pharma_sfa
 #. odoo-javascript
@@ -2331,8 +3067,8 @@ msgid ""
 "Location access only works from a secure origin such as HTTPS or localhost. "
 "Reload this page from a secure address and try again."
 msgstr ""
-"يعمل الوصول إلى الموقع فقط من مصدر آمن مثل HTTPS أو العنوان المحلي. أعد تحميل "
-"هذه الصفحة من عنوان آمن ثم حاول مجددًا."
+"يعمل الوصول إلى الموقع فقط من مصدر آمن مثل HTTPS أو العنوان المحلي. أعد "
+"تحميل هذه الصفحة من عنوان آمن ثم حاول مجددًا."
 
 #. module: ftiq_pharma_sfa
 #. odoo-javascript
@@ -2343,14 +3079,19 @@ msgstr "الموقع مطلوب لهذا الإجراء."
 #. module: ftiq_pharma_sfa
 #. odoo-python
 #: code:addons/ftiq_pharma_sfa/models/visit.py:0
-msgid "Location is required to start a visit. Enable location services and try again."
+msgid ""
+"Location is required to start a visit. Enable location services and try "
+"again."
 msgstr "يلزم توفر الموقع لبدء الزيارة. فعّل خدمات الموقع ثم حاول مرة أخرى."
 
 #. module: ftiq_pharma_sfa
 #. odoo-python
 #: code:addons/ftiq_pharma_sfa/models/field_attendance.py:0
-msgid "Location is required to start field activity. Enable location services and try again."
-msgstr "يلزم توفر الموقع لبدء النشاط الميداني. فعّل خدمات الموقع ثم حاول مرة أخرى."
+msgid ""
+"Location is required to start field activity. Enable location services and "
+"try again."
+msgstr ""
+"يلزم توفر الموقع لبدء النشاط الميداني. فعّل خدمات الموقع ثم حاول مرة أخرى."
 
 #. module: ftiq_pharma_sfa
 #. odoo-javascript
@@ -2359,9 +3100,22 @@ msgid "Location request was not completed."
 msgstr "تعذر إكمال طلب الموقع."
 
 #. module: ftiq_pharma_sfa
+#. odoo-javascript
+#: code:addons/ftiq_pharma_sfa/static/src/js/plan_geo_map_field.js:0
+msgid "Location search is currently unavailable."
+msgstr "بحث الموقع غير متاح حاليًا."
+
+#. module: ftiq_pharma_sfa
+#. odoo-python
+#: code:addons/ftiq_pharma_sfa/models/activity_feed.py:0
+msgid "Locked"
+msgstr "مقفل"
+
+#. module: ftiq_pharma_sfa
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_account_payment__ftiq_longitude
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_daily_task__longitude
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_stock_check__longitude
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_hr_expense__ftiq_longitude
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_sale_order__ftiq_longitude
 msgid "Longitude"
 msgstr "خط الطول"
@@ -2376,6 +3130,18 @@ msgstr "مدير"
 #: code:addons/ftiq_pharma_sfa/static/src/js/dashboard.js:0
 msgid "Manager View"
 msgstr "عرض المدير"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_plan_wizard__task_generation_policy__manual
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_weekly_plan__task_generation_policy__manual
+msgid "Manual Sync"
+msgstr "مزامنة يدوية"
+
+#. module: ftiq_pharma_sfa
+#. odoo-javascript
+#: code:addons/ftiq_pharma_sfa/static/src/xml/plan_geo_map_field.xml:0
+msgid "Map Selection"
+msgstr "تحديد الخريطة"
 
 #. module: ftiq_pharma_sfa
 #: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_account_payment_form_inherit
@@ -2415,6 +3181,23 @@ msgid "Material"
 msgstr "مادة تسويقية"
 
 #. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_visit__material_log_count
+msgid "Material Log Count"
+msgstr "عدد سجلات المواد"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_marketing_material__material_scope
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_material_view_log__material_scope
+msgid "Material Scope"
+msgstr "نطاق المادة"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_marketing_material__material_type
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_material_view_log__material_type
+msgid "Material Type"
+msgstr "نوع المادة"
+
+#. module: ftiq_pharma_sfa
 #: model:ir.model,name:ftiq_pharma_sfa.model_ftiq_material_view_log
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_visit__material_view_log_ids
 #: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_visit_form
@@ -2429,9 +3212,16 @@ msgid "Material View Report"
 msgstr "تقرير عرض المواد"
 
 #. module: ftiq_pharma_sfa
-#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_plan_wizard_form
-msgid "Medical Profile"
-msgstr "الملف الطبي"
+#. odoo-python
+#: code:addons/ftiq_pharma_sfa/models/visit.py:0
+msgid "Material log end time cannot be earlier than the start time."
+msgstr "لا يمكن أن يكون وقت انتهاء سجل المادة أسبق من وقت البدء."
+
+#. module: ftiq_pharma_sfa
+#. odoo-python
+#: code:addons/ftiq_pharma_sfa/models/visit.py:0
+msgid "Material product must match the selected product detailing line."
+msgstr "يجب أن يتطابق المنتج الخاص بالمادة مع سطر تفاصيل المنتج المحدد."
 
 #. module: ftiq_pharma_sfa
 #: model:ir.model,name:ftiq_pharma_sfa.model_ftiq_specialty
@@ -2464,6 +3254,7 @@ msgid "Messages"
 msgstr "الرسائل"
 
 #. module: ftiq_pharma_sfa
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_weekly_plan_line__execution_state__missed
 #: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_weekly_plan_line__state__missed
 msgid "Missed"
 msgstr "فائت"
@@ -2533,6 +3324,12 @@ msgid "My Field Orders"
 msgstr "طلباتي الميدانية"
 
 #. module: ftiq_pharma_sfa
+#. odoo-javascript
+#: code:addons/ftiq_pharma_sfa/static/src/xml/plan_geo_map_field.xml:0
+msgid "My Location"
+msgstr "موقعي"
+
+#. module: ftiq_pharma_sfa
 #: model:ir.ui.menu,name:ftiq_pharma_sfa.menu_ftiq_my_orders
 msgid "My Orders"
 msgstr "طلباتي"
@@ -2568,9 +3365,16 @@ msgid "My Visits"
 msgstr "زياراتي"
 
 #. module: ftiq_pharma_sfa
+#. odoo-javascript
+#: code:addons/ftiq_pharma_sfa/static/src/js/mobile_client_search.js:0
+msgid "N/A"
+msgstr "غير متاح"
+
+#. module: ftiq_pharma_sfa
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_area__name
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_call_reason__name
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_city__name
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_client_category__name
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_client_classification__name
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_client_question__name
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_client_question_option__name
@@ -2585,12 +3389,25 @@ msgstr "زياراتي"
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_speaker_level__name
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_specialty__name
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_subspecialty__name
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_task_profile__name
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_task_type__name
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_visit__name
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_weekly_plan__name
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_workplace_type__name
 msgid "Name"
 msgstr "المرجع"
+
+#. module: ftiq_pharma_sfa
+#. odoo-javascript
+#: code:addons/ftiq_pharma_sfa/static/src/xml/mobile_client_search.xml:0
+msgid "Name / Address"
+msgstr "الاسم / العنوان"
+
+#. module: ftiq_pharma_sfa
+#. odoo-javascript
+#: code:addons/ftiq_pharma_sfa/static/src/xml/mobile_client_search.xml:0
+msgid "Nearby"
+msgstr "بالقرب"
 
 #. module: ftiq_pharma_sfa
 #. odoo-javascript
@@ -2610,13 +3427,14 @@ msgstr "عملاء جدد"
 
 #. module: ftiq_pharma_sfa
 #. odoo-python
-#: code:addons/ftiq_pharma_sfa/wizard/plan_wizard.py:0
+#: code:addons/ftiq_pharma_sfa/models/weekly_plan.py:0
 msgid "New Plan"
 msgstr "خطة جديدة"
 
 #. module: ftiq_pharma_sfa
 #: model:ir.actions.act_window,name:ftiq_pharma_sfa.action_ftiq_plan_wizard
 #: model:ir.ui.menu,name:ftiq_pharma_sfa.menu_ftiq_plan_wizard
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_plan_wizard_form
 msgid "New Plan Wizard"
 msgstr "معالج خطة جديدة"
 
@@ -2631,7 +3449,8 @@ msgstr "تم تعيين مهمة جديدة لك: <b>%s</b> مجدولة في %s
 #: code:addons/ftiq_pharma_sfa/models/weekly_plan.py:0
 msgid ""
 "New team plan assigned to you: <b>%s</b> for <b>%s</b> (week starting %s)."
-msgstr "تم تعيين خطة فريق جديدة لك: <b>%s</b> لـ <b>%s</b> (الأسبوع الذي يبدأ %s)."
+msgstr ""
+"تم تعيين خطة فريق جديدة لك: <b>%s</b> لـ <b>%s</b> (الأسبوع الذي يبدأ %s)."
 
 #. module: ftiq_pharma_sfa
 #: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_plan_wizard_form
@@ -2700,6 +3519,35 @@ msgstr "لا توجد منطقة محددة"
 #: code:addons/ftiq_pharma_sfa/static/src/xml/dashboard.xml:0
 msgid "No area data for the selected period."
 msgstr "لا توجد بيانات مناطق للفترة المحددة."
+#. module: ftiq_pharma_sfa
+#. odoo-python
+#: code:addons/ftiq_pharma_sfa/models/plan_candidate_service.py:0
+msgid "No clients were found inside the selected area."
+msgstr "لم يتم العثور على عملاء داخل المنطقة المحددة."
+
+#. module: ftiq_pharma_sfa
+#. odoo-javascript
+#: code:addons/ftiq_pharma_sfa/static/src/js/plan_geo_map_field.js:0
+msgid "No geo-enabled clients are available. Add coordinates to client records to use GEO selection."
+msgstr "لا توجد عملاء مفعّلون جغرافيًا. أضف الإحداثيات إلى سجلات العملاء لاستخدام اختيار GEO."
+
+#. module: ftiq_pharma_sfa
+#. odoo-javascript
+#: code:addons/ftiq_pharma_sfa/static/src/xml/plan_geo_map_field.xml:0
+msgid "No geo-enabled clients available."
+msgstr "لا توجد عملاء مفعّلة جغرافيًا."
+
+#. module: ftiq_pharma_sfa
+#. odoo-javascript
+#: code:addons/ftiq_pharma_sfa/static/src/js/plan_geo_map_field.js:0
+msgid "No location matched the search query."
+msgstr "لم يطابق أي موقع عبارة البحث."
+
+#. module: ftiq_pharma_sfa
+#. odoo-javascript
+#: code:addons/ftiq_pharma_sfa/static/src/xml/mobile_client_search.xml:0
+msgid "No matching clients found."
+msgstr "لم يتم العثور على عملاء مطابقين."
 
 #. module: ftiq_pharma_sfa
 #. odoo-python
@@ -2710,6 +3558,12 @@ msgstr "لا يوجد مستند تشغيلي مرتبط بسجل الحضور �
 #. module: ftiq_pharma_sfa
 #. odoo-javascript
 #: code:addons/ftiq_pharma_sfa/static/src/xml/dashboard.xml:0
+msgid "No recent operational activity found."
+msgstr "لا توجد أنشطة تشغيلية حديثة."
+
+#. module: ftiq_pharma_sfa
+#. odoo-javascript
+#: code:addons/ftiq_pharma_sfa/static/src/xml/mobile_client_search.xml:0
 msgid "No recent visits found."
 msgstr "لا توجد زيارات حديثة."
 
@@ -2738,11 +3592,18 @@ msgid "Not Interested"
 msgstr "غير مهتم"
 
 #. module: ftiq_pharma_sfa
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_weekly_plan_line__execution_state__not_ready
+msgid "Not Ready"
+msgstr "غير جاهز"
+
+#. module: ftiq_pharma_sfa
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_client_answer__note
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_material_view_log__note
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_plan_wizard__note
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_stock_check_line__note
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_weekly_plan__note
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_weekly_plan_line__note
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.report_visit_template
 msgid "Note"
 msgstr "ملاحظة"
 
@@ -2751,6 +3612,7 @@ msgstr "ملاحظة"
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_stock_check__notes
 #: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_sales_target_form
 #: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_stock_check_form
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.report_visit_template
 msgid "Notes"
 msgstr "ملاحظات"
 
@@ -2812,6 +3674,18 @@ msgid "Offline"
 msgstr "غير متصل"
 
 #. module: ftiq_pharma_sfa
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_plan_wizard__task_generation_policy__approve
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_weekly_plan__task_generation_policy__approve
+msgid "On Approval"
+msgstr "عند الموافقة"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_plan_wizard__task_generation_policy__create
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_weekly_plan__task_generation_policy__create
+msgid "On Plan Creation"
+msgstr "عند إنشاء الخطة"
+
+#. module: ftiq_pharma_sfa
 #. odoo-python
 #: code:addons/ftiq_pharma_sfa/models/account_payment.py:0
 msgid "Only collected payments can be marked as deposited."
@@ -2832,6 +3706,7 @@ msgstr "يمكن تحديد التحصيلات المسودة فقط كمحصل�
 #. module: ftiq_pharma_sfa
 #. odoo-python
 #: code:addons/ftiq_pharma_sfa/models/weekly_plan.py:0
+#: code:addons/ftiq_pharma_sfa/models/weekly_plan_refactor.py:0
 msgid "Only draft plans can be submitted."
 msgstr "يمكن تقديم الخطط المسودة فقط."
 
@@ -2842,6 +3717,18 @@ msgid "Only draft stock checks can be submitted."
 msgstr "يمكن تقديم جرد المخزون في حالة المسودة فقط."
 
 #. module: ftiq_pharma_sfa
+#. odoo-python
+#: code:addons/ftiq_pharma_sfa/models/daily_task_refactor.py:0
+msgid "Only draft, pending, or returned tasks can be started."
+msgstr "يمكن بدء المهام في حالة المسودة أو قيد الانتظار أو المعادة فقط."
+
+#. module: ftiq_pharma_sfa
+#. odoo-python
+#: code:addons/ftiq_pharma_sfa/models/daily_task_refactor.py:0
+msgid "Only executed or returned tasks can be submitted."
+msgstr "يمكن تقديم المهام المنفذة أو المعادة فقط."
+
+#. module: ftiq_pharma_sfa
 #: model:ir.model.constraint,message:ftiq_pharma_sfa.constraint_ftiq_client_answer_partner_question_uniq
 msgid "Only one answer per question per client is allowed."
 msgstr "يُسمح بإجابة واحدة فقط لكل سؤال لكل عميل."
@@ -2849,6 +3736,7 @@ msgstr "يُسمح بإجابة واحدة فقط لكل سؤال لكل عمي�
 #. module: ftiq_pharma_sfa
 #. odoo-python
 #: code:addons/ftiq_pharma_sfa/models/weekly_plan.py:0
+#: code:addons/ftiq_pharma_sfa/models/weekly_plan_refactor.py:0
 msgid "Only submitted plans can be approved."
 msgstr "يمكن اعتماد الخطط المقدمة فقط."
 
@@ -2872,6 +3760,18 @@ msgstr "يمكن مراجعة جرد المخزون المقدم فقط."
 
 #. module: ftiq_pharma_sfa
 #. odoo-python
+#: code:addons/ftiq_pharma_sfa/models/daily_task_refactor.py:0
+msgid "Only submitted tasks can be confirmed."
+msgstr "يمكن تأكيد المهام المقدمة فقط."
+
+#. module: ftiq_pharma_sfa
+#. odoo-python
+#: code:addons/ftiq_pharma_sfa/models/daily_task_refactor.py:0
+msgid "Only submitted tasks can be returned."
+msgstr "يمكن إرجاع المهام المقدمة فقط."
+
+#. module: ftiq_pharma_sfa
+#. odoo-python
 #: code:addons/ftiq_pharma_sfa/models/visit.py:0
 msgid "Only submitted visits can be approved."
 msgstr "يمكن اعتماد الزيارات المقدمة فقط."
@@ -2881,6 +3781,30 @@ msgstr "يمكن اعتماد الزيارات المقدمة فقط."
 #: code:addons/ftiq_pharma_sfa/models/visit.py:0
 msgid "Only submitted visits can be returned."
 msgstr "يمكن إرجاع الزيارات المقدمة فقط."
+
+#. module: ftiq_pharma_sfa
+#. odoo-python
+#: code:addons/ftiq_pharma_sfa/models/daily_task_refactor.py:0
+msgid "Only tasks in progress can be completed."
+msgstr "يمكن إكمال المهام الجارية فقط."
+
+#. module: ftiq_pharma_sfa
+#. odoo-javascript
+#: code:addons/ftiq_pharma_sfa/static/src/xml/mobile_client_search.xml:0
+msgid "Open Client"
+msgstr "فتح العميل"
+
+#. module: ftiq_pharma_sfa
+#. odoo-javascript
+#: code:addons/ftiq_pharma_sfa/static/src/xml/mobile_client_search.xml:0
+msgid "Open Due"
+msgstr "المستحق المفتوح"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_partner__ftiq_open_invoice_amount
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_users__ftiq_open_invoice_amount
+msgid "Open Invoice Residual"
+msgstr "الرصيد المتبقي للفواتير المفتوحة"
 
 #. module: ftiq_pharma_sfa
 #. odoo-javascript
@@ -2913,15 +3837,14 @@ msgstr "فتح الزيارة"
 #. module: ftiq_pharma_sfa
 #. odoo-javascript
 #: code:addons/ftiq_pharma_sfa/static/src/xml/dashboard.xml:0
-msgid "Open Visits"
-msgstr "الزيارات المفتوحة"
-
-#. module: ftiq_pharma_sfa
-#. odoo-javascript
-#: code:addons/ftiq_pharma_sfa/static/src/xml/dashboard.xml:0
 #: model:ir.ui.menu,name:ftiq_pharma_sfa.menu_ftiq_operations
 msgid "Operations"
 msgstr "العمليات"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_plan_wizard_form
+msgid "Operations Signals"
+msgstr "إشارات العمليات"
 
 #. module: ftiq_pharma_sfa
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_client_answer__option_id
@@ -2930,14 +3853,22 @@ msgid "Option"
 msgstr "خيار"
 
 #. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_plan_wizard_form
+msgid "Optional note for all tasks"
+msgstr "ملاحظة اختيارية لجميع المهام"
+
+#. module: ftiq_pharma_sfa
 #: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_client_question_form
 msgid "Options"
 msgstr "الخيارات"
 
 #. module: ftiq_pharma_sfa
 #. odoo-javascript
+#. odoo-python
+#: code:addons/ftiq_pharma_sfa/models/activity_feed.py:0
 #: code:addons/ftiq_pharma_sfa/static/src/js/dashboard.js:0
 #: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_daily_task__task_type__order
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_task_profile__code__order
 #: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_daily_task_kanban
 msgid "Order"
 msgstr "أمر بيع"
@@ -2950,6 +3881,7 @@ msgstr "مهام البيع"
 #. module: ftiq_pharma_sfa
 #. odoo-python
 #: code:addons/ftiq_pharma_sfa/models/daily_task.py:0
+#: code:addons/ftiq_pharma_sfa/models/daily_task_refactor.py:0
 msgid "Order tasks can only be completed after the linked order is confirmed."
 msgstr "لا يمكن إكمال مهام الطلب إلا بعد تأكيد الطلب المرتبط."
 
@@ -2957,6 +3889,7 @@ msgstr "لا يمكن إكمال مهام الطلب إلا بعد تأكيد ا
 #. odoo-javascript
 #: code:addons/ftiq_pharma_sfa/static/src/js/dashboard.js:0
 #: code:addons/ftiq_pharma_sfa/static/src/xml/dashboard.xml:0
+#: code:addons/ftiq_pharma_sfa/static/src/xml/mobile_client_search.xml:0
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_partner__ftiq_order_count
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_res_users__ftiq_order_count
 #: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_res_partner_form_inherit
@@ -2971,12 +3904,23 @@ msgid "Orders Amount"
 msgstr "مبلغ الطلبات"
 
 #. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.report_visit_template
+msgid "Orders:"
+msgstr "الطلبات:"
+
+#. module: ftiq_pharma_sfa
 #. odoo-javascript
 #: code:addons/ftiq_pharma_sfa/static/src/js/dashboard.js:0
 #: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_daily_task__task_type__other
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_task_profile__code__other
 #: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__hr_expense__ftiq_expense_type__other
 msgid "Other"
 msgstr "أخرى"
+
+#. module: ftiq_pharma_sfa
+#: model:ftiq.task.profile,name:ftiq_pharma_sfa.ftiq_task_profile_other
+msgid "Other Field Task"
+msgstr "مهمة ميدانية أخرى"
 
 #. module: ftiq_pharma_sfa
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_visit__outcome
@@ -2998,7 +3942,6 @@ msgstr "النتيجة"
 msgid "Outstanding"
 msgstr "الذمم المتبقية"
 
-
 #. module: ftiq_pharma_sfa
 #. odoo-javascript
 #: code:addons/ftiq_pharma_sfa/static/src/xml/dashboard.xml:0
@@ -3012,9 +3955,26 @@ msgid "Overdue Tasks"
 msgstr "المهام المتأخرة"
 
 #. module: ftiq_pharma_sfa
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_marketing_material__material_type__pdf
+msgid "PDF"
+msgstr "PDF"
+
+#. module: ftiq_pharma_sfa
+#. odoo-python
+#: code:addons/ftiq_pharma_sfa/models/activity_feed.py:0
+msgid "Paid"
+msgstr "مدفوع"
+
+#. module: ftiq_pharma_sfa
 #: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__hr_expense__ftiq_expense_type__parking
 msgid "Parking"
 msgstr "مواقف"
+
+#. module: ftiq_pharma_sfa
+#. odoo-python
+#: code:addons/ftiq_pharma_sfa/models/activity_feed.py:0
+msgid "Partially Paid"
+msgstr "مدفوع جزئيًا"
 
 #. module: ftiq_pharma_sfa
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_client_answer__partner_id
@@ -3049,8 +4009,11 @@ msgstr "الدفعات"
 
 #. module: ftiq_pharma_sfa
 #. odoo-javascript
+#. odoo-python
+#: code:addons/ftiq_pharma_sfa/models/activity_feed.py:0
 #: code:addons/ftiq_pharma_sfa/static/src/js/dashboard.js:0
 #: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_daily_task__state__pending
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_weekly_plan_line__execution_state__pending
 #: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_weekly_plan_line__state__pending
 #: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_daily_task_search
 msgid "Pending"
@@ -3068,16 +4031,9 @@ msgstr "من تاريخ"
 
 #. module: ftiq_pharma_sfa
 #: model:ir.module.category,name:ftiq_pharma_sfa.module_category_ftiq_pharma_sfa
-#: model:ir.ui.menu,name:ftiq_pharma_sfa.menu_ftiq_pharma_sfa_root
 #: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_res_partner_form_inherit
 msgid "Pharma SFA"
 msgstr "أتمتة المبيعات"
-
-#. module: ftiq_pharma_sfa
-#. odoo-javascript
-#: code:addons/ftiq_pharma_sfa/static/src/xml/dashboard.xml:0
-msgid "Dashboard"
-msgstr "لوحة التحكم "
 
 #. module: ftiq_pharma_sfa
 #: model:ir.actions.act_window,name:ftiq_pharma_sfa.action_ftiq_pharmacies
@@ -3085,6 +4041,17 @@ msgstr "لوحة التحكم "
 #: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_res_partner_search_inherit
 msgid "Pharmacies"
 msgstr "الصيدليات"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__res_partner__ftiq_client_type__pharmacy
+msgid "Pharmacy"
+msgstr "صيدلية"
+
+#. module: ftiq_pharma_sfa
+#. odoo-javascript
+#: code:addons/ftiq_pharma_sfa/static/src/xml/mobile_client_search.xml:0
+msgid "Phone"
+msgstr "الهاتف"
 
 #. module: ftiq_pharma_sfa
 #: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__hr_expense__ftiq_expense_type__phone
@@ -3130,12 +4097,6 @@ msgstr "الصور والتوقيع"
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_weekly_plan_line__plan_id
 msgid "Plan"
 msgstr "خطة"
-
-#. module: ftiq_pharma_sfa
-#. odoo-python
-#: code:addons/ftiq_pharma_sfa/models/weekly_plan.py:0
-msgid "Plan %s - %s (%s)"
-msgstr "خطة %s - %s (%s)"
 
 #. module: ftiq_pharma_sfa
 #. odoo-javascript
@@ -3184,20 +4145,26 @@ msgid "Planned Count"
 msgstr "عدد المخطط"
 
 #. module: ftiq_pharma_sfa
+#: model:ftiq.task.profile,name:ftiq_pharma_sfa.ftiq_task_profile_visit
+msgid "Planned Visit"
+msgstr "زيارة مخططة"
+
+#. module: ftiq_pharma_sfa
 #: model:ir.ui.menu,name:ftiq_pharma_sfa.menu_ftiq_planning
 msgid "Planning"
 msgstr "التخطيط"
-
-#. module: ftiq_pharma_sfa
-#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_plan_wizard_form
-msgid "Planning note, route idea, or campaign context..."
-msgstr "ملاحظة تخطيط، فكرة طريق، أو سياق حملة..."
 
 #. module: ftiq_pharma_sfa
 #: model:ir.actions.act_window,name:ftiq_pharma_sfa.action_ftiq_plans_to_approve
 #: model:ir.ui.menu,name:ftiq_pharma_sfa.menu_ftiq_plans_to_approve
 msgid "Plans to Approve"
 msgstr "خطط للاعتماد"
+
+#. module: ftiq_pharma_sfa
+#. odoo-python
+#: code:addons/ftiq_pharma_sfa/models/activity_feed.py:0
+msgid "Posted"
+msgstr "مُرحّل"
 
 #. module: ftiq_pharma_sfa
 #: model:ir.model,name:ftiq_pharma_sfa.model_ftiq_prescriber_status
@@ -3209,6 +4176,12 @@ msgstr "حالة الواصف"
 #: model:ir.ui.menu,name:ftiq_pharma_sfa.menu_ftiq_config_prescriber_status
 msgid "Prescriber Statuses"
 msgstr "حالات الواصف"
+
+#. module: ftiq_pharma_sfa
+#. odoo-javascript
+#: code:addons/ftiq_pharma_sfa/static/src/js/plan_geo_map_field.js:0
+msgid "Press Next to review the matching clients inside the selected area."
+msgstr "اضغط التالي لمراجعة العملاء المطابقين داخل المنطقة المحددة."
 
 #. module: ftiq_pharma_sfa
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_weekly_plan__user_id
@@ -3244,6 +4217,11 @@ msgid "Product Detail Report"
 msgstr "تقرير تفاصيل المنتجات"
 
 #. module: ftiq_pharma_sfa
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_marketing_material__material_scope__product
+msgid "Product Detailing"
+msgstr "تفصيل المنتج"
+
+#. module: ftiq_pharma_sfa
 #: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_visit_form
 #: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.report_visit_template
 msgid "Product Details"
@@ -3256,10 +4234,32 @@ msgid "Product Line"
 msgstr "سطر المنتج"
 
 #. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_marketing_material_search
+msgid "Product Scope"
+msgstr "نطاق المنتج"
+
+#. module: ftiq_pharma_sfa
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_sales_target__line_ids
 #: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_sales_target_form
 msgid "Product Targets"
 msgstr "أهداف المنتجات"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_marketing_material__material_scope__both
+msgid "Product or Visit"
+msgstr "منتج أو زيارة"
+
+#. module: ftiq_pharma_sfa
+#. odoo-python
+#: code:addons/ftiq_pharma_sfa/models/marketing_material.py:0
+msgid "Product-scoped marketing material must be linked to a product."
+msgstr "يجب ربط المادة التسويقية ذات نطاق المنتج بمنتج."
+
+#. module: ftiq_pharma_sfa
+#. odoo-python
+#: code:addons/ftiq_pharma_sfa/models/visit.py:0
+msgid "Product-scoped material logs must be linked to a product detailing line."
+msgstr "يجب ربط سجلات المواد ذات نطاق المنتج بسطر تفاصيل المنتج."
 
 #. module: ftiq_pharma_sfa
 #. odoo-javascript
@@ -3316,6 +4316,24 @@ msgid "Question Type"
 msgstr "نوع السؤال"
 
 #. module: ftiq_pharma_sfa
+#. odoo-python
+#: code:addons/ftiq_pharma_sfa/models/activity_feed.py:0
+msgid "Quotation"
+msgstr "عرض سعر"
+
+#. module: ftiq_pharma_sfa
+#. odoo-python
+#: code:addons/ftiq_pharma_sfa/models/activity_feed.py:0
+msgid "Quotation Sent"
+msgstr "تم إرسال عرض السعر"
+
+#. module: ftiq_pharma_sfa
+#. odoo-javascript
+#: code:addons/ftiq_pharma_sfa/static/src/xml/mobile_client_search.xml:0
+msgid "Radius (km)"
+msgstr "نصف القطر (كم)"
+
+#. module: ftiq_pharma_sfa
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_daily_task__rating_ids
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_field_attendance__rating_ids
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_sales_target__rating_ids
@@ -3337,7 +4355,7 @@ msgstr "اسم صورة الإيصال"
 
 #. module: ftiq_pharma_sfa
 #. odoo-javascript
-#: code:addons/ftiq_pharma_sfa/static/src/xml/dashboard.xml:0
+#: code:addons/ftiq_pharma_sfa/static/src/xml/mobile_client_search.xml:0
 msgid "Recent Visits"
 msgstr "الزيارات الحديثة"
 
@@ -3359,6 +4377,12 @@ msgid "Refresh"
 msgstr "تحديث"
 
 #. module: ftiq_pharma_sfa
+#. odoo-python
+#: code:addons/ftiq_pharma_sfa/models/activity_feed.py:0
+msgid "Refused"
+msgstr "مرفوض"
+
+#. module: ftiq_pharma_sfa
 #. odoo-javascript
 #: code:addons/ftiq_pharma_sfa/static/src/xml/dashboard.xml:0
 msgid "Regions"
@@ -3374,6 +4398,7 @@ msgstr "السجلات المرتبطة"
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_account_move__ftiq_visit_id
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_account_payment__ftiq_visit_id
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_stock_check__visit_id
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_hr_expense__ftiq_visit_id
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_sale_order__ftiq_visit_id
 msgid "Related Visit"
 msgstr "الزيارة المرتبطة"
@@ -3384,11 +4409,23 @@ msgid "Remaining Amount"
 msgstr "المبلغ المتبقي"
 
 #. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_plan_wizard_form
+msgid "Rep"
+msgstr "مندوب"
+
+#. module: ftiq_pharma_sfa
 #. odoo-javascript
 #: code:addons/ftiq_pharma_sfa/static/src/js/dashboard.js:0
 #: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_daily_task__task_type__report
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_task_profile__code__report
 msgid "Report"
 msgstr "تقرير"
+
+#. module: ftiq_pharma_sfa
+#. odoo-python
+#: code:addons/ftiq_pharma_sfa/models/activity_feed.py:0
+msgid "Reported"
+msgstr "تم الإبلاغ"
 
 #. module: ftiq_pharma_sfa
 #: model:ir.ui.menu,name:ftiq_pharma_sfa.menu_ftiq_reports
@@ -3396,11 +4433,14 @@ msgid "Reports"
 msgstr "التقارير"
 
 #. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_account_bank_statement_line__ftiq_user_id
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_account_move__ftiq_user_id
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_account_payment__ftiq_user_id
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_daily_task__user_id
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_sales_target__user_id
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_stock_check__user_id
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_weekly_plan_line__user_id
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_hr_expense__ftiq_user_id
 #: model:res.groups,name:ftiq_pharma_sfa.group_ftiq_rep
 #: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_daily_task_search
 #: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_field_attendance_search
@@ -3436,6 +4476,60 @@ msgid "Required"
 msgstr "مطلوب"
 
 #. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_daily_task__required_photo_count
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_task_profile__required_photo_count
+msgid "Required Photo Count"
+msgstr "عدد الصور المطلوب"
+
+#. module: ftiq_pharma_sfa
+#. odoo-python
+#: code:addons/ftiq_pharma_sfa/models/task_profile.py:0
+msgid "Required photo count cannot be negative."
+msgstr "لا يمكن أن يكون عدد الصور المطلوب سالبًا."
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_daily_task__requires_associated_partner
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_task_profile__requires_associated_partner
+msgid "Requires Associated Partner"
+msgstr "يتطلب شريكًا مرتبطًا"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_daily_task__requires_check_in
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_task_profile__requires_check_in
+msgid "Requires Check In"
+msgstr "يتطلب تسجيل حضور"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_daily_task__confirmation_required
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_task_profile__requires_confirmation
+msgid "Requires Confirmation"
+msgstr "يتطلب تأكيدًا"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_daily_task__requires_partner
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_task_profile__requires_partner
+msgid "Requires Partner"
+msgstr "يتطلب عميلًا"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_daily_task__requires_photos
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_task_profile__requires_photos
+msgid "Requires Photos"
+msgstr "يتطلب صورًا"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_daily_task__requires_products
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_task_profile__requires_products
+msgid "Requires Products"
+msgstr "يتطلب منتجات"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_daily_task__requires_user
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_task_profile__requires_user
+msgid "Requires User"
+msgstr "يتطلب مستخدمًا"
+
+#. module: ftiq_pharma_sfa
 #: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_daily_task_form
 msgid "Reset"
 msgstr "إعادة تعيين"
@@ -3459,6 +4553,12 @@ msgid "Residual In Payment Currency"
 msgstr "الرصيد المتبقي بعملة الدفع"
 
 #. module: ftiq_pharma_sfa
+#. odoo-python
+#: code:addons/ftiq_pharma_sfa/models/activity_feed.py:0
+msgid "Residual due"
+msgstr "رصيد مستحق"
+
+#. module: ftiq_pharma_sfa
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_daily_task__activity_user_id
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_sales_target__activity_user_id
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_stock_check__activity_user_id
@@ -3469,11 +4569,18 @@ msgstr "المستخدم المسؤول"
 
 #. module: ftiq_pharma_sfa
 #. odoo-javascript
+#: code:addons/ftiq_pharma_sfa/static/src/xml/mobile_client_search.xml:0
+msgid "Results"
+msgstr "النتائج"
+
+#. module: ftiq_pharma_sfa
+#. odoo-javascript
 #: code:addons/ftiq_pharma_sfa/static/src/js/geolocation.js:0
 msgid "Retry"
 msgstr "إعادة المحاولة"
 
 #. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_daily_task_form
 #: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_visit_form
 #: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_weekly_plan_form
 msgid "Return"
@@ -3481,22 +4588,50 @@ msgstr "إرجاع"
 
 #. module: ftiq_pharma_sfa
 #. odoo-javascript
+#. odoo-python
+#: code:addons/ftiq_pharma_sfa/models/activity_feed.py:0
 #: code:addons/ftiq_pharma_sfa/static/src/js/dashboard.js:0
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_daily_task__state__returned
 #: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_visit__state__returned
 #: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_weekly_plan__state__returned
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_weekly_plan_line__execution_state__returned
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_daily_task_search
 #: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_visit_search
 msgid "Returned"
 msgstr "مرتجعة"
 
 #. module: ftiq_pharma_sfa
-#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_plan_wizard_form
-msgid "Review the Final Scope"
-msgstr "مراجعة النطاق النهائي"
+#. odoo-python
+#: code:addons/ftiq_pharma_sfa/models/activity_feed.py:0
+msgid "Reversed"
+msgstr "معكوس"
 
 #. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_plan_wizard_form
+msgid "Review the matching clients"
+msgstr "راجع العملاء المطابقين"
+
+#. module: ftiq_pharma_sfa
+#. odoo-python
+#: code:addons/ftiq_pharma_sfa/models/activity_feed.py:0
 #: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_stock_check__state__reviewed
 msgid "Reviewed"
 msgstr "تمت المراجعة"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_stock_check__reviewed_by_id
+msgid "Reviewed By"
+msgstr "مراجع من قبل"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_stock_check__reviewed_on
+msgid "Reviewed On"
+msgstr "تاريخ المراجعة"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_res_partner_form_inherit
+msgid "SFA - Execution Card"
+msgstr "SFA - بطاقة التنفيذ"
 
 #. module: ftiq_pharma_sfa
 #: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_res_partner_form_inherit
@@ -3580,11 +4715,23 @@ msgstr "أهداف المبيعات"
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_stock_check__team_id
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_weekly_plan__team_id
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_weekly_plan_line__team_id
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_hr_expense__ftiq_team_id
 #: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_daily_task_search
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_plan_wizard_form
 #: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_sales_target_search
 #: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_weekly_plan_search
 msgid "Sales Team"
 msgstr "فريق المبيعات"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.ui.menu,name:ftiq_pharma_sfa.menu_ftiq_pharma_sfa_root
+msgid "Sales automation"
+msgstr "أتمتة المبيعات"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_marketing_material__material_type__sample
+msgid "Sample Guide"
+msgstr "دليل العينات"
 
 #. module: ftiq_pharma_sfa
 #: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_visit__outcome__sample_requested
@@ -3603,12 +4750,25 @@ msgid "Samples Distributed"
 msgstr "العينات الموزعة"
 
 #. module: ftiq_pharma_sfa
+#. odoo-python
+#: code:addons/ftiq_pharma_sfa/models/visit.py:0
+msgid "Samples distributed and stock on hand cannot be negative."
+msgstr "العينات الموزعة والمخزون المتاح لا يمكن أن يكونا سالبين."
+
+#. module: ftiq_pharma_sfa
 #: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_weekly_plan_line__day_of_week__5
 msgid "Saturday"
 msgstr "السبت"
 
 #. module: ftiq_pharma_sfa
+#. odoo-javascript
+#: code:addons/ftiq_pharma_sfa/static/src/xml/plan_geo_map_field.xml:0
+msgid "Save"
+msgstr "حفظ"
+
+#. module: ftiq_pharma_sfa
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_plan_wizard__schedule_date
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_plan_wizard_form
 msgid "Schedule Date"
 msgstr "تاريخ الجدولة"
 
@@ -3626,19 +4786,67 @@ msgid "Scheduled Tasks"
 msgstr "المهام المجدولة"
 
 #. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_marketing_material_search
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.report_visit_template
+msgid "Scope"
+msgstr "النطاق"
+
+#. module: ftiq_pharma_sfa
+#. odoo-javascript
+#: code:addons/ftiq_pharma_sfa/static/src/xml/mobile_client_search.xml:0
+#: code:addons/ftiq_pharma_sfa/static/src/xml/plan_geo_map_field.xml:0
+msgid "Search"
+msgstr "بحث"
+
+#. module: ftiq_pharma_sfa
+#. odoo-javascript
+#: code:addons/ftiq_pharma_sfa/static/src/xml/mobile_client_search.xml:0
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_plan_wizard_form
+msgid "Search by code"
+msgstr "البحث بالرمز"
+
+#. module: ftiq_pharma_sfa
+#. odoo-javascript
+#: code:addons/ftiq_pharma_sfa/static/src/xml/mobile_client_search.xml:0
+msgid "Search by name or address"
+msgstr "البحث بالاسم أو العنوان"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_plan_wizard_form
+msgid "Search in matching clients"
+msgstr "البحث في العملاء المطابقين"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_plan_wizard_form
+msgid "Search keyword"
+msgstr "كلمة البحث"
+
+#. module: ftiq_pharma_sfa
+#. odoo-javascript
+#: code:addons/ftiq_pharma_sfa/static/src/xml/plan_geo_map_field.xml:0
+msgid "Search place or address"
+msgstr "البحث عن مكان أو عنوان"
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_plan_wizard_form
+msgid "Segment &amp; Specialty"
+msgstr "الفئة والتخصص"
+
+#. module: ftiq_pharma_sfa
 #: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_plan_wizard_form
 msgid "Select All"
 msgstr "تحديد الكل"
 
 #. module: ftiq_pharma_sfa
-#. odoo-python
-#: code:addons/ftiq_pharma_sfa/wizard/plan_wizard.py:0
-msgid "Select a default representative from the selected team."
-msgstr "اختر مندوباً افتراضياً من الفريق المحدد."
+#. odoo-javascript
+#: code:addons/ftiq_pharma_sfa/static/src/xml/mobile_client_search.xml:0
+msgid "Select a client to view the execution card."
+msgstr "اختر عميلاً لعرض بطاقة التنفيذ."
 
 #. module: ftiq_pharma_sfa
 #. odoo-python
 #: code:addons/ftiq_pharma_sfa/wizard/plan_wizard.py:0
+#: code:addons/ftiq_pharma_sfa/wizard/plan_wizard_refactor.py:0
 msgid "Select a sales team before creating the plan."
 msgstr "اختر فريق مبيعات قبل إنشاء الخطة."
 
@@ -3655,28 +4863,61 @@ msgid "Select a visit outcome before submission."
 msgstr "اختر نتيجة الزيارة قبل التقديم."
 
 #. module: ftiq_pharma_sfa
+#. odoo-javascript
+#: code:addons/ftiq_pharma_sfa/static/src/xml/plan_geo_map_field.xml:0
+msgid "Select area on map"
+msgstr "حدد منطقة على الخريطة"
+
+#. module: ftiq_pharma_sfa
+#. odoo-python
+#: code:addons/ftiq_pharma_sfa/wizard/plan_wizard.py:0
+#: code:addons/ftiq_pharma_sfa/wizard/plan_wizard_refactor.py:0
+msgid "Select at least one client before creating the plan."
+msgstr "اختر عميلاً واحداً على الأقل قبل إنشاء الخطة."
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_plan_wizard_form
+msgid "Select client"
+msgstr "اختر عميل"
+
+#. module: ftiq_pharma_sfa
 #: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_client_question__question_type__selection
 msgid "Selection"
 msgstr "اختيار"
 
 #. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_plan_wizard__selection_mode
+msgid "Selection Mode"
+msgstr "وضع الاختيار"
+
+#. module: ftiq_pharma_sfa
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_call_reason__sequence
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_client_category__sequence
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_client_classification__sequence
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_client_question__sequence
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_client_question_option__sequence
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_marketing_material__sequence
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_stock_check_line__sequence
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_task_profile__sequence
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_visit_product_line__sequence
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_weekly_plan_line__sequence
 msgid "Sequence"
 msgstr "التسلسل"
 
 #. module: ftiq_pharma_sfa
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_plan_wizard__step__setup
+msgid "Set"
+msgstr "الضبط"
+
+#. module: ftiq_pharma_sfa
 #: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_plan_wizard_form
-msgid ""
-"Set the team, choose the default rep, filter the client scope, and generate "
-"operational visit lines."
-msgstr "حدد الفريق، اختر المندوب الافتراضي، رشح نطاق العملاء، وأنشئ أسطر الزيارات التشغيلية."
+msgid "Set task details to apply to all selected clients."
+msgstr "اضبط تفاصيل المهمة لتطبيقها على جميع العملاء المحددين."
+
+#. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_plan_wizard_form
+msgid "Shared Note"
+msgstr "ملاحظة مشتركة"
 
 #. module: ftiq_pharma_sfa
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_stock_check__photo
@@ -3689,9 +4930,20 @@ msgid "Shelf Position"
 msgstr "موقع الرف"
 
 #. module: ftiq_pharma_sfa
+#: model:ftiq.task.profile,name:ftiq_pharma_sfa.ftiq_task_profile_stock
+msgid "Shelf Stock Check"
+msgstr "جرد مخزون الرفوف"
+
+#. module: ftiq_pharma_sfa
 #: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_visit_form
 msgid "Show on Map"
 msgstr "عرض على الخريطة"
+
+#. module: ftiq_pharma_sfa
+#. odoo-javascript
+#: code:addons/ftiq_pharma_sfa/static/src/xml/plan_geo_map_field.xml:0
+msgid "Showing"
+msgstr "عرض"
 
 #. module: ftiq_pharma_sfa
 #: model:ir.model,name:ftiq_pharma_sfa.model_ftiq_speaker_level
@@ -3711,11 +4963,19 @@ msgid "Specialties"
 msgstr "التخصصات"
 
 #. module: ftiq_pharma_sfa
+#. odoo-javascript
+#: code:addons/ftiq_pharma_sfa/static/src/xml/mobile_client_search.xml:0
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_subspecialty__specialty_id
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_plan_wizard_form
 #: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_res_partner_search_inherit
 #: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_visit_search
 msgid "Specialty"
 msgstr "التخصص"
+
+#. module: ftiq_pharma_sfa
+#: model:ftiq.task.profile,description:ftiq_pharma_sfa.ftiq_task_profile_report
+msgid "Standalone reporting task that can be completed manually."
+msgstr "مهمة إبلاغ مستقلة يمكن إكمالها يدوياً."
 
 #. module: ftiq_pharma_sfa
 #: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_daily_task_form
@@ -3835,11 +5095,13 @@ msgstr "مخزون"
 
 #. module: ftiq_pharma_sfa
 #. odoo-python
+#: code:addons/ftiq_pharma_sfa/models/activity_feed.py:0
 #: code:addons/ftiq_pharma_sfa/models/daily_task.py:0
 #: code:addons/ftiq_pharma_sfa/models/visit.py:0
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_stock_check_line__check_id
 #: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_daily_task__task_type__stock
 #: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_field_attendance__entry_reference__ftiq_stock_check
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_task_profile__code__stock
 msgid "Stock Check"
 msgstr "جرد مخزون"
 
@@ -3872,6 +5134,11 @@ msgid "Stock Checks"
 msgstr "جرد المخزون"
 
 #. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.report_visit_template
+msgid "Stock Checks:"
+msgstr "جرد المخزون:"
+
+#. module: ftiq_pharma_sfa
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_stock_check__line_ids
 #: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_stock_check_form
 msgid "Stock Lines"
@@ -3899,9 +5166,22 @@ msgstr "المخزون المتاح"
 
 #. module: ftiq_pharma_sfa
 #. odoo-python
+#: code:addons/ftiq_pharma_sfa/models/stock_check.py:0
+msgid "Stock quantities cannot be negative."
+msgstr "كميات المخزون لا يمكن أن تكون سالبة."
+
+#. module: ftiq_pharma_sfa
+#. odoo-python
 #: code:addons/ftiq_pharma_sfa/models/daily_task.py:0
 msgid "Stock tasks can only be completed after the stock check is reviewed."
 msgstr "لا يمكن إكمال مهام الجرد إلا بعد مراجعة جرد المخزون."
+
+#. module: ftiq_pharma_sfa
+#. odoo-python
+#: code:addons/ftiq_pharma_sfa/models/daily_task_refactor.py:0
+msgid ""
+"Stock tasks require a linked stock check in the expected execution state."
+msgstr "مهام الجرد تتطلب جرد مخزون مرتبط في حالة التنفيذ المتوقعة."
 
 #. module: ftiq_pharma_sfa
 #: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_plan_wizard_form
@@ -3909,6 +5189,7 @@ msgid "Subcategory"
 msgstr "الفئة الفرعية"
 
 #. module: ftiq_pharma_sfa
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_daily_task_form
 #: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_stock_check_form
 #: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_visit_form
 #: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_weekly_plan_form
@@ -3917,14 +5198,25 @@ msgstr "تقديم"
 
 #. module: ftiq_pharma_sfa
 #. odoo-javascript
+#. odoo-python
+#: code:addons/ftiq_pharma_sfa/models/activity_feed.py:0
 #: code:addons/ftiq_pharma_sfa/static/src/js/dashboard.js:0
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_daily_task__state__submitted
 #: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_stock_check__state__submitted
 #: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_visit__state__submitted
 #: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_weekly_plan__state__submitted
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_weekly_plan_line__execution_state__submitted
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_daily_task_search
 #: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_visit_search
 #: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_weekly_plan_search
 msgid "Submitted"
 msgstr "مقدمة"
+
+#. module: ftiq_pharma_sfa
+#. odoo-javascript
+#: code:addons/ftiq_pharma_sfa/static/src/xml/dashboard.xml:0
+msgid "Submitted visits waiting review"
+msgstr "زيارات مقدمة بانتظار المراجعة"
 
 #. module: ftiq_pharma_sfa
 #: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_specialty_form
@@ -4018,6 +5310,8 @@ msgid "Targets"
 msgstr "الأهداف"
 
 #. module: ftiq_pharma_sfa
+#. odoo-python
+#: code:addons/ftiq_pharma_sfa/models/activity_feed.py:0
 #: model:ir.model,name:ftiq_pharma_sfa.model_project_task
 msgid "Task"
 msgstr "المهمة"
@@ -4027,6 +5321,33 @@ msgstr "المهمة"
 #: code:addons/ftiq_pharma_sfa/models/daily_task.py:0
 msgid "Task <b>%s</b> was reassigned to you for %s."
 msgstr "تم إعادة تعيين المهمة <b>%s</b> لك لـ %s."
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_plan_wizard__task_generation_policy
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_weekly_plan__task_generation_policy
+msgid "Task Generation Policy"
+msgstr "سياسة توليد المهام"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model,name:ftiq_pharma_sfa.model_ftiq_task_profile
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_daily_task__task_profile_id
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_plan_wizard__task_profile_id
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_weekly_plan__task_profile_id
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_daily_task_search
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_plan_wizard_form
+msgid "Task Profile"
+msgstr "ملف المهمة"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.actions.act_window,name:ftiq_pharma_sfa.action_ftiq_task_profile
+#: model:ir.ui.menu,name:ftiq_pharma_sfa.menu_ftiq_config_task_profiles
+msgid "Task Profiles"
+msgstr "ملفات المهام"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.ui.menu,name:ftiq_pharma_sfa.menu_ftiq_config_task_types
+msgid "Task Tags"
+msgstr "أنواع المهام"
 
 #. module: ftiq_pharma_sfa
 #: model:ir.model,name:ftiq_pharma_sfa.model_ftiq_task_type
@@ -4039,7 +5360,6 @@ msgstr "نوع المهمة"
 
 #. module: ftiq_pharma_sfa
 #: model:ir.actions.act_window,name:ftiq_pharma_sfa.action_ftiq_task_type
-#: model:ir.ui.menu,name:ftiq_pharma_sfa.menu_ftiq_config_task_types
 msgid "Task Types"
 msgstr "أنواع المهام"
 
@@ -4054,10 +5374,9 @@ msgid "Task outcome / result..."
 msgstr "نتيجة المهمة..."
 
 #. module: ftiq_pharma_sfa
-#: model:project.project,label_tasks:ftiq_pharma_sfa.demo_project_plan_rep1_week10
-#: model:project.project,label_tasks:ftiq_pharma_sfa.demo_project_plan_rep2_week10
-msgid "Tasks"
-msgstr "المهام"
+#: model:ir.model.constraint,message:ftiq_pharma_sfa.constraint_ftiq_task_profile_ftiq_task_profile_name_unique
+msgid "Task profile name must be unique."
+msgstr "اسم ملف المهمة يجب أن يكون فريداً."
 
 #. module: ftiq_pharma_sfa
 #. odoo-javascript
@@ -4107,7 +5426,8 @@ msgstr "لا يمكن تخصيص نفس الفاتورة مرتين في تحص�
 #. odoo-python
 #: code:addons/ftiq_pharma_sfa/models/visit.py:0
 msgid "The visit must be in progress before creating linked field operations."
-msgstr "يجب أن تكون الزيارة قيد التنفيذ قبل إنشاء العمليات الميدانية المرتبطة."
+msgstr ""
+"يجب أن تكون الزيارة قيد التنفيذ قبل إنشاء العمليات الميدانية المرتبطة."
 
 #. module: ftiq_pharma_sfa
 #: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_visit_search
@@ -4120,6 +5440,30 @@ msgstr "هذا الشهر"
 #: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_visit_search
 msgid "This Week"
 msgstr "هذا الأسبوع"
+
+#. module: ftiq_pharma_sfa
+#. odoo-python
+#: code:addons/ftiq_pharma_sfa/models/daily_task_refactor.py:0
+msgid "This task profile does not require submission."
+msgstr "ملف المهمة هذا لا يتطلب تقديماً."
+
+#. module: ftiq_pharma_sfa
+#. odoo-python
+#: code:addons/ftiq_pharma_sfa/models/daily_task_refactor.py:0
+msgid "This task profile requires photo evidence before completion."
+msgstr "ملف المهمة هذا يتلب صوراً كدليل قبل الإكمال."
+
+#. module: ftiq_pharma_sfa
+#. odoo-python
+#: code:addons/ftiq_pharma_sfa/models/daily_task_refactor.py:0
+msgid "This task profile requires product evidence before completion."
+msgstr "ملف المهمة هذا يتطلب دليل منتجات قبل الإكمال."
+
+#. module: ftiq_pharma_sfa
+#. odoo-python
+#: code:addons/ftiq_pharma_sfa/models/daily_task_refactor.py:0
+msgid "This task requires linked execution evidence before completion."
+msgstr "هذه المهمة تتطلب دليل تنفيذ مرتبط قبل الإكمال."
 
 #. module: ftiq_pharma_sfa
 #: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_weekly_plan_line__day_of_week__3
@@ -4148,9 +5492,19 @@ msgid "Total Items"
 msgstr "إجمالي الأصناف"
 
 #. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_visit__total_material_minutes
+msgid "Total Material Minutes"
+msgstr "إجمالي دقائق المواد"
+
+#. module: ftiq_pharma_sfa
 #: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_visit_product_line_list
 msgid "Total Samples"
 msgstr "إجمالي العينات"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_visit__total_samples_distributed
+msgid "Total Samples Distributed"
+msgstr "إجمالي العينات الموزعة"
 
 #. module: ftiq_pharma_sfa
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_stock_check__total_qty
@@ -4187,7 +5541,9 @@ msgstr "فعّل خدمات GPS أو موقع الجهاز، اترك الشبك
 msgid ""
 "Turn on Location Services on the device and allow this website to use your "
 "location, then tap Retry."
-msgstr "فعّل خدمات الموقع على الجهاز واسمح لهذا الموقع باستخدام موقعك، ثم اضغط إعادة المحاولة."
+msgstr ""
+"فعّل خدمات الموقع على الجهاز واسمح لهذا الموقع باستخدام موقعك، ثم اضغط إعادة"
+" المحاولة."
 
 #. module: ftiq_pharma_sfa
 #. odoo-javascript
@@ -4195,10 +5551,14 @@ msgstr "فعّل خدمات الموقع على الجهاز واسمح لهذا
 msgid ""
 "Turn on device Location and allow this site to access location in the "
 "browser settings, then tap Retry."
-msgstr "فعّل موقع الجهاز واسمح لهذا الموقع بالوصول للموقع في إعدادات المتصفح، ثم اضغط إعادة المحاولة."
+msgstr ""
+"فعّل موقع الجهاز واسمح لهذا الموقع بالوصول للموقع في إعدادات المتصفح، ثم "
+"اضغط إعادة المحاولة."
 
 #. module: ftiq_pharma_sfa
 #: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_plan_wizard__step__type
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_marketing_material_search
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.report_visit_template
 msgid "Type"
 msgstr "النوع"
 
@@ -4212,9 +5572,45 @@ msgid "Type of the exception activity on record."
 msgstr "نوع نشاط الاستثناء في السجل."
 
 #. module: ftiq_pharma_sfa
+#. odoo-javascript
+#: code:addons/ftiq_pharma_sfa/static/src/js/plan_geo_map_field.js:0
+msgid "Unable to get the current location."
+msgstr "تعذر الحصول على الموقع الحالي."
+
+#. module: ftiq_pharma_sfa
+#. odoo-javascript
+#: code:addons/ftiq_pharma_sfa/static/src/js/mobile_client_search.js:0
+msgid "Unable to read the current location."
+msgstr "تعذر قراءة الموقع الحالي."
+
+#. module: ftiq_pharma_sfa
+#. odoo-javascript
+#: code:addons/ftiq_pharma_sfa/static/src/js/mobile_client_search.js:0
+msgid "Unable to search clients."
+msgstr "تعذر البحث عن العملاء."
+
+#. module: ftiq_pharma_sfa
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_account_payment__ftiq_unallocated_amount
 msgid "Unallocated Amount"
 msgstr "المبلغ غير المخصص"
+
+#. module: ftiq_pharma_sfa
+#. odoo-javascript
+#: code:addons/ftiq_pharma_sfa/static/src/xml/plan_geo_map_field.xml:0
+msgid "Undo Point"
+msgstr "تراجع عن النقطة"
+
+#. module: ftiq_pharma_sfa
+#. odoo-javascript
+#: code:addons/ftiq_pharma_sfa/static/src/xml/dashboard.xml:0
+msgid "Unified Activity Feed"
+msgstr "تغذية الأنشطة الموحدة"
+
+#. module: ftiq_pharma_sfa
+#. odoo-python
+#: code:addons/ftiq_pharma_sfa/models/activity_feed.py:0
+msgid "Unpaid"
+msgstr "غير مدفوع"
 
 #. module: ftiq_pharma_sfa
 #: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_visit_search
@@ -4233,6 +5629,12 @@ msgid "Urgent"
 msgstr "عاجل"
 
 #. module: ftiq_pharma_sfa
+#. odoo-javascript
+#: code:addons/ftiq_pharma_sfa/static/src/js/plan_geo_map_field.js:0
+msgid "Use Draw to define a closed search area on the map."
+msgstr "استخدم الرسم لتحديد منطقة بحث مغلقة على الخريطة."
+
+#. module: ftiq_pharma_sfa
 #: model:ir.model,name:ftiq_pharma_sfa.model_res_users
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_field_attendance__user_id
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_material_view_log__user_id
@@ -4243,11 +5645,8 @@ msgid "User"
 msgstr "المستخدم"
 
 #. module: ftiq_pharma_sfa
-#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_plan_wizard_form
-msgid "Validation Signals"
-msgstr "إشارات التحقق"
-
-#. module: ftiq_pharma_sfa
+#. odoo-python
+#: code:addons/ftiq_pharma_sfa/models/activity_feed.py:0
 #: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__account_payment__ftiq_collection_state__verified
 msgid "Verified"
 msgstr "موثّق"
@@ -4263,6 +5662,11 @@ msgid "Very Urgent"
 msgstr "عاجل جداً"
 
 #. module: ftiq_pharma_sfa
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_marketing_material__material_type__video
+msgid "Video"
+msgstr "فيديو"
+
+#. module: ftiq_pharma_sfa
 #. odoo-javascript
 #: code:addons/ftiq_pharma_sfa/static/src/xml/dashboard.xml:0
 msgid "View All"
@@ -4271,6 +5675,7 @@ msgstr "عرض الكل"
 #. module: ftiq_pharma_sfa
 #. odoo-javascript
 #. odoo-python
+#: code:addons/ftiq_pharma_sfa/models/activity_feed.py:0
 #: code:addons/ftiq_pharma_sfa/models/daily_task.py:0
 #: code:addons/ftiq_pharma_sfa/static/src/js/dashboard.js:0
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_field_attendance__visit_ids
@@ -4279,6 +5684,7 @@ msgstr "عرض الكل"
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_weekly_plan_line__visit_id
 #: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_daily_task__task_type__visit
 #: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_field_attendance__entry_reference__ftiq_visit
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_task_profile__code__visit
 #: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_daily_task_kanban
 msgid "Visit"
 msgstr "زيارة"
@@ -4287,6 +5693,12 @@ msgstr "زيارة"
 #: model:ir.ui.menu,name:ftiq_pharma_sfa.menu_ftiq_visit_report
 msgid "Visit Analysis"
 msgstr "تحليل الزيارات"
+
+#. module: ftiq_pharma_sfa
+#. odoo-javascript
+#: code:addons/ftiq_pharma_sfa/static/src/xml/dashboard.xml:0
+msgid "Visit Approvals"
+msgstr "اعتمادات الزيارات"
 
 #. module: ftiq_pharma_sfa
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_field_attendance__visit_count
@@ -4298,6 +5710,12 @@ msgstr "عدد الزيارات"
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_visit_product_line__visit_date
 msgid "Visit Date"
 msgstr "تاريخ الزيارة"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_marketing_material__material_scope__visit
+#: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_marketing_material_search
+msgid "Visit Level"
+msgstr "مستوى الزيارة"
 
 #. module: ftiq_pharma_sfa
 #: model:ir.model,name:ftiq_pharma_sfa.model_ftiq_visit_product_line
@@ -4350,12 +5768,20 @@ msgid "Visit tasks can only be completed after the linked visit is approved."
 msgstr "لا يمكن إكمال مهام الزيارة إلا بعد اعتماد الزيارة المرتبطة."
 
 #. module: ftiq_pharma_sfa
+#. odoo-python
+#: code:addons/ftiq_pharma_sfa/models/daily_task_refactor.py:0
+msgid "Visit tasks require a linked visit in the expected execution state."
+msgstr "مهام الزيارة تتطلب زيارة مرتبطة في حالة التنفيذ المتوقعة."
+
+#. module: ftiq_pharma_sfa
 #. odoo-javascript
 #. odoo-python
 #: code:addons/ftiq_pharma_sfa/models/field_attendance.py:0
 #: code:addons/ftiq_pharma_sfa/models/res_partner.py:0
 #: code:addons/ftiq_pharma_sfa/static/src/js/dashboard.js:0
+#: code:addons/ftiq_pharma_sfa/static/src/js/mobile_client_search.js:0
 #: code:addons/ftiq_pharma_sfa/static/src/xml/dashboard.xml:0
+#: code:addons/ftiq_pharma_sfa/static/src/xml/mobile_client_search.xml:0
 #: model:ir.actions.act_window,name:ftiq_pharma_sfa.action_ftiq_visit
 #: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_field_attendance_form
 #: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_res_partner_form_inherit
@@ -4385,6 +5811,11 @@ msgstr "يمكن إنشاء الزيارات من الخطط المعتمدة ف
 #: model:ir.ui.menu,name:ftiq_pharma_sfa.menu_ftiq_visits_to_approve
 msgid "Visits to Approve"
 msgstr "الزيارات المعلقة"
+
+#. module: ftiq_pharma_sfa
+#: model:ir.model.fields.selection,name:ftiq_pharma_sfa.selection__ftiq_marketing_material__material_type__visual
+msgid "Visual Aid"
+msgstr "وسيلة بصرية"
 
 #. module: ftiq_pharma_sfa
 #: model:ir.model.fields,field_description:ftiq_pharma_sfa.field_ftiq_daily_task__website_message_ids
@@ -4492,7 +5923,8 @@ msgstr "يمكنك إنشاء وإدارة الخطط لفرق المبيعات 
 msgid ""
 "You have been assigned plan lines in <b>%s</b> for team <b>%s</b> (week "
 "starting %s)."
-msgstr "تم تعيين أسطر خطة لك في <b>%s</b> للفريق <b>%s</b> (الأسبوع الذي يبدأ %s)."
+msgstr ""
+"تم تعيين أسطر خطة لك في <b>%s</b> للفريق <b>%s</b> (الأسبوع الذي يبدأ %s)."
 
 #. module: ftiq_pharma_sfa
 #. odoo-python
@@ -4505,6 +5937,12 @@ msgstr "يجب تسجيل الحضور أولاً."
 #: code:addons/ftiq_pharma_sfa/static/src/xml/dashboard.xml:0
 msgid "approved visits"
 msgstr "زيارات معتمدة"
+
+#. module: ftiq_pharma_sfa
+#. odoo-javascript
+#: code:addons/ftiq_pharma_sfa/static/src/xml/mobile_client_search.xml:0
+msgid "clients"
+msgstr "عملاء"
 
 #. module: ftiq_pharma_sfa
 #. odoo-javascript
@@ -4536,6 +5974,18 @@ msgid "done"
 msgstr "منجز"
 
 #. module: ftiq_pharma_sfa
+#. odoo-javascript
+#: code:addons/ftiq_pharma_sfa/static/src/xml/mobile_client_search.xml:0
+msgid "due"
+msgstr "مستحق"
+
+#. module: ftiq_pharma_sfa
+#. odoo-javascript
+#: code:addons/ftiq_pharma_sfa/static/src/xml/plan_geo_map_field.xml:0
+msgid "geo-enabled clients."
+msgstr "عملاء مفعّلون جغرافيًا."
+
+#. module: ftiq_pharma_sfa
 #: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_stock_check_kanban
 msgid "items"
 msgstr "أصناف"
@@ -4544,12 +5994,6 @@ msgstr "أصناف"
 #: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_weekly_plan_kanban
 msgid "missed"
 msgstr "فائت"
-
-#. module: ftiq_pharma_sfa
-#. odoo-javascript
-#: code:addons/ftiq_pharma_sfa/static/src/xml/dashboard.xml:0
-msgid "new this month"
-msgstr "جديد هذا الشهر"
 
 #. module: ftiq_pharma_sfa
 #. odoo-javascript
@@ -4594,10 +6038,12 @@ msgstr "كمية"
 #. module: ftiq_pharma_sfa
 #. odoo-javascript
 #: code:addons/ftiq_pharma_sfa/static/src/xml/dashboard.xml:0
-msgid "users in scope"
-msgstr "مستخدمين في النطاق"
+msgid "reviewed this month"
+msgstr "تمت مراجعتها هذا الشهر"
 
 #. module: ftiq_pharma_sfa
+#. odoo-javascript
+#: code:addons/ftiq_pharma_sfa/static/src/xml/mobile_client_search.xml:0
 #: model_terms:ir.ui.view,arch_db:ftiq_pharma_sfa.ftiq_field_attendance_kanban
 msgid "visits"
 msgstr "زيارات"
@@ -4608,81 +6054,71 @@ msgid "| Achieved:"
 msgstr "| المحقق:"
 
 #. module: ftiq_pharma_sfa
-#: model_terms:product.template,description:ftiq_pharma_sfa.demo_product_lipitor
-msgid "أقراص أتورفاستاتين 20 مجم - لخفض الكوليسترول"
-msgstr ""
+#: model:ftiq.client.category,name:ftiq_pharma_sfa.ftiq_client_category_application_promotion
+msgid "تطبيق / ببح"
+msgstr "تطبيق / ببح"
 
 #. module: ftiq_pharma_sfa
-#: model_terms:product.template,description:ftiq_pharma_sfa.demo_product_zithromax
-msgid "أقراص أزيثروميسين 500 مجم - مضاد حيوي"
-msgstr ""
+#: model:ftiq.client.category,name:ftiq_pharma_sfa.ftiq_client_category_doctor
+msgid "دكتور"
+msgstr "دكتور"
 
 #. module: ftiq_pharma_sfa
-#: model_terms:product.template,description:ftiq_pharma_sfa.demo_product_augmentin
-msgid "أقراص أموكسيسيلين + كلافيولانيك أسيد 1 جم - مضاد حيوي"
-msgstr ""
+#: model:ftiq.client.category,name:ftiq_pharma_sfa.ftiq_client_category_company
+msgid "شركة"
+msgstr "شركة"
 
 #. module: ftiq_pharma_sfa
-#: model_terms:product.template,description:ftiq_pharma_sfa.demo_product_concor
-msgid "أقراص بيسوبرولول 5 مجم - لعلاج ضغط الدم والقلب"
-msgstr ""
+#: model:ftiq.client.category,name:ftiq_pharma_sfa.ftiq_client_category_pharmacy
+msgid "صيدلية"
+msgstr "صيدلية"
 
 #. module: ftiq_pharma_sfa
-#: model_terms:product.template,description:ftiq_pharma_sfa.demo_product_voltaren
-msgid "أقراص ديكلوفيناك 50 مجم - مسكن ومضاد للالتهاب"
-msgstr ""
+#: model:ftiq.client.category,name:ftiq_pharma_sfa.ftiq_client_category_clinic_center
+msgid "عيادة / مركز تجميل"
+msgstr "عيادة / مركز تجميل"
 
 #. module: ftiq_pharma_sfa
-#: model_terms:product.template,description:ftiq_pharma_sfa.demo_product_glucophage
-msgid "أقراص ميتفورمين 850 مجم - لعلاج السكري من النوع الثاني"
-msgstr ""
+#: model:ftiq.client.category,name:ftiq_pharma_sfa.ftiq_client_category_course
+msgid "كورسات"
+msgstr "كورسات"
 
 #. module: ftiq_pharma_sfa
-#: model:product.template,name:ftiq_pharma_sfa.demo_product_amoxil
-msgid "أموكسيل 500 مجم"
-msgstr ""
+#: model:ftiq.client.category,name:ftiq_pharma_sfa.ftiq_client_category_market_equipment
+msgid "ماركت / تجهيزات"
+msgstr "ماركت / تجهيزات"
 
 #. module: ftiq_pharma_sfa
-#: model:product.template,name:ftiq_pharma_sfa.demo_product_augmentin
-msgid "أوجمنتين 1 جم"
-msgstr ""
+#: model:ftiq.client.category,name:ftiq_pharma_sfa.ftiq_client_category_store
+msgid "متجر"
+msgstr "متجر"
 
 #. module: ftiq_pharma_sfa
-#: model:product.template,name:ftiq_pharma_sfa.demo_product_glucophage
-msgid "جلوكوفاج 850 مجم"
-msgstr ""
+#: model:ftiq.client.category,name:ftiq_pharma_sfa.ftiq_client_category_lab
+msgid "مختبر"
+msgstr "مختبر"
 
 #. module: ftiq_pharma_sfa
-#: model:product.template,name:ftiq_pharma_sfa.demo_product_zithromax
-msgid "زيثروماكس 500 مجم"
-msgstr ""
+#: model:ftiq.client.category,name:ftiq_pharma_sfa.ftiq_client_category_hospital_center
+msgid "مستشفى / مركز صحي"
+msgstr "مستشفى / مركز صحي"
 
 #. module: ftiq_pharma_sfa
-#: model:product.template,name:ftiq_pharma_sfa.demo_product_voltaren
-msgid "فولتارين 50 مجم"
-msgstr ""
+#: model:ftiq.client.category,name:ftiq_pharma_sfa.ftiq_client_category_medical_delegate
+msgid "معاون طبي"
+msgstr "معاون طبي"
 
 #. module: ftiq_pharma_sfa
-#: model_terms:product.template,description:ftiq_pharma_sfa.demo_product_amoxil
-msgid "كبسولات أموكسيسيلين 500 مجم - مضاد حيوي واسع المجال"
-msgstr ""
+#: model:ftiq.client.category,name:ftiq_pharma_sfa.ftiq_client_category_real_estate_office
+msgid "مكتب عقار"
+msgstr "مكتب عقار"
 
 #. module: ftiq_pharma_sfa
-#: model_terms:product.template,description:ftiq_pharma_sfa.demo_product_nexium
-msgid "كبسولات إيزوميبرازول 40 مجم - لعلاج قرحة المعدة"
-msgstr ""
+#: model:ftiq.client.category,name:ftiq_pharma_sfa.ftiq_client_category_scientific_office
+msgid "مكتب علمي"
+msgstr "مكتب علمي"
 
 #. module: ftiq_pharma_sfa
-#: model:product.template,name:ftiq_pharma_sfa.demo_product_concor
-msgid "كونكور 5 مجم"
-msgstr ""
-
-#. module: ftiq_pharma_sfa
-#: model:product.template,name:ftiq_pharma_sfa.demo_product_lipitor
-msgid "ليبيتور 20 مجم"
-msgstr ""
-
-#. module: ftiq_pharma_sfa
-#: model:product.template,name:ftiq_pharma_sfa.demo_product_nexium
-msgid "نيكسيوم 40 مجم"
-msgstr ""
+#: model:ftiq.client.category,name:ftiq_pharma_sfa.ftiq_client_category_apparel_personal
+msgid "ملبوس / شخصي"
+msgstr "ملبوس / شخصي"

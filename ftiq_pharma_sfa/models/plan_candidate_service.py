@@ -77,8 +77,8 @@ class FtiqPlanCandidateService(models.AbstractModel):
 
     def post_filter_partners(self, wizard, partners):
         wizard.ensure_one()
-        payment_model = self.env["account.payment"].sudo()
-        task_model = self.env["ftiq.daily.task"].sudo()
+        payment_model = self.env["account.payment"]
+        task_model = self.env["ftiq.daily.task"]
         if wizard.filter_has_cashed in ("yes", "no"):
             paid_partners = payment_model.search([
                 ("is_field_collection", "=", True),

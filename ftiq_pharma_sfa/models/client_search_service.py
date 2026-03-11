@@ -34,7 +34,7 @@ class FtiqClientSearchService(models.AbstractModel):
             ("state", "=", "posted"),
             ("amount_residual", ">", 0),
         ]
-        open_invoices = self.env["account.move"].sudo().search(invoice_domain)
+        open_invoices = self.env["account.move"].search(invoice_domain)
         distance_km = False
         if latitude and longitude and partner.partner_latitude and partner.partner_longitude:
             distance_km = self._distance_km(latitude, longitude, partner.partner_latitude, partner.partner_longitude)
@@ -133,11 +133,14 @@ class FtiqClientSearchService(models.AbstractModel):
         )
 
     def get_client_card(self, partner_id, latitude=False, longitude=False):
-        partner = self.env["res.partner"].browse(partner_id).exists()
+        partner = self.env["res.partner"].search(
+            self._get_client_base_domain() + [("id", "=", partner_id)],
+            limit=1,
+        )
         if not partner:
             return {}
         data = self._serialize_partner(partner, latitude=latitude, longitude=longitude)
-        recent_visits = self.env["ftiq.visit"].sudo().search([
+        recent_visits = self.env["ftiq.visit"].search([
             ("partner_id", "=", partner.id),
         ], order="visit_date desc, id desc", limit=5)
         data["recent_visits"] = [{

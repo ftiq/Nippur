@@ -1,0 +1,339 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+        <record id="base.main_company" model="res.company">
+            <field name="country_id" ref="base.iq"/>
+        </record>
+
+        <!-- ربط المدن الحالية بالدول -->
+        <record id="demo_city_sanaa" model="ftiq.city">
+            <field name="country_id" ref="base.ye"/>
+        </record>
+        <record id="demo_city_aden" model="ftiq.city">
+            <field name="country_id" ref="base.ye"/>
+        </record>
+        <record id="demo_city_taiz" model="ftiq.city">
+            <field name="country_id" ref="base.ye"/>
+        </record>
+        <record id="demo_city_hodeidah" model="ftiq.city">
+            <field name="country_id" ref="base.ye"/>
+        </record>
+
+        <!-- بيانات عراقية لتجربة المعالج -->
+        <record id="demo_city_baghdad" model="ftiq.city">
+            <field name="name">بغداد</field>
+            <field name="country_id" ref="base.iq"/>
+        </record>
+        <record id="demo_area_baghdad_iskan" model="ftiq.area">
+            <field name="name">الاسكان</field>
+            <field name="city_id" ref="demo_city_baghdad"/>
+        </record>
+
+        <!-- تصنيف العملاء الحاليين -->
+        <record id="demo_doctor1" model="res.partner">
+            <field name="country_id" ref="base.ye"/>
+            <field name="ftiq_client_category_id" ref="ftiq_client_category_doctor"/>
+        </record>
+        <record id="demo_doctor2" model="res.partner">
+            <field name="country_id" ref="base.ye"/>
+            <field name="ftiq_client_category_id" ref="ftiq_client_category_doctor"/>
+        </record>
+        <record id="demo_doctor3" model="res.partner">
+            <field name="country_id" ref="base.ye"/>
+            <field name="ftiq_client_category_id" ref="ftiq_client_category_doctor"/>
+        </record>
+        <record id="demo_doctor4" model="res.partner">
+            <field name="country_id" ref="base.ye"/>
+            <field name="ftiq_client_category_id" ref="ftiq_client_category_doctor"/>
+        </record>
+        <record id="demo_doctor5" model="res.partner">
+            <field name="country_id" ref="base.ye"/>
+            <field name="ftiq_client_category_id" ref="ftiq_client_category_doctor"/>
+        </record>
+        <record id="demo_doctor6" model="res.partner">
+            <field name="country_id" ref="base.ye"/>
+            <field name="ftiq_client_category_id" ref="ftiq_client_category_doctor"/>
+        </record>
+        <record id="demo_doctor7" model="res.partner">
+            <field name="country_id" ref="base.ye"/>
+            <field name="ftiq_client_category_id" ref="ftiq_client_category_doctor"/>
+        </record>
+        <record id="demo_center1" model="res.partner">
+            <field name="country_id" ref="base.ye"/>
+            <field name="ftiq_client_category_id" ref="ftiq_client_category_hospital_center"/>
+        </record>
+        <record id="demo_center2" model="res.partner">
+            <field name="country_id" ref="base.ye"/>
+            <field name="ftiq_client_category_id" ref="ftiq_client_category_hospital_center"/>
+        </record>
+        <record id="demo_pharmacy1" model="res.partner">
+            <field name="country_id" ref="base.ye"/>
+            <field name="ftiq_client_category_id" ref="ftiq_client_category_pharmacy"/>
+        </record>
+        <record id="demo_pharmacy2" model="res.partner">
+            <field name="country_id" ref="base.ye"/>
+            <field name="ftiq_client_category_id" ref="ftiq_client_category_pharmacy"/>
+        </record>
+
+        <record id="demo_doctor_baghdad_derma" model="res.partner">
+            <field name="name">عيادة الدكتور رائد عبد الله / جلدية - الاسكان</field>
+            <field name="is_ftiq_doctor" eval="True"/>
+            <field name="ftiq_client_category_id" ref="ftiq_client_category_doctor"/>
+            <field name="ftiq_specialty_id" ref="demo_specialty_dermatology"/>
+            <field name="ftiq_classification_id" ref="demo_class_a"/>
+            <field name="ftiq_prescriber_status_id" ref="demo_prescriber_active"/>
+            <field name="ftiq_official_type_id" ref="demo_official_specialist"/>
+            <field name="ftiq_workplace_type_id" ref="demo_workplace_clinic"/>
+            <field name="ftiq_debt_classification_id" ref="demo_debt_none"/>
+            <field name="ftiq_color_code_id" ref="demo_color_green"/>
+            <field name="country_id" ref="base.iq"/>
+            <field name="ftiq_city_id" ref="demo_city_baghdad"/>
+            <field name="ftiq_area_id" ref="demo_area_baghdad_iskan"/>
+            <field name="city">بغداد</field>
+            <field name="street">الاسكان</field>
+            <field name="phone">+9647700000001</field>
+            <field name="ftiq_geo_confirmed" eval="True"/>
+            <field name="ftiq_app_verified" eval="True"/>
+            <field name="ftiq_license_attached" eval="True"/>
+            <field name="ftiq_general_note">عميل تجريبي أضيف لسيناريو معالج الخطة بفلاتر العراق وبغداد والاسكان والجلدية.</field>
+        </record>
+
+        <!-- فرق المبيعات وربطها بالمشرفين والمندوبين -->
+        <record id="demo_team_sanaa" model="crm.team">
+            <field name="name">فريق صنعاء الطبي</field>
+            <field name="user_id" ref="demo_user_supervisor1"/>
+            <field name="company_id" ref="base.main_company"/>
+        </record>
+        <record id="demo_team_aden" model="crm.team">
+            <field name="name">فريق عدن الطبي</field>
+            <field name="user_id" ref="demo_user_supervisor2"/>
+            <field name="company_id" ref="base.main_company"/>
+        </record>
+
+        <record id="demo_team_member_rep1" model="crm.team.member">
+            <field name="crm_team_id" ref="demo_team_sanaa"/>
+            <field name="user_id" ref="demo_user_rep1"/>
+        </record>
+        <record id="demo_team_member_rep2" model="crm.team.member">
+            <field name="crm_team_id" ref="demo_team_sanaa"/>
+            <field name="user_id" ref="demo_user_rep2"/>
+        </record>
+        <record id="demo_team_member_rep3" model="crm.team.member">
+            <field name="crm_team_id" ref="demo_team_aden"/>
+            <field name="user_id" ref="demo_user_rep3"/>
+        </record>
+
+        <!-- تعريب أسماء الحسابات واليوميات المستخدمة في الديمو -->
+        <record id="demo_account_receivable_ftiq" model="account.account">
+            <field name="name">ذمم مدينة تجريبية - FTIQ</field>
+        </record>
+        <record id="demo_account_income_ftiq" model="account.account">
+            <field name="name">إيراد تجريبي - FTIQ</field>
+        </record>
+        <record id="demo_account_cash_ftiq" model="account.account">
+            <field name="name">صندوق نقدي تجريبي - FTIQ</field>
+        </record>
+        <record id="demo_journal_sale_ftiq" model="account.journal">
+            <field name="name">يومية مبيعات ميدانية تجريبية</field>
+        </record>
+        <record id="demo_journal_cash_ftiq" model="account.journal">
+            <field name="name">يومية تحصيل نقدي تجريبية</field>
+        </record>
+        <record id="demo_payment_method_line_cash_in_ftiq" model="account.payment.method.line">
+            <field name="name">تحصيل نقدي ميداني</field>
+        </record>
+        <record id="demo_payment_method_line_cash_out_ftiq" model="account.payment.method.line">
+            <field name="name">صرف نقدي ميداني</field>
+        </record>
+
+        <!-- الموظفون -->
+        <record id="demo_employee_rep1" model="hr.employee">
+            <field name="name">محمد المندوب - موظف ميداني</field>
+        </record>
+        <record id="demo_employee_rep2" model="hr.employee">
+            <field name="name">علي المندوب - موظف ميداني</field>
+        </record>
+        <record id="demo_employee_rep3" model="hr.employee">
+            <field name="name">عمر المندوب - موظف ميداني</field>
+        </record>
+
+        <!-- المشاريع والخطط -->
+        <record id="demo_project_plan_rep1_week10" model="project.project">
+            <field name="name">مشروع خطة محمد - الأسبوع 10</field>
+        </record>
+        <record id="demo_project_plan_rep2_week10" model="project.project">
+            <field name="name">مشروع خطة علي - الأسبوع 10</field>
+        </record>
+
+        <record id="demo_plan_rep1_week10" model="ftiq.weekly.plan">
+            <field name="name">الخطة الأسبوعية لمحمد - الأسبوع 10</field>
+            <field name="team_id" ref="demo_team_sanaa"/>
+            <field name="note">خطة معتمدة لزيارات الأطباء والمراكز ذات الأولوية العالية في صنعاء.</field>
+        </record>
+        <record id="demo_plan_rep2_week10" model="ftiq.weekly.plan">
+            <field name="name">الخطة الأسبوعية لعلي - الأسبوع 10</field>
+            <field name="team_id" ref="demo_team_sanaa"/>
+            <field name="note">خطة مرفوعة للمراجعة وتتضمن متابعة التحصيل وفحص الأرفف في الصيدليات.</field>
+        </record>
+
+        <record id="demo_plan1_line_doctor1" model="ftiq.weekly.plan.line">
+            <field name="user_id" ref="demo_user_rep1"/>
+            <field name="note">زيارة متابعة للطبيب مع مناقشة اعتماد طلبية جديدة.</field>
+        </record>
+        <record id="demo_plan1_line_center1" model="ftiq.weekly.plan.line">
+            <field name="user_id" ref="demo_user_rep1"/>
+            <field name="note">عرض تعريفي للمركز الطبي حول المنتجات الأساسية وخطة التوريد.</field>
+        </record>
+        <record id="demo_plan1_line_doctor3" model="ftiq.weekly.plan.line">
+            <field name="user_id" ref="demo_user_rep1"/>
+            <field name="note">عرض الحملة الجديدة ومناقشة فرص الوصف خلال الأسبوع الحالي.</field>
+        </record>
+        <record id="demo_plan2_line_doctor5" model="ftiq.weekly.plan.line">
+            <field name="user_id" ref="demo_user_rep2"/>
+            <field name="note">زيارة متابعة للتحصيل والالتزام العلاجي مع مراجعة الذمم المفتوحة.</field>
+        </record>
+        <record id="demo_plan2_line_pharmacy1" model="ftiq.weekly.plan.line">
+            <field name="user_id" ref="demo_user_rep2"/>
+            <field name="note">فحص رفوف الصيدلية وتوثيق الرصيد المتاح والاحتياج المتوقع.</field>
+        </record>
+
+        <record id="demo_project_plan_rep3_week10" model="project.project">
+            <field name="name">مشروع خطة عمر - الأسبوع 10</field>
+            <field name="user_id" ref="demo_user_rep3"/>
+            <field name="company_id" ref="base.main_company"/>
+        </record>
+        <record id="demo_plan_rep3_week10" model="ftiq.weekly.plan">
+            <field name="name">الخطة الأسبوعية لعمر - الأسبوع 10</field>
+            <field name="team_id" ref="demo_team_aden"/>
+            <field name="task_type_id" ref="demo_task_followup"/>
+            <field name="week_start">2026-03-02</field>
+            <field name="state">draft</field>
+            <field name="project_id" ref="demo_project_plan_rep3_week10"/>
+            <field name="note">خطة قيد الإعداد لتوسيع التغطية في عدن وزيادة تفعيل الأطباء الجدد.</field>
+        </record>
+        <record id="demo_plan3_line_doctor6" model="ftiq.weekly.plan.line">
+            <field name="plan_id" ref="demo_plan_rep3_week10"/>
+            <field name="partner_id" ref="demo_doctor6"/>
+            <field name="scheduled_date">2026-03-05</field>
+            <field name="sequence">1</field>
+            <field name="user_id" ref="demo_user_rep3"/>
+            <field name="note">زيارة تمهيدية لتعريف الطبيب بالمنتجات المسكنة وخطة المتابعة القادمة.</field>
+            <field name="state">pending</field>
+        </record>
+
+        <!-- مهام ومشاريع الخطة -->
+        <record id="demo_project_task_plan1_line_doctor1" model="project.task">
+            <field name="name">زيارة الدكتور عبدالله - خطة محمد</field>
+        </record>
+        <record id="demo_project_task_plan1_line_center1" model="project.task">
+            <field name="name">زيارة مركز الحياة الطبي - خطة محمد</field>
+        </record>
+        <record id="demo_project_task_plan1_line_doctor3" model="project.task">
+            <field name="name">زيارة الدكتور محمد الكامل - خطة محمد</field>
+        </record>
+        <record id="demo_project_task_plan2_line_doctor5" model="project.task">
+            <field name="name">زيارة الدكتور يوسف الأهدل - خطة علي</field>
+        </record>
+        <record id="demo_project_task_plan2_line_pharmacy1" model="project.task">
+            <field name="name">زيارة صيدلية الأمل - خطة علي</field>
+        </record>
+        <record id="demo_project_task_plan3_line_doctor6" model="project.task">
+            <field name="name">زيارة الدكتور سالم باعباد - خطة عمر</field>
+            <field name="project_id" ref="demo_project_plan_rep3_week10"/>
+            <field name="partner_id" ref="demo_doctor6"/>
+            <field name="user_ids" eval="[(6, 0, [ref('demo_user_rep3')])]"/>
+            <field name="date_deadline">2026-03-05 23:59:59</field>
+            <field name="planned_date_begin">2026-03-05 10:00:00</field>
+            <field name="ftiq_plan_id" ref="demo_plan_rep3_week10"/>
+            <field name="ftiq_plan_line_id" ref="demo_plan3_line_doctor6"/>
+        </record>
+
+        <record id="demo_task_visit_pending_doctor6" model="ftiq.daily.task">
+            <field name="task_type">visit</field>
+            <field name="partner_id" ref="demo_doctor6"/>
+            <field name="associated_partner_id" ref="demo_doctor6"/>
+            <field name="user_id" ref="demo_user_rep3"/>
+            <field name="scheduled_date">2026-03-05 10:00:00</field>
+            <field name="priority">1</field>
+            <field name="description">زيارة تعريفية أولى ضمن خطة عدن الأسبوعية.</field>
+            <field name="state">pending</field>
+            <field name="plan_id" ref="demo_plan_rep3_week10"/>
+            <field name="plan_line_id" ref="demo_plan3_line_doctor6"/>
+            <field name="project_id" ref="demo_project_plan_rep3_week10"/>
+            <field name="project_task_id" ref="demo_project_task_plan3_line_doctor6"/>
+            <field name="tag_ids" eval="[(6, 0, [ref('demo_task_followup')])]"/>
+        </record>
+        <record id="demo_plan3_line_doctor6" model="ftiq.weekly.plan.line">
+            <field name="daily_task_id" ref="demo_task_visit_pending_doctor6"/>
+            <field name="project_task_id" ref="demo_project_task_plan3_line_doctor6"/>
+        </record>
+
+        <!-- تحسين عرض الطلبات والفواتير والتحصيل -->
+        <record id="demo_field_order_rep1_doctor1" model="sale.order">
+            <field name="ftiq_delivery_notes">التسليم صباحاً عبر سيارة التوزيع مع التأكيد على حساسية التخزين.</field>
+            <field name="note">طلبية ميدانية ناتجة عن زيارة معتمدة للطبيب.</field>
+        </record>
+        <record id="demo_field_order_rep2_doctor5" model="sale.order">
+            <field name="ftiq_delivery_notes">التسليم إلى العيادة خلال 24 ساعة مع متابعة التحصيل الجزئي.</field>
+            <field name="note">طلبية ميدانية لعيادة السكري بعد زيارة متابعة.</field>
+        </record>
+        <record id="demo_field_order_rep1_doctor1_line1" model="sale.order.line">
+            <field name="name">طلبية ترويجية لمنتج أموكسيل 500 مجم</field>
+        </record>
+        <record id="demo_field_order_rep2_doctor5_line1" model="sale.order.line">
+            <field name="name">طلبية دعم مخزون لمنتج جلوكوفاج 850 مجم</field>
+        </record>
+
+        <record id="demo_invoice_doctor1" model="account.move">
+            <field name="ref">فاتورة تجريبية 001</field>
+            <field name="ftiq_field_notes">فاتورة ناتجة عن طلبية ميدانية بعد زيارة معتمدة للدكتور عبدالله.</field>
+        </record>
+        <record id="demo_invoice_doctor5" model="account.move">
+            <field name="ref">فاتورة تجريبية 002</field>
+            <field name="ftiq_field_notes">فاتورة مرتبطة بمتابعة عيادة السكري والتحصيل الميداني.</field>
+        </record>
+
+        <record id="demo_payment_collection_rep1" model="account.payment">
+            <field name="memo">تحصيل ميداني 001</field>
+            <field name="ftiq_check_number">CHK-FTIQ-001</field>
+            <field name="ftiq_check_date">2026-03-03</field>
+            <field name="ftiq_bank_name">بنك اليمن والكويت</field>
+        </record>
+        <record id="demo_payment_collection_rep2" model="account.payment">
+            <field name="memo">تحصيل ميداني 002</field>
+            <field name="ftiq_check_number">CHK-FTIQ-002</field>
+            <field name="ftiq_check_date">2026-03-04</field>
+            <field name="ftiq_bank_name">بنك الكريمي</field>
+        </record>
+
+        <record id="demo_collection_line_rep1_inv1" model="ftiq.collection.line">
+            <field name="payment_id" ref="demo_payment_collection_rep1"/>
+            <field name="invoice_id" ref="demo_invoice_doctor1"/>
+            <field name="allocated_amount">300.00</field>
+        </record>
+        <record id="demo_collection_line_rep2_inv2" model="ftiq.collection.line">
+            <field name="payment_id" ref="demo_payment_collection_rep2"/>
+            <field name="invoice_id" ref="demo_invoice_doctor5"/>
+            <field name="allocated_amount">180.00</field>
+        </record>
+
+        <!-- الأهداف والمصروفات -->
+        <record id="demo_target_rep1_visits" model="ftiq.sales.target">
+            <field name="name">هدف زيارات محمد الشهري</field>
+            <field name="notes">يركز على الأطباء ذوي الأولوية العالية في صنعاء وقياس الزيارات المعتمدة.</field>
+        </record>
+        <record id="demo_target_rep3_products" model="ftiq.sales.target">
+            <field name="name">هدف تغطية المنتجات لعمر</field>
+            <field name="notes">هدف مبدئي لرفع تغطية المنتجات الأساسية داخل منطقة عدن.</field>
+        </record>
+
+        <record id="demo_expense_rep1_transport" model="hr.expense">
+            <field name="name">مصروف نقل ميداني داخل المدينة</field>
+        </record>
+        <record id="demo_expense_rep2_food" model="hr.expense">
+            <field name="name">مصروف وجبة عمل ميدانية</field>
+        </record>
+
+    </data>
+</odoo>
+

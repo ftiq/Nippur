@@ -24,49 +24,49 @@ class FtiqActivityFeed(models.AbstractModel):
         return items[:limit]
 
     def _build_task_items(self, scope_user_ids):
-        records = self.env["ftiq.daily.task"].sudo().search([
+        records = self.env["ftiq.daily.task"].search([
             ("user_id", "in", scope_user_ids),
             ("state", "not in", FTIQ_ACTIVITY_TERMINAL_TASK_STATES),
         ], order="scheduled_date desc, id desc", limit=10)
         return [self._serialize_task(record) for record in records]
 
     def _build_visit_items(self, scope_user_ids):
-        records = self.env["ftiq.visit"].sudo().search([
+        records = self.env["ftiq.visit"].search([
             ("user_id", "in", scope_user_ids),
         ], order="write_date desc, id desc", limit=10)
         return [self._serialize_visit(record) for record in records]
 
     def _build_order_items(self, scope_user_ids):
-        records = self.env["sale.order"].sudo().search([
+        records = self.env["sale.order"].search([
             ("user_id", "in", scope_user_ids),
             ("is_field_order", "=", True),
         ], order="write_date desc, id desc", limit=10)
         return [self._serialize_order(record) for record in records]
 
     def _build_collection_items(self, scope_user_ids):
-        records = self.env["account.payment"].sudo().search([
+        records = self.env["account.payment"].search([
             ("ftiq_user_id", "in", scope_user_ids),
             ("is_field_collection", "=", True),
         ], order="write_date desc, id desc", limit=10)
         return [self._serialize_collection(record) for record in records]
 
     def _build_stock_check_items(self, scope_user_ids):
-        records = self.env["ftiq.stock.check"].sudo().search([
+        records = self.env["ftiq.stock.check"].search([
             ("user_id", "in", scope_user_ids),
         ], order="write_date desc, id desc", limit=10)
         return [self._serialize_stock_check(record) for record in records]
 
     def _build_expense_items(self, scope_user_ids):
-        records = self.env["hr.expense"].sudo().search([
+        records = self.env["hr.expense"].search([
             ("is_field_expense", "=", True),
             ("ftiq_user_id", "in", scope_user_ids),
         ], order="write_date desc, id desc", limit=10)
         return [self._serialize_expense(record) for record in records]
 
     def _build_invoice_items(self, scope_user_ids):
-        records = self.env["account.move"].sudo().search([
-            ("invoice_user_id", "in", scope_user_ids),
-            ("move_type", "=", "out_invoice"),
+        records = self.env["account.move"].search([
+            ("ftiq_access_user_id", "in", scope_user_ids),
+            ("is_field_invoice", "=", True),
             ("state", "=", "posted"),
             ("amount_residual", ">", 0),
         ], order="invoice_date_due asc, invoice_date asc, id desc", limit=8)

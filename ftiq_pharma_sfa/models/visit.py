@@ -78,10 +78,10 @@ class FtiqVisit(models.Model):
             rec.team_id = rec.plan_line_id.team_id or rec.user_id.sale_team_id
 
     def _compute_related_counts(self):
-        sale_order_obj = self.env['sale.order'].sudo()
-        payment_obj = self.env['account.payment'].sudo()
-        invoice_obj = self.env['account.move'].sudo()
-        stock_check_obj = self.env['ftiq.stock.check'].sudo()
+        sale_order_obj = self.env['sale.order']
+        payment_obj = self.env['account.payment']
+        invoice_obj = self.env['account.move']
+        stock_check_obj = self.env['ftiq.stock.check']
         for rec in self:
             rec.sale_order_count = sale_order_obj.search_count([
                 ('ftiq_visit_id', '=', rec.id),
@@ -91,7 +91,7 @@ class FtiqVisit(models.Model):
             ])
             rec.invoice_count = invoice_obj.search_count([
                 ('ftiq_visit_id', '=', rec.id),
-                ('move_type', '=', 'out_invoice'),
+                ('is_field_invoice', '=', True),
             ])
             rec.stock_check_count = stock_check_obj.search_count([
                 ('visit_id', '=', rec.id),

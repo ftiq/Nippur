@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="ftiq_mobile_runtime_policy_list" model="ir.ui.view">
+        <field name="name">ftiq.mobile.runtime.policy.list</field>
+        <field name="model">ftiq.mobile.runtime.policy</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="company_id"/>
+                <field name="registration_required"/>
+                <field name="maintenance_enabled"/>
+                <field name="android_min_version"/>
+                <field name="android_latest_version"/>
+                <field name="ios_min_version"/>
+                <field name="ios_latest_version"/>
+                <field name="active"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="ftiq_mobile_runtime_policy_form" model="ir.ui.view">
+        <field name="name">ftiq.mobile.runtime.policy.form</field>
+        <field name="model">ftiq.mobile.runtime.policy</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="company_id"/>
+                            <field name="active"/>
+                            <field name="registration_required"/>
+                            <field name="maintenance_enabled"/>
+                        </group>
+                        <group>
+                            <field name="maintenance_message" placeholder="Displayed to users when maintenance mode is active..."/>
+                        </group>
+                    </group>
+                    <group string="Android">
+                        <group>
+                            <field name="android_min_version"/>
+                            <field name="android_recommended_version"/>
+                            <field name="android_latest_version"/>
+                        </group>
+                        <group>
+                            <field name="android_force_update"/>
+                            <field name="android_store_url" widget="url"/>
+                        </group>
+                    </group>
+                    <group string="iOS">
+                        <group>
+                            <field name="ios_min_version"/>
+                            <field name="ios_recommended_version"/>
+                            <field name="ios_latest_version"/>
+                        </group>
+                        <group>
+                            <field name="ios_force_update"/>
+                            <field name="ios_store_url" widget="url"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_ftiq_mobile_runtime_policy" model="ir.actions.act_window">
+        <field name="name">Mobile Runtime Policy</field>
+        <field name="res_model">ftiq.mobile.runtime.policy</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <record id="ftiq_mobile_device_list" model="ir.ui.view">
+        <field name="name">ftiq.mobile.device.list</field>
+        <field name="model">ftiq.mobile.device</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="user_id"/>
+                <field name="team_id"/>
+                <field name="platform"/>
+                <field name="app_version"/>
+                <field name="build_number"/>
+                <field name="state"/>
+                <field name="last_seen_at"/>
+                <field name="last_login_at"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="ftiq_mobile_device_form" model="ir.ui.view">
+        <field name="name">ftiq.mobile.device.form</field>
+        <field name="model">ftiq.mobile.device</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_activate" type="object" string="Activate" invisible="state == 'active'"/>
+                    <button name="action_revoke" type="object" string="Revoke" invisible="state == 'revoked'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="active,revoked"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name" readonly="1"/>
+                            <field name="user_id" readonly="1"/>
+                            <field name="company_id" readonly="1"/>
+                            <field name="team_id" readonly="1"/>
+                            <field name="installation_id" readonly="1"/>
+                            <field name="platform" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="app_version" readonly="1"/>
+                            <field name="build_number" readonly="1"/>
+                            <field name="locale_code" readonly="1"/>
+                            <field name="os_version" readonly="1"/>
+                            <field name="push_token" readonly="1"/>
+                        </group>
+                    </group>
+                    <group string="Device">
+                        <group>
+                            <field name="device_name" readonly="1"/>
+                            <field name="device_model" readonly="1"/>
+                            <field name="device_brand" readonly="1"/>
+                            <field name="device_manufacturer" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="notification_permission" readonly="1"/>
+                            <field name="location_permission" readonly="1"/>
+                            <field name="location_services_enabled" readonly="1"/>
+                            <field name="biometrics_available" readonly="1"/>
+                        </group>
+                    </group>
+                    <group string="Audit">
+                        <group>
+                            <field name="last_seen_at" readonly="1"/>
+                            <field name="last_login_at" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="last_ip" readonly="1"/>
+                            <field name="last_user_agent" readonly="1"/>
+                        </group>
+                    </group>
+                    <group string="Capabilities">
+                        <field name="capabilities_json" readonly="1" nolabel="1"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_ftiq_mobile_device" model="ir.actions.act_window">
+        <field name="name">Mobile Devices</field>
+        <field name="res_model">ftiq.mobile.device</field>
+        <field name="view_mode">list,form</field>
+        <field name="context">{'search_default_group_by_user_id': 1}</field>
+    </record>
+
+</odoo>

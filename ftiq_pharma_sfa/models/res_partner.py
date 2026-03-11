@@ -171,7 +171,7 @@ class ResPartner(models.Model):
                 rec.ftiq_last_visit_date = False
 
     def _compute_ftiq_order_count(self):
-        sale_order_obj = self.env['sale.order'].sudo()
+        sale_order_obj = self.env['sale.order']
         for rec in self:
             rec.ftiq_order_count = sale_order_obj.search_count([
                 ('partner_id', '=', rec.id),
@@ -179,7 +179,7 @@ class ResPartner(models.Model):
             ])
 
     def _compute_ftiq_collection_count(self):
-        payment_obj = self.env['account.payment'].sudo()
+        payment_obj = self.env['account.payment']
         for rec in self:
             rec.ftiq_collection_count = payment_obj.search_count([
                 ('partner_id', '=', rec.id),
@@ -188,11 +188,11 @@ class ResPartner(models.Model):
             ])
 
     def _compute_ftiq_invoice_count(self):
-        invoice_obj = self.env['account.move'].sudo()
+        invoice_obj = self.env['account.move']
         for rec in self:
             invoices = invoice_obj.search([
                 ('partner_id', 'child_of', rec.commercial_partner_id.id),
-                ('move_type', '=', 'out_invoice'),
+                ('is_field_invoice', '=', True),
             ])
             rec.ftiq_invoice_count = len(invoices)
             rec.ftiq_open_invoice_amount = sum(

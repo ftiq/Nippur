@@ -19,6 +19,11 @@
                 <field name="ftiq_team_id" invisible="not is_field_expense"/>
                 <field name="ftiq_latitude" invisible="not is_field_expense"/>
                 <field name="ftiq_longitude" invisible="not is_field_expense"/>
+                <field name="ftiq_receipt_image_name" invisible="not is_field_expense"/>
+                <field name="ftiq_receipt_image"
+                       widget="image"
+                       filename="ftiq_receipt_image_name"
+                       invisible="not is_field_expense"/>
             </xpath>
         </field>
     </record>

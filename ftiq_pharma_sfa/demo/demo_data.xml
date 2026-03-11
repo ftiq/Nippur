@@ -10,7 +10,7 @@
         <record id="demo_user_manager" model="res.users">
             <field name="name">أحمد المدير</field>
             <field name="login">ahmed_manager</field>
-            <field name="password">ahmed123</field>
+            <field name="password">11</field>
             <field name="email">ahmed.manager@demo.com</field>
             <field name="groups_id" eval="[(4, ref('ftiq_pharma_sfa.group_ftiq_manager')), (4, ref('base.group_user'))]"/>
             <field name="ftiq_is_medical_rep" eval="False"/>
@@ -20,7 +20,7 @@
         <record id="demo_user_supervisor1" model="res.users">
             <field name="name">خالد المشرف</field>
             <field name="login">khaled_supervisor</field>
-            <field name="password">khaled123</field>
+            <field name="password">11</field>
             <field name="email">khaled.supervisor@demo.com</field>
             <field name="groups_id" eval="[(4, ref('ftiq_pharma_sfa.group_ftiq_supervisor')), (4, ref('base.group_user'))]"/>
             <field name="ftiq_is_medical_rep" eval="False"/>
@@ -30,7 +30,7 @@
         <record id="demo_user_supervisor2" model="res.users">
             <field name="name">سامي المشرف</field>
             <field name="login">sami_supervisor</field>
-            <field name="password">sami123</field>
+            <field name="password">11</field>
             <field name="email">sami.supervisor@demo.com</field>
             <field name="groups_id" eval="[(4, ref('ftiq_pharma_sfa.group_ftiq_supervisor')), (4, ref('base.group_user'))]"/>
             <field name="ftiq_is_medical_rep" eval="False"/>
@@ -40,7 +40,7 @@
         <record id="demo_user_rep1" model="res.users">
             <field name="name">محمد المندوب</field>
             <field name="login">mohammed_rep</field>
-            <field name="password">mohammed123</field>
+            <field name="password">11</field>
             <field name="email">mohammed.rep@demo.com</field>
             <field name="groups_id" eval="[(4, ref('ftiq_pharma_sfa.group_ftiq_rep')), (4, ref('base.group_user'))]"/>
             <field name="ftiq_is_medical_rep" eval="True"/>
@@ -51,7 +51,7 @@
         <record id="demo_user_rep2" model="res.users">
             <field name="name">علي المندوب</field>
             <field name="login">ali_rep</field>
-            <field name="password">ali123</field>
+            <field name="password">11</field>
             <field name="email">ali.rep@demo.com</field>
             <field name="groups_id" eval="[(4, ref('ftiq_pharma_sfa.group_ftiq_rep')), (4, ref('base.group_user'))]"/>
             <field name="ftiq_is_medical_rep" eval="True"/>
@@ -62,7 +62,7 @@
         <record id="demo_user_rep3" model="res.users">
             <field name="name">عمر المندوب</field>
             <field name="login">omar_rep</field>
-            <field name="password">omar123</field>
+            <field name="password">11</field>
             <field name="email">omar.rep@demo.com</field>
             <field name="groups_id" eval="[(4, ref('ftiq_pharma_sfa.group_ftiq_rep')), (4, ref('base.group_user'))]"/>
             <field name="ftiq_is_medical_rep" eval="True"/>
@@ -515,6 +515,7 @@
         <record id="demo_doctor1" model="res.partner">
             <field name="name">د. عبدالله الشرعبي</field>
             <field name="is_ftiq_doctor" eval="True"/>
+            <field name="ftiq_client_category_id" ref="ftiq_client_category_doctor"/>
             <field name="ftiq_specialty_id" ref="demo_specialty_internal"/>
             <field name="ftiq_subspecialty_id" ref="demo_sub_gastro"/>
             <field name="ftiq_classification_id" ref="demo_class_a"/>
@@ -532,6 +533,8 @@
             <field name="ftiq_general_note">طبيب استشاري متميز في أمراض الجهاز الهضمي، يفضل منتجات الشركة ويصف بشكل منتظم</field>
             <field name="phone">+967771234567</field>
             <field name="email">dr.alsharabi@hospital.com</field>
+            <field name="partner_latitude">15.3554200</field>
+            <field name="partner_longitude">44.2061500</field>
             <field name="city">صنعاء</field>
             <field name="street">شارع الزبيري - أمام المستشفى الجمهوري</field>
         </record>
@@ -539,6 +542,7 @@
         <record id="demo_doctor2" model="res.partner">
             <field name="name">د. فاطمة الحميري</field>
             <field name="is_ftiq_doctor" eval="True"/>
+            <field name="ftiq_client_category_id" ref="ftiq_client_category_doctor"/>
             <field name="ftiq_specialty_id" ref="demo_specialty_pediatrics"/>
             <field name="ftiq_subspecialty_id" ref="demo_sub_neonatology"/>
             <field name="ftiq_classification_id" ref="demo_class_a"/>
@@ -554,6 +558,8 @@
             <field name="ftiq_general_note">أخصائية أطفال متميزة، تهتم بالدراسات السريرية الحديثة</field>
             <field name="phone">+967772345678</field>
             <field name="email">dr.fatima@clinic.com</field>
+            <field name="partner_latitude">15.3479800</field>
+            <field name="partner_longitude">44.2046200</field>
             <field name="city">صنعاء</field>
             <field name="street">حدة - مجمع العيادات الطبية</field>
         </record>
@@ -561,6 +567,7 @@
         <record id="demo_doctor3" model="res.partner">
             <field name="name">د. محمد الكامل</field>
             <field name="is_ftiq_doctor" eval="True"/>
+            <field name="ftiq_client_category_id" ref="ftiq_client_category_doctor"/>
             <field name="ftiq_specialty_id" ref="demo_specialty_cardiology"/>
             <field name="ftiq_classification_id" ref="demo_class_b"/>
             <field name="ftiq_prescriber_status_id" ref="demo_prescriber_active"/>
@@ -575,6 +582,8 @@
             <field name="ftiq_general_note">استشاري قلب - يحتاج متابعة منتظمة لمنتجات الضغط والكوليسترول</field>
             <field name="phone">+967773456789</field>
             <field name="email">dr.kamel@heart.com</field>
+            <field name="partner_latitude">15.3234100</field>
+            <field name="partner_longitude">44.1935200</field>
             <field name="city">صنعاء</field>
             <field name="street">شارع الستين - عيادة القلب التخصصية</field>
         </record>
@@ -582,6 +591,7 @@
         <record id="demo_doctor4" model="res.partner">
             <field name="name">د. نورا العمري</field>
             <field name="is_ftiq_doctor" eval="True"/>
+            <field name="ftiq_client_category_id" ref="ftiq_client_category_doctor"/>
             <field name="ftiq_specialty_id" ref="demo_specialty_dermatology"/>
             <field name="ftiq_classification_id" ref="demo_class_b"/>
             <field name="ftiq_prescriber_status_id" ref="demo_prescriber_potential"/>
@@ -594,6 +604,8 @@
             <field name="ftiq_general_note">أخصائية جلدية - واصفة محتملة تحتاج مزيد من الزيارات</field>
             <field name="phone">+967774567890</field>
             <field name="email">dr.noura@skin.com</field>
+            <field name="partner_latitude">15.3168800</field>
+            <field name="partner_longitude">44.1879600</field>
             <field name="city">صنعاء</field>
             <field name="street">شارع تعز - مجمع النور الطبي</field>
         </record>
@@ -601,6 +613,7 @@
         <record id="demo_doctor5" model="res.partner">
             <field name="name">د. يوسف الأهدل</field>
             <field name="is_ftiq_doctor" eval="True"/>
+            <field name="ftiq_client_category_id" ref="ftiq_client_category_doctor"/>
             <field name="ftiq_specialty_id" ref="demo_specialty_internal"/>
             <field name="ftiq_subspecialty_id" ref="demo_sub_endocrine"/>
             <field name="ftiq_classification_id" ref="demo_class_a"/>
@@ -614,6 +627,8 @@
             <field name="ftiq_general_note">استشاري غدد صماء وسكري - واصف رئيسي لجلوكوفاج</field>
             <field name="phone">+967775678901</field>
             <field name="email">dr.yousuf@aden.com</field>
+            <field name="partner_latitude">12.7874200</field>
+            <field name="partner_longitude">45.0281100</field>
             <field name="city">عدن</field>
             <field name="street">المعلا - مجمع عدن الطبي</field>
         </record>
@@ -621,6 +636,7 @@
         <record id="demo_doctor6" model="res.partner">
             <field name="name">د. سالم باعباد</field>
             <field name="is_ftiq_doctor" eval="True"/>
+            <field name="ftiq_client_category_id" ref="ftiq_client_category_doctor"/>
             <field name="ftiq_specialty_id" ref="demo_specialty_orthopedics"/>
             <field name="ftiq_classification_id" ref="demo_class_c"/>
             <field name="ftiq_prescriber_status_id" ref="demo_prescriber_new"/>
@@ -633,6 +649,8 @@
             <field name="ftiq_general_note">أخصائي عظام جديد - يحتاج تعريف بمنتجات المسكنات</field>
             <field name="phone">+967776789012</field>
             <field name="email">dr.salem@aden.com</field>
+            <field name="partner_latitude">12.7846500</field>
+            <field name="partner_longitude">45.0239600</field>
             <field name="city">عدن</field>
             <field name="street">خور مكسر - المستشفى العسكري</field>
         </record>
@@ -640,6 +658,7 @@
         <record id="demo_doctor7" model="res.partner">
             <field name="name">د. أمل الصبري</field>
             <field name="is_ftiq_doctor" eval="True"/>
+            <field name="ftiq_client_category_id" ref="ftiq_client_category_doctor"/>
             <field name="ftiq_specialty_id" ref="demo_specialty_general"/>
             <field name="ftiq_classification_id" ref="demo_class_c"/>
             <field name="ftiq_prescriber_status_id" ref="demo_prescriber_potential"/>
@@ -652,6 +671,8 @@
             <field name="ftiq_general_note">طبيبة عامة - عيادة نشطة بمعدل مرضى عالي</field>
             <field name="phone">+967777890123</field>
             <field name="email">dr.amal@taiz.com</field>
+            <field name="partner_latitude">13.5793200</field>
+            <field name="partner_longitude">44.0201400</field>
             <field name="city">تعز</field>
             <field name="street">المظفر - شارع جمال</field>
         </record>
@@ -663,6 +684,7 @@
         <record id="demo_center1" model="res.partner">
             <field name="name">مركز الحياة الطبي</field>
             <field name="is_ftiq_center" eval="True"/>
+            <field name="ftiq_client_category_id" ref="ftiq_client_category_hospital_center"/>
             <field name="ftiq_specialty_id" ref="demo_specialty_internal"/>
             <field name="ftiq_classification_id" ref="demo_class_a"/>
             <field name="ftiq_workplace_type_id" ref="demo_workplace_polyclinic"/>
@@ -673,6 +695,8 @@
             <field name="ftiq_general_note">مجمع عيادات متعدد التخصصات - حجم وصفات كبير</field>
             <field name="phone">+967711111111</field>
             <field name="email">info@hayat-medical.com</field>
+            <field name="partner_latitude">15.3508400</field>
+            <field name="partner_longitude">44.2025400</field>
             <field name="city">صنعاء</field>
             <field name="street">شارع حدة - بجانب الجامعة</field>
         </record>
@@ -680,6 +704,7 @@
         <record id="demo_center2" model="res.partner">
             <field name="name">مركز الشفاء التخصصي</field>
             <field name="is_ftiq_center" eval="True"/>
+            <field name="ftiq_client_category_id" ref="ftiq_client_category_hospital_center"/>
             <field name="ftiq_specialty_id" ref="demo_specialty_cardiology"/>
             <field name="ftiq_classification_id" ref="demo_class_b"/>
             <field name="ftiq_workplace_type_id" ref="demo_workplace_private_hospital"/>
@@ -690,6 +715,8 @@
             <field name="ftiq_general_note">مركز متخصص في أمراض القلب - يحتاج متابعة لمنتجات الضغط</field>
             <field name="phone">+967712222222</field>
             <field name="email">info@shifaa-center.com</field>
+            <field name="partner_latitude">15.3219500</field>
+            <field name="partner_longitude">44.1918300</field>
             <field name="city">صنعاء</field>
             <field name="street">شارع الستين الجنوبي</field>
         </record>
@@ -701,6 +728,7 @@
         <record id="demo_pharmacy1" model="res.partner">
             <field name="name">صيدلية الأمل</field>
             <field name="is_ftiq_pharmacy" eval="True"/>
+            <field name="ftiq_client_category_id" ref="ftiq_client_category_pharmacy"/>
             <field name="ftiq_classification_id" ref="demo_class_a"/>
             <field name="ftiq_debt_classification_id" ref="demo_debt_none"/>
             <field name="ftiq_color_code_id" ref="demo_color_green"/>
@@ -708,6 +736,8 @@
             <field name="ftiq_city_id" ref="demo_city_sanaa"/>
             <field name="ftiq_general_note">صيدلية كبيرة - مبيعات عالية لجميع المنتجات</field>
             <field name="phone">+967713333333</field>
+            <field name="partner_latitude">15.3542100</field>
+            <field name="partner_longitude">44.2051200</field>
             <field name="city">صنعاء</field>
             <field name="street">شارع الزبيري - أمام المستشفى</field>
         </record>
@@ -715,6 +745,7 @@
         <record id="demo_pharmacy2" model="res.partner">
             <field name="name">صيدلية النور</field>
             <field name="is_ftiq_pharmacy" eval="True"/>
+            <field name="ftiq_client_category_id" ref="ftiq_client_category_pharmacy"/>
             <field name="ftiq_classification_id" ref="demo_class_b"/>
             <field name="ftiq_debt_classification_id" ref="demo_debt_medium"/>
             <field name="ftiq_color_code_id" ref="demo_color_orange"/>
@@ -722,6 +753,8 @@
             <field name="ftiq_city_id" ref="demo_city_sanaa"/>
             <field name="ftiq_general_note">صيدلية متوسطة - ديون متوسطة تحتاج متابعة</field>
             <field name="phone">+967714444444</field>
+            <field name="partner_latitude">15.3197400</field>
+            <field name="partner_longitude">44.1894200</field>
             <field name="city">صنعاء</field>
             <field name="street">حدة - بجانب مركز الحياة</field>
         </record>
