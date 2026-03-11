@@ -383,12 +383,25 @@ class FtiqMobileOperationsApi(FtiqMobileApiBase):
         )
         all_collections = self._search_scoped("account.payment")
 
-        schedules = self._search_scoped(
-            "ftiq.daily.task",
-            collection_schedule_domain,
-            order="scheduled_date asc, priority desc, id desc",
-            limit=schedule_limit,
-        )
+        try:
+            schedules = self._search_scoped(
+                "ftiq.daily.task",
+                collection_schedule_domain,
+                order="scheduled_date asc, priority desc, id desc",
+                limit=schedule_limit,
+            )
+            schedule_count = self._search_scoped(
+                "ftiq.daily.task",
+                collection_schedule_domain,
+            ).__len__()
+            overdue_schedule_count = self._search_scoped(
+                "ftiq.daily.task",
+                overdue_schedule_domain,
+            ).__len__()
+        except AccessError:
+            schedules = request.env["ftiq.daily.task"]
+            schedule_count = 0
+            overdue_schedule_count = 0
         notifications = self._search_scoped(
             "ftiq.team.message",
             order="create_date desc, id desc",
@@ -414,14 +427,8 @@ class FtiqMobileOperationsApi(FtiqMobileApiBase):
                     "account.payment",
                     pending_collection_domain,
                 ).__len__(),
-                "schedule_count": self._search_scoped(
-                    "ftiq.daily.task",
-                    collection_schedule_domain,
-                ).__len__(),
-                "overdue_schedule_count": self._search_scoped(
-                    "ftiq.daily.task",
-                    overdue_schedule_domain,
-                ).__len__(),
+                "schedule_count": schedule_count,
+                "overdue_schedule_count": overdue_schedule_count,
                 "notification_count": self._search_scoped(
                     "ftiq.team.message",
                 ).__len__(),
