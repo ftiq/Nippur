@@ -139,10 +139,25 @@ class FtiqTeamMessage(models.Model):
             )
 
     def _dispatch_push_notifications(self):
-        push_service = self.env["ftiq.firebase.push.service"]
+        notification_model = self.env["ftiq.mobile.notification"]
         for record in self:
             try:
-                push_service.send_team_message_push(record)
+                notification_model.create_for_users(
+                    record._push_recipient_users(),
+                    title=record.subject,
+                    body=record.body,
+                    category="team",
+                    priority=record.priority or "normal",
+                    target=record.task_id or record,
+                    source=record,
+                    author=record.author_id,
+                    payload={
+                        "message_type": record.message_type or "note",
+                        "team_id": record.team_id.id if record.team_id else False,
+                        "team_message_id": record.id,
+                    },
+                    event_key=f"team_message:{record.id}",
+                )
             except Exception:
                 _logger.exception(
                     "FTIQ team message push delivery failed for message %s",

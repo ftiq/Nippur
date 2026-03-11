@@ -175,18 +175,21 @@ class AccountPayment(models.Model):
             draft_payments.action_post()
         self.write({'ftiq_collection_state': 'collected'})
         self._complete_ftiq_tasks()
+        self._notify_mobile_status_change('collected')
 
     def action_ftiq_deposit(self):
         for rec in self:
             if rec.ftiq_collection_state != 'collected':
                 raise UserError(_('Only collected payments can be marked as deposited.'))
         self.write({'ftiq_collection_state': 'deposited'})
+        self._notify_mobile_status_change('deposited')
 
     def action_ftiq_verify(self):
         for rec in self:
             if rec.ftiq_collection_state != 'deposited':
                 raise UserError(_('Only deposited payments can be verified.'))
         self.write({'ftiq_collection_state': 'verified'})
+        self._notify_mobile_status_change('verified')
 
     def action_post(self):
         field_collections = self.filtered('is_field_collection')
@@ -253,6 +256,35 @@ class AccountPayment(models.Model):
                 vals['ftiq_longitude'] = longitude
             if vals:
                 rec.write(vals)
+
+    def _notify_mobile_status_change(self, event_key):
+        notification_model = self.env['ftiq.mobile.notification']
+        for rec in self.filtered('is_field_collection'):
+            if event_key in ('collected', 'deposited'):
+                recipients = notification_model.approval_users_for(rec) - rec.ftiq_user_id
+                title = _('Collection updated')
+                body = _('Collection %s is now %s.') % (rec.display_name, rec.ftiq_collection_state or event_key)
+                priority = 'normal'
+            else:
+                recipients = rec.ftiq_user_id
+                title = _('Collection verified')
+                body = _('Collection %s was verified.') % rec.display_name
+                priority = 'normal'
+            notification_model.create_for_users(
+                recipients,
+                title=title,
+                body=body,
+                category='collection',
+                priority=priority,
+                target=rec,
+                source=rec,
+                author=self.env.user,
+                payload={
+                    'collection_id': rec.id,
+                    'event': event_key,
+                },
+                event_key=f'collection:{rec.id}:{event_key}',
+            )
 
     def _ensure_ftiq_operational_attendance(self):
         Attendance = self.env['ftiq.field.attendance']

@@ -123,3 +123,6 @@ access_ftiq_mobile_device_manager,ftiq.mobile.device.manager,model_ftiq_mobile_d
 access_ftiq_mobile_request_log_rep,ftiq.mobile.request.log.rep,model_ftiq_mobile_request_log,group_ftiq_rep,1,0,1,0
 access_ftiq_mobile_request_log_supervisor,ftiq.mobile.request.log.supervisor,model_ftiq_mobile_request_log,group_ftiq_supervisor,1,0,1,0
 access_ftiq_mobile_request_log_manager,ftiq.mobile.request.log.manager,model_ftiq_mobile_request_log,group_ftiq_manager,1,0,1,0
+access_ftiq_mobile_notification_rep,ftiq.mobile.notification.rep,model_ftiq_mobile_notification,group_ftiq_rep,1,1,0,0
+access_ftiq_mobile_notification_supervisor,ftiq.mobile.notification.supervisor,model_ftiq_mobile_notification,group_ftiq_supervisor,1,1,0,0
+access_ftiq_mobile_notification_manager,ftiq.mobile.notification.manager,model_ftiq_mobile_notification,group_ftiq_manager,1,1,0,0

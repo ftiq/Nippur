@@ -37,6 +37,7 @@ class SaleOrder(models.Model):
         completed_tasks = self.filtered('ftiq_daily_task_id').mapped('ftiq_daily_task_id')
         if completed_tasks:
             completed_tasks._mark_linked_execution_confirmed(fields.Datetime.now())
+        self._notify_mobile_order_confirmed()
         return result
 
     def _create_invoices(self, grouped=False, final=False, date=None):
@@ -57,6 +58,7 @@ class SaleOrder(models.Model):
                     vals['ftiq_user_id'] = field_order.user_id.id
                 if vals:
                     move.write(vals)
+                field_order._notify_mobile_invoice_created(move)
         return moves
 
     def _ensure_ftiq_operational_attendance(self):
@@ -85,3 +87,44 @@ class SaleOrder(models.Model):
                     entry_reference=f'{order._name},{order.id}',
                 )
             order.ftiq_attendance_id = attendance.id
+
+    def _notify_mobile_order_confirmed(self):
+        notification_model = self.env['ftiq.mobile.notification']
+        for order in self.filtered('is_field_order'):
+            recipients = (notification_model.approval_users_for(order) | order.user_id) - self.env.user
+            notification_model.create_for_users(
+                recipients,
+                title=_('Order confirmed'),
+                body=_('Order %s was confirmed.') % order.name,
+                category='order',
+                priority='normal',
+                target=order,
+                source=order,
+                author=self.env.user,
+                payload={
+                    'order_id': order.id,
+                    'event': 'confirmed',
+                },
+                event_key=f'order:{order.id}:confirmed',
+            )
+
+    def _notify_mobile_invoice_created(self, move):
+        self.ensure_one()
+        notification_model = self.env['ftiq.mobile.notification']
+        recipients = (notification_model.approval_users_for(self) | self.user_id) - self.env.user
+        notification_model.create_for_users(
+            recipients,
+            title=_('Invoice created'),
+            body=_('Invoice %s was created from order %s.') % (move.display_name, self.name),
+            category='invoice',
+            priority='normal',
+            target=move,
+            source=self,
+            author=self.env.user,
+            payload={
+                'invoice_id': move.id,
+                'order_id': self.id,
+                'event': 'created',
+            },
+            event_key=f'invoice:{move.id}:created',
+        )

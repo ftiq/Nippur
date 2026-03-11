@@ -2,11 +2,8 @@
 <odoo>
     <data noupdate="0">
 
-        <!-- ============================================================ -->
-        <!-- المستخدمون - Users with passwords                           -->
-        <!-- ============================================================ -->
 
-        <!-- مدير المبيعات الميدانية -->
+
         <record id="demo_user_manager" model="res.users">
             <field name="name">أحمد المدير</field>
             <field name="login">ahmed_manager</field>
@@ -16,7 +13,7 @@
             <field name="ftiq_is_medical_rep" eval="False"/>
         </record>
 
-        <!-- مشرف المنطقة الأولى -->
+
         <record id="demo_user_supervisor1" model="res.users">
             <field name="name">خالد المشرف</field>
             <field name="login">khaled_supervisor</field>
@@ -26,7 +23,7 @@
             <field name="ftiq_is_medical_rep" eval="False"/>
         </record>
 
-        <!-- مشرف المنطقة الثانية -->
+
         <record id="demo_user_supervisor2" model="res.users">
             <field name="name">سامي المشرف</field>
             <field name="login">sami_supervisor</field>
@@ -36,7 +33,7 @@
             <field name="ftiq_is_medical_rep" eval="False"/>
         </record>
 
-        <!-- مندوب طبي 1 -->
+
         <record id="demo_user_rep1" model="res.users">
             <field name="name">محمد المندوب</field>
             <field name="login">mohammed_rep</field>
@@ -47,7 +44,7 @@
             <field name="ftiq_supervisor_id" ref="demo_user_supervisor1"/>
         </record>
 
-        <!-- مندوب طبي 2 -->
+
         <record id="demo_user_rep2" model="res.users">
             <field name="name">علي المندوب</field>
             <field name="login">ali_rep</field>
@@ -58,7 +55,7 @@
             <field name="ftiq_supervisor_id" ref="demo_user_supervisor1"/>
         </record>
 
-        <!-- مندوب طبي 3 -->
+
         <record id="demo_user_rep3" model="res.users">
             <field name="name">عمر المندوب</field>
             <field name="login">omar_rep</field>
@@ -69,9 +66,6 @@
             <field name="ftiq_supervisor_id" ref="demo_user_supervisor2"/>
         </record>
 
-        <!-- ============================================================ -->
-        <!-- التخصصات الطبية - Medical Specialties                       -->
-        <!-- ============================================================ -->
 
         <record id="demo_specialty_internal" model="ftiq.specialty">
             <field name="name">الباطنية</field>
@@ -98,7 +92,7 @@
             <field name="name">الجراحة العامة</field>
         </record>
 
-        <!-- التخصصات الفرعية -->
+
         <record id="demo_sub_gastro" model="ftiq.subspecialty">
             <field name="name">الجهاز الهضمي</field>
             <field name="specialty_id" ref="demo_specialty_internal"/>
@@ -120,9 +114,6 @@
             <field name="specialty_id" ref="demo_specialty_cardiology"/>
         </record>
 
-        <!-- ============================================================ -->
-        <!-- تصنيفات العملاء - Client Classifications                    -->
-        <!-- ============================================================ -->
 
         <record id="demo_class_a" model="ftiq.client.classification">
             <field name="name">الفئة أ - عالي القيمة</field>
@@ -141,9 +132,7 @@
             <field name="sequence">4</field>
         </record>
 
-        <!-- ============================================================ -->
-        <!-- حالات الواصف - Prescriber Statuses                          -->
-        <!-- ============================================================ -->
+
 
         <record id="demo_prescriber_active" model="ftiq.prescriber.status">
             <field name="name">واصف نشط</field>
@@ -158,9 +147,7 @@
             <field name="name">واصف جديد</field>
         </record>
 
-        <!-- ============================================================ -->
-        <!-- الأنواع الرسمية - Official Types                            -->
-        <!-- ============================================================ -->
+
 
         <record id="demo_official_consultant" model="ftiq.official.type">
             <field name="name">استشاري</field>
@@ -175,9 +162,7 @@
             <field name="name">طبيب عام</field>
         </record>
 
-        <!-- ============================================================ -->
-        <!-- مستويات المتحدثين - Speaker Levels                          -->
-        <!-- ============================================================ -->
+
 
         <record id="demo_speaker_national" model="ftiq.speaker.level">
             <field name="name">متحدث وطني</field>
@@ -189,9 +174,7 @@
             <field name="name">متحدث محلي</field>
         </record>
 
-        <!-- ============================================================ -->
-        <!-- مستويات القيادة - Leadership Levels                         -->
-        <!-- ============================================================ -->
+
 
         <record id="demo_leader_kol" model="ftiq.leadership.level">
             <field name="name">قائد رأي رئيسي (KOL)</field>
@@ -203,9 +186,6 @@
             <field name="name">مناصر</field>
         </record>
 
-        <!-- ============================================================ -->
-        <!-- أنواع أماكن العمل - Workplace Types                         -->
-        <!-- ============================================================ -->
 
         <record id="demo_workplace_hospital" model="ftiq.workplace.type">
             <field name="name">مستشفى حكومي</field>
@@ -220,9 +200,6 @@
             <field name="name">مجمع عيادات</field>
         </record>
 
-        <!-- ============================================================ -->
-        <!-- تصنيفات الديون - Debt Classifications                       -->
-        <!-- ============================================================ -->
 
         <record id="demo_debt_none" model="ftiq.debt.classification">
             <field name="name">بدون ديون</field>
@@ -237,9 +214,7 @@
             <field name="name">ديون مرتفعة</field>
         </record>
 
-        <!-- ============================================================ -->
-        <!-- رموز الألوان - Color Codes                                  -->
-        <!-- ============================================================ -->
+
 
         <record id="demo_color_green" model="ftiq.color.code">
             <field name="name">أخضر - أولوية عالية</field>
@@ -258,9 +233,7 @@
             <field name="color">1</field>
         </record>
 
-        <!-- ============================================================ -->
-        <!-- المدن والمناطق - Cities and Areas                           -->
-        <!-- ============================================================ -->
+
 
         <record id="demo_city_sanaa" model="ftiq.city">
             <field name="name">صنعاء</field>
@@ -296,7 +269,7 @@
             <field name="city_id" ref="demo_city_taiz"/>
         </record>
 
-        <!-- تعيين المناطق للمستخدمين -->
+
         <record id="demo_user_rep1" model="res.users">
             <field name="ftiq_area_id" ref="demo_area_sanaa_center"/>
             <field name="ftiq_city_id" ref="demo_city_sanaa"/>
@@ -310,9 +283,8 @@
             <field name="ftiq_city_id" ref="demo_city_aden"/>
         </record>
 
-        <!-- ============================================================ -->
-        <!-- أسباب الاتصال - Call Reasons                                -->
-        <!-- ============================================================ -->
+
+
 
         <record id="demo_reason_promotion" model="ftiq.call.reason">
             <field name="name">ترويج منتج جديد</field>
@@ -339,9 +311,8 @@
             <field name="sequence">6</field>
         </record>
 
-        <!-- ============================================================ -->
-        <!-- أنواع المهام - Task Types                                   -->
-        <!-- ============================================================ -->
+
+
 
         <record id="demo_task_regular" model="ftiq.task.type">
             <field name="name">زيارة روتينية</field>
@@ -356,9 +327,7 @@
             <field name="name">مؤتمر طبي</field>
         </record>
 
-        <!-- ============================================================ -->
-        <!-- المنتجات الدوائية - Pharmaceutical Products                 -->
-        <!-- ============================================================ -->
+
 
         <record id="demo_product_amoxil" model="product.template">
             <field name="name">أموكسيل 500 مجم</field>
@@ -417,9 +386,7 @@
             <field name="description">أقراص أزيثروميسين 500 مجم - مضاد حيوي</field>
         </record>
 
-        <!-- ============================================================ -->
-        <!-- المواد التسويقية - Marketing Materials                      -->
-        <!-- ============================================================ -->
+
 
         <record id="demo_material_amoxil_brochure" model="ftiq.marketing.material">
             <field name="name">بروشور أموكسيل - الدليل العلمي</field>
@@ -446,9 +413,6 @@
             <field name="sequence">4</field>
         </record>
 
-        <!-- ============================================================ -->
-        <!-- أسئلة العملاء - Client Questions                            -->
-        <!-- ============================================================ -->
 
         <record id="demo_question_prescription_volume" model="ftiq.client.question">
             <field name="name">ما متوسط عدد الوصفات اليومية؟</field>
@@ -486,7 +450,7 @@
             <field name="sequence">5</field>
         </record>
 
-        <!-- خيارات السؤال الثاني -->
+
         <record id="demo_option_amoxil" model="ftiq.client.question.option">
             <field name="name">أموكسيل</field>
             <field name="question_id" ref="demo_question_preferred_brand"/>
@@ -508,9 +472,7 @@
             <field name="sequence">4</field>
         </record>
 
-        <!-- ============================================================ -->
-        <!-- العملاء - الأطباء - Doctors                                 -->
-        <!-- ============================================================ -->
+
 
         <record id="demo_doctor1" model="res.partner">
             <field name="name">د. عبدالله الشرعبي</field>
@@ -677,9 +639,6 @@
             <field name="street">المظفر - شارع جمال</field>
         </record>
 
-        <!-- ============================================================ -->
-        <!-- العملاء - المراكز الطبية - Medical Centers                  -->
-        <!-- ============================================================ -->
 
         <record id="demo_center1" model="res.partner">
             <field name="name">مركز الحياة الطبي</field>
@@ -721,9 +680,7 @@
             <field name="street">شارع الستين الجنوبي</field>
         </record>
 
-        <!-- ============================================================ -->
-        <!-- العملاء - الصيدليات - Pharmacies                            -->
-        <!-- ============================================================ -->
+
 
         <record id="demo_pharmacy1" model="res.partner">
             <field name="name">صيدلية الأمل</field>
@@ -759,9 +716,6 @@
             <field name="street">حدة - بجانب مركز الحياة</field>
         </record>
 
-        <!-- ============================================================ -->
-        <!-- إجابات العملاء - Client Answers                             -->
-        <!-- ============================================================ -->
 
         <record id="demo_answer1_q1" model="ftiq.client.answer">
             <field name="partner_id" ref="demo_doctor1"/>

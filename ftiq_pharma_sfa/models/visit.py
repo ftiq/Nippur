@@ -258,6 +258,7 @@ class FtiqVisit(models.Model):
         self._validate_submission()
         self.write({'state': 'submitted'})
         self._sync_plan_line_progress()
+        self._notify_mobile_status_change('submitted')
 
     def action_approve(self):
         self.ensure_one()
@@ -265,6 +266,7 @@ class FtiqVisit(models.Model):
             raise UserError(_('Only submitted visits can be approved.'))
         self.write({'state': 'approved'})
         self._sync_plan_line_progress()
+        self._notify_mobile_status_change('approved')
 
     def action_return(self):
         self.ensure_one()
@@ -272,12 +274,47 @@ class FtiqVisit(models.Model):
             raise UserError(_('Only submitted visits can be returned.'))
         self.write({'state': 'returned'})
         self._sync_plan_line_progress()
+        self._notify_mobile_status_change('returned')
 
     def action_reset_draft(self):
         self.ensure_one()
         if self.state not in ('returned',):
             raise UserError(_('Can only reset returned visits to draft.'))
         self.write({'state': 'draft'})
+
+    def _notify_mobile_status_change(self, event_key):
+        notification_model = self.env['ftiq.mobile.notification']
+        for rec in self:
+            if event_key == 'submitted':
+                recipients = notification_model.approval_users_for(rec) - rec.user_id
+                title = _('Visit submitted')
+                body = _('Visit %s was submitted and is awaiting review.') % rec.display_name
+                priority = 'normal'
+            elif event_key == 'approved':
+                recipients = rec.user_id
+                title = _('Visit approved')
+                body = _('Visit %s was approved.') % rec.display_name
+                priority = 'normal'
+            else:
+                recipients = rec.user_id
+                title = _('Visit returned')
+                body = _('Visit %s was returned for revision.') % rec.display_name
+                priority = 'urgent'
+            notification_model.create_for_users(
+                recipients,
+                title=title,
+                body=body,
+                category='visit',
+                priority=priority,
+                target=rec,
+                source=rec,
+                author=self.env.user,
+                payload={
+                    'visit_id': rec.id,
+                    'event': event_key,
+                },
+                event_key=f'visit:{rec.id}:{event_key}',
+            )
         self._sync_plan_line_progress()
 
     def action_show_on_map(self):

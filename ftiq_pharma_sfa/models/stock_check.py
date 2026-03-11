@@ -108,6 +108,7 @@ class FtiqStockCheck(models.Model):
                 raise UserError(_('GPS coordinates are required before submitting the stock check.'))
         self.write({'state': 'submitted'})
         self.filtered('ftiq_daily_task_id').mapped('ftiq_daily_task_id')._mark_linked_execution_submitted(fields.Datetime.now())
+        self._notify_mobile_status_change('submitted')
 
     def action_review(self):
         for rec in self:
@@ -119,12 +120,14 @@ class FtiqStockCheck(models.Model):
             'reviewed_on': fields.Datetime.now(),
         })
         self.filtered('ftiq_daily_task_id').mapped('ftiq_daily_task_id')._mark_linked_execution_confirmed(fields.Datetime.now())
+        self._notify_mobile_status_change('reviewed')
 
     def action_reset_draft(self):
         for rec in self:
             if rec.state != 'submitted':
                 raise UserError(_('Only submitted stock checks can be reset to draft.'))
         self.write({'state': 'draft'})
+        self._notify_mobile_status_change('reset')
 
     def _capture_location_from_context(self):
         self.ensure_one()
@@ -136,6 +139,40 @@ class FtiqStockCheck(models.Model):
                 'latitude': latitude,
                 'longitude': longitude,
             })
+
+    def _notify_mobile_status_change(self, event_key):
+        notification_model = self.env['ftiq.mobile.notification']
+        for rec in self:
+            if event_key == 'submitted':
+                recipients = notification_model.approval_users_for(rec) - rec.user_id
+                title = _('Stock check submitted')
+                body = _('Stock check %s was submitted and is awaiting review.') % rec.display_name
+                priority = 'normal'
+            elif event_key == 'reviewed':
+                recipients = rec.user_id
+                title = _('Stock check reviewed')
+                body = _('Stock check %s was reviewed.') % rec.display_name
+                priority = 'normal'
+            else:
+                recipients = rec.user_id
+                title = _('Stock check reset')
+                body = _('Stock check %s was reset to draft.') % rec.display_name
+                priority = 'urgent'
+            notification_model.create_for_users(
+                recipients,
+                title=title,
+                body=body,
+                category='stock_check',
+                priority=priority,
+                target=rec,
+                source=rec,
+                author=self.env.user,
+                payload={
+                    'stock_check_id': rec.id,
+                    'event': event_key,
+                },
+                event_key=f'stock_check:{rec.id}:{event_key}',
+            )
 
 
 class FtiqStockCheckLine(models.Model):

@@ -110,18 +110,21 @@ class FtiqDailyTask(models.Model):
                 raise UserError(_("Only executed or returned tasks can be submitted."))
             rec._validate_completion_dependencies()
             rec.write({"state": "submitted", "completed_date": fields.Datetime.now()})
+            rec._notify_mobile_status_change("submitted")
 
     def action_confirm(self):
         for rec in self:
             if rec.state != "submitted":
                 raise UserError(_("Only submitted tasks can be confirmed."))
         self.write({"state": "confirmed", "completed_date": fields.Datetime.now()})
+        self._notify_mobile_status_change("confirmed")
 
     def action_return(self):
         for rec in self:
             if rec.state != "submitted":
                 raise UserError(_("Only submitted tasks can be returned."))
         self.write({"state": "returned"})
+        self._notify_mobile_status_change("returned")
 
     def action_reset(self):
         self.write({"state": "pending", "completed_date": False})
@@ -268,3 +271,38 @@ class FtiqDailyTask(models.Model):
         records = self.filtered(lambda rec: rec.confirmation_required and rec.state != "cancelled")
         if records:
             records.write({"state": "returned"})
+
+    def _notify_mobile_status_change(self, event_key):
+        notification_model = self.env["ftiq.mobile.notification"]
+        for rec in self:
+            if event_key == "submitted":
+                recipients = notification_model.approval_users_for(rec) - rec.user_id
+                title = _("Task submitted")
+                body = _("Task %s was submitted and is awaiting review.") % rec.display_name
+                priority = "urgent" if rec.priority == "2" else "normal"
+            elif event_key == "confirmed":
+                recipients = rec.user_id
+                title = _("Task confirmed")
+                body = _("Task %s was confirmed.") % rec.display_name
+                priority = "normal"
+            else:
+                recipients = rec.user_id
+                title = _("Task returned")
+                body = _("Task %s was returned for revision.") % rec.display_name
+                priority = "urgent"
+            notification_model.create_for_users(
+                recipients,
+                title=title,
+                body=body,
+                category="task",
+                priority=priority,
+                target=rec,
+                source=rec,
+                author=self.env.user,
+                payload={
+                    "task_id": rec.id,
+                    "task_type": rec.task_type or "",
+                    "event": event_key,
+                },
+                event_key=f"task:{rec.id}:{event_key}",
+            )
