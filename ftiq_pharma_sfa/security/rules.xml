@@ -253,6 +253,26 @@
         <field name="groups" eval="[(4, ref('group_ftiq_manager'))]"/>
     </record>
 
+    <record id="ftiq_res_partner_mobile_visibility_rule" model="ir.rule">
+        <field name="name">FTIQ Partner: Mobile roles read field clients and user contacts</field>
+        <field name="model_id" ref="base.model_res_partner"/>
+        <field name="domain_force">['&amp;', '|', ('company_id', '=', False), ('company_id', '=', user.company_id.id), '|', ('commercial_partner_id.ftiq_is_field_client', '=', True), ('user_ids', '!=', False)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_rep')), (4, ref('group_ftiq_supervisor')), (4, ref('group_ftiq_manager'))]"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="ftiq_res_users_mobile_visibility_rule" model="ir.rule">
+        <field name="name">FTIQ Users: Mobile roles read internal company users</field>
+        <field name="model_id" ref="base.model_res_users"/>
+        <field name="domain_force">[('share', '=', False), ('company_ids', 'in', [user.company_id.id])]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_rep')), (4, ref('group_ftiq_supervisor')), (4, ref('group_ftiq_manager'))]"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
     <record id="ftiq_collection_line_rule_rep" model="ir.rule">
         <field name="name">Collection Line: Rep sees own</field>
         <field name="model_id" ref="model_ftiq_collection_line"/>

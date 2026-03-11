@@ -126,3 +126,9 @@ access_ftiq_mobile_request_log_manager,ftiq.mobile.request.log.manager,model_fti
 access_ftiq_mobile_notification_rep,ftiq.mobile.notification.rep,model_ftiq_mobile_notification,group_ftiq_rep,1,1,0,0
 access_ftiq_mobile_notification_supervisor,ftiq.mobile.notification.supervisor,model_ftiq_mobile_notification,group_ftiq_supervisor,1,1,0,0
 access_ftiq_mobile_notification_manager,ftiq.mobile.notification.manager,model_ftiq_mobile_notification,group_ftiq_manager,1,1,0,0
+access_res_partner_ftiq_rep,res.partner.ftiq.rep,base.model_res_partner,group_ftiq_rep,1,0,0,0
+access_res_partner_ftiq_supervisor,res.partner.ftiq.supervisor,base.model_res_partner,group_ftiq_supervisor,1,0,0,0
+access_res_partner_ftiq_manager,res.partner.ftiq.manager,base.model_res_partner,group_ftiq_manager,1,0,0,0
+access_res_users_ftiq_rep,res.users.ftiq.rep,base.model_res_users,group_ftiq_rep,1,0,0,0
+access_res_users_ftiq_supervisor,res.users.ftiq.supervisor,base.model_res_users,group_ftiq_supervisor,1,0,0,0
+access_res_users_ftiq_manager,res.users.ftiq.manager,base.model_res_users,group_ftiq_manager,1,0,0,0
