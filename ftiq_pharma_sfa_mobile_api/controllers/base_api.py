@@ -1,7 +1,9 @@
 import json
 import logging
 
-from odoo import _, fields, http
+import odoo.http as odoo_http
+import odoo.modules.registry
+from odoo import _, api, fields, http
 from odoo.exceptions import AccessDenied, AccessError, UserError, ValidationError
 from odoo.http import request
 from odoo.osv import expression
@@ -27,6 +29,7 @@ class FtiqMobileApiBase(http.Controller):
         "ftiq.daily.task",
         "ftiq.visit",
         "ftiq.weekly.plan",
+        "project.project",
         "sale.order",
         "purchase.order",
         "project.task",
@@ -34,6 +37,7 @@ class FtiqMobileApiBase(http.Controller):
         "account.move",
         "hr.expense",
         "ftiq.stock.check",
+        "ftiq.team.message",
     }
 
     def _ok(self, data=None, meta=None, status=200):
@@ -165,6 +169,40 @@ class FtiqMobileApiBase(http.Controller):
             "ip": remote_ip[:128],
             "user_agent": user_agent[:512],
         }
+
+    def _request_database(self):
+        for candidate in (
+            request.httprequest.headers.get("X-Odoo-Database"),
+            request.httprequest.headers.get("X-FTIQ-Database"),
+            request.httprequest.args.get("db"),
+        ):
+            normalized = (candidate or "").strip()
+            if normalized:
+                return normalized
+        return (request.session.db or request.db or "").strip()
+
+    def _bearer_token(self):
+        header_value = (request.httprequest.headers.get("Authorization") or "").strip()
+        if not header_value.lower().startswith("bearer "):
+            return ""
+        return header_value[7:].strip()
+
+    def _issue_session_cookie(self, db, uid):
+        request.session.db = db
+        request.session.uid = uid
+        registry = odoo.modules.registry.Registry(db)
+        with registry.cursor() as cr:
+            env = api.Environment(cr, uid, request.session.context)
+            odoo_http.root.session_store.rotate(request.session, env)
+            request.future_response.set_cookie(
+                "session_id",
+                request.session.sid,
+                max_age=odoo_http.get_session_max_inactivity(env),
+                httponly=True,
+                secure=request.httprequest.scheme == "https",
+                samesite="Lax",
+            )
+        request.update_env(user=uid)
 
     def _mobile_request_uid(self, payload):
         value = ""
@@ -350,6 +388,33 @@ class FtiqMobileApiBase(http.Controller):
                     [("ftiq_daily_task_id.user_id", "=", user.id)],
                 ]),
             ])
+        if model_name == "project.project":
+            base = [("company_id", "=", user.company_id.id)]
+            if role == "manager":
+                return base
+            if role == "supervisor":
+                return expression.AND([
+                    base,
+                    expression.OR([
+                        [("user_id", "=", user.id)],
+                        [("favorite_user_ids", "in", [user.id])],
+                        [("task_ids.user_ids", "in", [user.id])],
+                        [("task_ids.ftiq_daily_task_id.user_id", "=", user.id)],
+                        [("task_ids.ftiq_daily_task_id.team_id.user_id", "=", user.id)],
+                        [("ftiq_plan_ids.team_id.user_id", "=", user.id)],
+                        [("ftiq_plan_ids.line_ids.user_id", "=", user.id)],
+                    ]),
+                ])
+            return expression.AND([
+                base,
+                expression.OR([
+                    [("user_id", "=", user.id)],
+                    [("favorite_user_ids", "in", [user.id])],
+                    [("task_ids.user_ids", "in", [user.id])],
+                    [("task_ids.ftiq_daily_task_id.user_id", "=", user.id)],
+                    [("ftiq_plan_ids.line_ids.user_id", "=", user.id)],
+                ]),
+            ])
         if model_name == "account.payment":
             base = [("is_field_collection", "=", True)]
             if role == "manager":
@@ -523,6 +588,79 @@ class FtiqMobileApiBase(http.Controller):
             return request.env[model_name]
         return self._browse_scoped(model_name, record_id).exists()
 
+    def _record_has_access(self, record, mode):
+        if not record:
+            return False
+        try:
+            record.check_access_rights(mode)
+            record.check_access_rule(mode)
+        except AccessError:
+            return False
+        return True
+
+    def _thread_attachments_for_record(self, record):
+        message_ids = request.env["mail.message"].search(
+            [
+                ("model", "=", record._name),
+                ("res_id", "=", record.id),
+            ]
+        ).ids
+        domain = expression.OR([
+            [
+                ("res_model", "=", record._name),
+                ("res_id", "=", record.id),
+                ("type", "=", "binary"),
+            ],
+            [
+                ("res_model", "=", "mail.message"),
+                ("res_id", "in", message_ids or [0]),
+                ("type", "=", "binary"),
+            ],
+        ])
+        return request.env["ir.attachment"].sudo().search(
+            domain,
+            order="create_date desc, id desc",
+        )
+
+    def _thread_followers_for_record(self, record):
+        if "message_partner_ids" not in getattr(record, "_fields", {}):
+            return request.env["res.partner"]
+        try:
+            return record.message_partner_ids
+        except AccessError:
+            return request.env["res.partner"]
+
+    def _serialize_thread_attachment(self, attachment):
+        mimetype = (attachment.mimetype or "").strip()
+        return {
+            "id": attachment.id,
+            "name": attachment.name or attachment.display_name or "",
+            "mimetype": mimetype,
+            "file_size": attachment.file_size or 0,
+            "is_image": mimetype.startswith("image/"),
+            "url": f"{self._host_url()}/web/content/{attachment.id}?download=true",
+            "preview_url": self._image_url("ir.attachment", attachment.id, "datas")
+            if mimetype.startswith("image/")
+            else "",
+            "create_date": fields.Datetime.to_string(attachment.create_date)
+            if attachment.create_date
+            else None,
+            "author": self._serialize_user(attachment.create_uid)
+            if attachment.create_uid
+            else {},
+        }
+
+    def _serialize_thread_follower(self, partner):
+        user = partner.user_ids[:1]
+        return {
+            "partner_id": partner.id,
+            "user_id": user.id if user else False,
+            "name": partner.display_name,
+            "email": partner.email or "",
+            "phone": partner.phone or partner.mobile or "",
+            "image_url": self._image_url("res.partner", partner.id, "avatar_128"),
+        }
+
     def _thread_notification_domain(self, record, message_ids=None):
         domain = [
             ("res_partner_id", "=", self._current_user().partner_id.id),
@@ -616,8 +754,9 @@ class FtiqMobileApiBase(http.Controller):
             "week_start",
             "date_order",
             "invoice_date",
-            "date_deadline",
+            "date_start",
             "date",
+            "date_deadline",
         ):
             if field_name not in record._fields:
                 continue
@@ -628,6 +767,7 @@ class FtiqMobileApiBase(http.Controller):
             if value:
                 date_value = str(value)
                 break
+        can_write = self._record_has_access(record, "write")
         return {
             "model": record._name,
             "id": record.id,
@@ -636,6 +776,10 @@ class FtiqMobileApiBase(http.Controller):
             "date": date_value,
             "partner": self._serialize_partner_card(partner) if partner else {},
             "user": self._serialize_user(user) if user else {},
+            "available_actions": {
+                "post_message": can_write,
+                "upload_attachment": can_write,
+            },
         }
 
     def _serialize_thread_feed(self, record, limit=40):
@@ -658,6 +802,8 @@ class FtiqMobileApiBase(http.Controller):
         unread_count = len(
             [notification for notification in notifications if not notification.is_read]
         )
+        attachments = self._thread_attachments_for_record(record)
+        followers = self._thread_followers_for_record(record)
         return {
             "record": self._serialize_thread_record(record),
             "messages": [
@@ -665,17 +811,20 @@ class FtiqMobileApiBase(http.Controller):
                 for message in ordered_messages
             ],
             "unread_count": unread_count,
+            "attachments": [
+                self._serialize_thread_attachment(attachment)
+                for attachment in attachments
+            ],
+            "attachment_count": len(attachments),
+            "followers": [
+                self._serialize_thread_follower(partner)
+                for partner in followers
+            ],
+            "follower_count": len(followers),
         }
 
     def _message_deep_link(self, message, task_record=None):
-        task = task_record if task_record is not None else self._safe_related_record(
-            message,
-            "task_id",
-            "ftiq.daily.task",
-        )
-        if task:
-            return f"ftiq://task?id={task.id}&message_id={message.id}"
-        return f"ftiq://notifications?message_id={message.id}"
+        return f"ftiq://team-message?id={message.id}"
 
     def _notification_summary(self, sync_live=False):
         if sync_live:
@@ -795,6 +944,17 @@ class FtiqMobileApiBase(http.Controller):
             "biometrics_available": bool(device.biometrics_available),
             "last_seen_at": fields.Datetime.to_string(device.last_seen_at) if device.last_seen_at else None,
             "last_login_at": fields.Datetime.to_string(device.last_login_at) if device.last_login_at else None,
+            "session_state": device.session_token_state(),
+            "session_token_issued_at": fields.Datetime.to_string(device.session_token_issued_at)
+            if device.session_token_issued_at
+            else None,
+            "session_token_last_seen_at": fields.Datetime.to_string(device.session_token_last_seen_at)
+            if device.session_token_last_seen_at
+            else None,
+            "session_token_expires_at": fields.Datetime.to_string(device.session_token_expires_at)
+            if device.session_token_expires_at
+            else None,
+            "is_current": False,
         }
 
     def _serialize_mobile_runtime(self, policy=None, platform="", app_version="", build_number="", device=False):
@@ -1111,6 +1271,68 @@ class FtiqMobileApiBase(http.Controller):
             data["activities"] = self._serialize_activities_for_record(task)
         return data
 
+    def _serialize_project(self, project, detailed=False):
+        manager = self._safe_related_record(project, "user_id", "res.users")
+        partner = self._safe_related_record(project, "partner_id", "res.partner")
+        company = self._safe_related_record(project, "company_id", "res.company")
+        next_milestone = getattr(project, "next_milestone_id", request.env["project.milestone"])
+        data = {
+            "id": project.id,
+            "name": project.display_name,
+            "description": html2plaintext(project.description or "").strip(),
+            "partner": self._serialize_partner_card(partner) if partner else {},
+            "company": self._serialize_company(company) if company else {},
+            "manager": self._serialize_user(manager) if manager else {},
+            "privacy_visibility": project.privacy_visibility or "",
+            "date_start": str(project.date_start or ""),
+            "date_end": str(project.date or ""),
+            "task_count": project.task_count,
+            "open_task_count": project.open_task_count,
+            "closed_task_count": project.closed_task_count,
+            "task_completion_percentage": project.task_completion_percentage,
+            "milestone_count": getattr(project, "milestone_count", 0) or 0,
+            "milestone_progress": getattr(project, "milestone_progress", 0) or 0,
+            "update_count": getattr(project, "update_count", 0) or 0,
+            "last_update_status": getattr(project, "last_update_status", "") or "",
+            "next_milestone": {
+                "id": next_milestone.id if next_milestone else False,
+                "name": next_milestone.display_name if next_milestone else "",
+                "deadline": str(next_milestone.deadline or "")
+                if next_milestone
+                else "",
+            },
+            "available_actions": {
+                "open_tasks": bool(project.task_count),
+            },
+        }
+        if detailed:
+            tasks = self._search_scoped(
+                "project.task",
+                [("project_id", "=", project.id)],
+                order="priority desc, date_deadline asc, id desc",
+                limit=8,
+            )
+            plans = self._search_scoped(
+                "ftiq.weekly.plan",
+                [("project_id", "=", project.id)],
+                order="week_start desc, id desc",
+                limit=5,
+            )
+            data["members"] = [
+                self._serialize_user(user)
+                for user in project.favorite_user_ids.filtered(lambda member: not member.share)
+            ]
+            data["tasks"] = [
+                self._serialize_project_task(task)
+                for task in tasks
+            ]
+            data["plans"] = [
+                self._serialize_plan(plan)
+                for plan in plans
+            ]
+            data["activities"] = self._serialize_activities_for_record(project)
+        return data
+
     def _serialize_project_task(self, task, detailed=False):
         linked_daily_task_id = self._safe_related_scoped_id(
             task,
@@ -1122,6 +1344,7 @@ class FtiqMobileApiBase(http.Controller):
             "ftiq_plan_id",
             "ftiq.weekly.plan",
         )
+        parent_task = self._safe_related_record(task, "parent_id", "project.task")
         data = {
             "id": task.id,
             "name": task.display_name,
@@ -1144,6 +1367,30 @@ class FtiqMobileApiBase(http.Controller):
             if getattr(task, "planned_date_begin", False)
             else None,
             "description": html2plaintext(task.description or "").strip(),
+            "parent_task": {
+                "id": parent_task.id if parent_task else False,
+                "name": parent_task.display_name if parent_task else "",
+            },
+            "counts": {
+                "subtasks": getattr(task, "subtask_count", 0) or 0,
+                "closed_subtasks": getattr(task, "closed_subtask_count", 0) or 0,
+                "dependencies": getattr(task, "depend_on_count", 0) or 0,
+                "dependents": getattr(task, "dependent_tasks_count", 0) or 0,
+            },
+            "milestone": {
+                "id": task.milestone_id.id if getattr(task, "milestone_id", False) else False,
+                "name": task.milestone_id.display_name if getattr(task, "milestone_id", False) else "",
+            },
+            "recurrence": {
+                "is_recurring": bool(
+                    getattr(task, "recurring_task", False) or getattr(task, "recurrence_id", False)
+                ),
+                "count": getattr(task, "recurring_count", 0) or 0,
+                "interval": getattr(task, "repeat_interval", 0) or 0,
+                "unit": getattr(task, "repeat_unit", "") or "",
+                "type": getattr(task, "repeat_type", "") or "",
+                "until": str(getattr(task, "repeat_until", "") or ""),
+            },
             "assigned_users": [
                 {
                     "id": user.id,
@@ -1160,12 +1407,38 @@ class FtiqMobileApiBase(http.Controller):
             },
         }
         if detailed:
+            data["subtasks"] = [
+                {
+                    "id": subtask.id,
+                    "name": subtask.display_name,
+                    "state": subtask.state,
+                }
+                for subtask in task.child_ids[:8]
+            ]
+            data["dependencies"] = {
+                "blocked_by": [
+                    {
+                        "id": blocked.id,
+                        "name": blocked.display_name,
+                        "state": blocked.state,
+                    }
+                    for blocked in task.depend_on_ids[:8]
+                ],
+                "dependents": [
+                    {
+                        "id": dependent.id,
+                        "name": dependent.display_name,
+                        "state": dependent.state,
+                    }
+                    for dependent in task.dependent_ids[:8]
+                ],
+            }
             data["activities"] = self._serialize_activities_for_record(task)
         return data
 
-    def _serialize_team_message(self, message):
+    def _serialize_team_message(self, message, detailed=False):
         task = self._safe_related_record(message, "task_id", "ftiq.daily.task")
-        return {
+        data = {
             "id": message.id,
             "subject": message.subject or "",
             "body": message.body or "",
@@ -1186,6 +1459,9 @@ class FtiqMobileApiBase(http.Controller):
             "deep_link": self._message_deep_link(message, task_record=task),
             "is_team_wide": bool(message.is_team_wide),
         }
+        if detailed:
+            data["activities"] = self._serialize_activities_for_record(message)
+        return data
 
     def _serialize_mobile_notification(self, notification):
         payload = {}
@@ -1325,6 +1601,10 @@ class FtiqMobileApiBase(http.Controller):
         return data
 
     def _serialize_purchase_order(self, order, detailed=False):
+        can_manage = self._current_role() == "manager"
+        can_approve = can_manage and order.state == "to approve"
+        can_confirm = can_manage and order.state in {"draft", "sent"}
+        can_reject = can_manage and order.state in {"draft", "sent", "to approve", "purchase"}
         data = {
             "id": order.id,
             "name": order.name or order.display_name,
@@ -1350,6 +1630,15 @@ class FtiqMobileApiBase(http.Controller):
             "partner_ref": order.partner_ref or "",
             "origin": order.origin or "",
             "notes": getattr(order, "notes", False) or getattr(order, "note", False) or "",
+            "invoice_status": getattr(order, "invoice_status", "") or "",
+            "date_planned": fields.Datetime.to_string(order.date_planned)
+            if getattr(order, "date_planned", False)
+            else None,
+            "available_actions": {
+                "confirm": can_confirm,
+                "approve": can_approve,
+                "reject": can_reject,
+            },
         }
         if detailed:
             lines = order.order_line.filtered(lambda line: not line.display_type)

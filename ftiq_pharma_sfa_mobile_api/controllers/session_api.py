@@ -38,6 +38,10 @@ class FtiqMobileSessionApi(FtiqMobileApiBase):
     def logout(self, **kwargs):
         return self._dispatch(self._logout)
 
+    @http.route("/ftiq_mobile_api/v1/session/token-login", type="http", auth="none", methods=["POST"], csrf=False)
+    def token_login(self, **kwargs):
+        return self._dispatch(self._token_login)
+
     @http.route("/ftiq_mobile_api/v1/session/me", type="http", auth="user", methods=["GET"], csrf=False)
     def me(self, **kwargs):
         return self._dispatch(self._me)
@@ -49,6 +53,14 @@ class FtiqMobileSessionApi(FtiqMobileApiBase):
     @http.route("/ftiq_mobile_api/v1/mobile/device/register", type="http", auth="user", methods=["POST"], csrf=False)
     def register_device(self, **kwargs):
         return self._dispatch(self._register_device)
+
+    @http.route("/ftiq_mobile_api/v1/session/devices", type="http", auth="user", methods=["GET"], csrf=False)
+    def session_devices(self, **kwargs):
+        return self._dispatch(self._session_devices)
+
+    @http.route("/ftiq_mobile_api/v1/session/devices/<int:device_id>/revoke", type="http", auth="user", methods=["POST"], csrf=False)
+    def session_device_revoke(self, device_id, **kwargs):
+        return self._dispatch(lambda: self._session_device_revoke(device_id))
 
     def _login(self):
         payload = self._json_body()
@@ -104,8 +116,64 @@ class FtiqMobileSessionApi(FtiqMobileApiBase):
             return self._ok(data)
 
     def _logout(self):
+        bearer_token = self._bearer_token()
+        if bearer_token:
+            metadata = self._client_request_metadata()
+            device = request.env["ftiq.mobile.device"].authenticate_session_token(
+                bearer_token,
+                remote_ip=metadata["ip"],
+                user_agent=metadata["user_agent"],
+            )
+            if device:
+                device.revoke_session_token()
         request.session.logout(keep_db=True)
         return self._ok({"logged_out": True})
+
+    def _token_login(self):
+        payload = self._json_body()
+        db = (payload.get("db") or self._request_database()).strip()
+        token = (payload.get("token") or self._bearer_token()).strip()
+        if not db or not token:
+            return self._error(
+                _("Database and session token are required."),
+                status=401,
+                code="session_token_missing",
+            )
+
+        if request.db and request.db != db:
+            request.env.cr.close()
+        elif request.db:
+            request.env.cr.rollback()
+
+        if not odoo_http.db_filter([db]):
+            return self._error(_("Database not found."), status=404, code="database_not_found")
+
+        request.session.db = db
+        metadata = self._client_request_metadata()
+        device = request.env["ftiq.mobile.device"].authenticate_session_token(
+            token,
+            remote_ip=metadata["ip"],
+            user_agent=metadata["user_agent"],
+        )
+        if not device:
+            return self._error(
+                _("The mobile session token is invalid or expired."),
+                status=401,
+                code="session_token_invalid",
+            )
+        denied = self._ensure_mobile_access(device.user_id)
+        if denied:
+            return denied
+        self._issue_session_cookie(db, device.user_id.id)
+        return self._ok({
+            "session": {
+                "uid": device.user_id.id,
+                "db": db,
+                "server_time": fields.Datetime.to_string(fields.Datetime.now()),
+            },
+            "user": self._serialize_user(device.user_id),
+            "device": self._serialize_mobile_device(device),
+        })
 
     def _me(self):
         denied = self._ensure_mobile_access(self._current_user())
@@ -159,13 +227,59 @@ class FtiqMobileSessionApi(FtiqMobileApiBase):
             remote_ip=metadata["ip"],
             user_agent=metadata["user_agent"],
         )
+        session_token = {}
+        if device.state == "active":
+            session_token = device.issue_session_token()
         return self._ok({
             "user": self._serialize_user(self._current_user()),
             "device": self._serialize_mobile_device(device),
+            "session_token": session_token.get("token") or "",
+            "session_token_expires_at": session_token.get("expires_at"),
             "mobile_runtime": self._serialize_mobile_runtime(
                 platform=payload.get("platform") or "",
                 app_version=payload.get("app_version") or "",
                 build_number=payload.get("build_number") or "",
                 device=device,
             ),
+        })
+
+    def _session_devices(self):
+        installation_id = request.httprequest.args.get("installation_id", "")
+        current_device = self._current_mobile_device(installation_id).exists()
+        devices = request.env["ftiq.mobile.device"].search(
+            [("user_id", "=", self._current_user().id)],
+            order="last_seen_at desc, id desc",
+            limit=20,
+        )
+        items = []
+        for device in devices:
+            payload = self._serialize_mobile_device(device)
+            payload["is_current"] = bool(current_device and current_device.id == device.id)
+            items.append(payload)
+        return self._ok({
+            "current_device_id": current_device.id if current_device else False,
+            "items": items,
+        })
+
+    def _session_device_revoke(self, device_id):
+        device = request.env["ftiq.mobile.device"].search([
+            ("id", "=", device_id),
+            ("user_id", "=", self._current_user().id),
+        ], limit=1)
+        if not device:
+            return self._error(
+                _("The selected device session could not be found."),
+                status=404,
+                code="device_not_found",
+            )
+        is_current = bool(
+            self._current_mobile_device((self._json_body().get("installation_id") or "").strip()).id == device.id
+        )
+        device.action_revoke()
+        if is_current:
+            request.session.logout(keep_db=True)
+        return self._ok({
+            "revoked": True,
+            "device": self._serialize_mobile_device(device),
+            "logged_out": is_current,
         })

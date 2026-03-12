@@ -49,6 +49,10 @@ class FtiqMobileOperationsApi(FtiqMobileApiBase):
     def purchases(self, **kwargs):
         return self._dispatch(self._purchases)
 
+    @http.route("/ftiq_mobile_api/v1/projects", type="http", auth="user", methods=["GET"], csrf=False)
+    def projects(self, **kwargs):
+        return self._dispatch(self._projects)
+
     @http.route("/ftiq_mobile_api/v1/invoices/<int:invoice_id>", type="http", auth="user", methods=["GET"], csrf=False)
     def invoice_detail(self, invoice_id, **kwargs):
         return self._dispatch(lambda: self._invoice_detail(invoice_id))
@@ -56,6 +60,22 @@ class FtiqMobileOperationsApi(FtiqMobileApiBase):
     @http.route("/ftiq_mobile_api/v1/purchases/<int:purchase_id>", type="http", auth="user", methods=["GET"], csrf=False)
     def purchase_detail(self, purchase_id, **kwargs):
         return self._dispatch(lambda: self._purchase_detail(purchase_id))
+
+    @http.route("/ftiq_mobile_api/v1/projects/<int:project_id>", type="http", auth="user", methods=["GET"], csrf=False)
+    def project_detail(self, project_id, **kwargs):
+        return self._dispatch(lambda: self._project_detail(project_id))
+
+    @http.route("/ftiq_mobile_api/v1/purchases/<int:purchase_id>/confirm", type="http", auth="user", methods=["POST"], csrf=False)
+    def purchase_confirm(self, purchase_id, **kwargs):
+        return self._dispatch(lambda: self._purchase_action(purchase_id, "confirm"))
+
+    @http.route("/ftiq_mobile_api/v1/purchases/<int:purchase_id>/approve", type="http", auth="user", methods=["POST"], csrf=False)
+    def purchase_approve(self, purchase_id, **kwargs):
+        return self._dispatch(lambda: self._purchase_action(purchase_id, "approve"))
+
+    @http.route("/ftiq_mobile_api/v1/purchases/<int:purchase_id>/reject", type="http", auth="user", methods=["POST"], csrf=False)
+    def purchase_reject(self, purchase_id, **kwargs):
+        return self._dispatch(lambda: self._purchase_action(purchase_id, "reject"))
 
     @http.route("/ftiq_mobile_api/v1/finance/workspace", type="http", auth="user", methods=["GET"], csrf=False)
     def finance_workspace(self, **kwargs):
@@ -88,6 +108,16 @@ class FtiqMobileOperationsApi(FtiqMobileApiBase):
     @http.route("/ftiq_mobile_api/v1/thread/messages", type="http", auth="user", methods=["POST"], csrf=False)
     def thread_message_create(self, **kwargs):
         return self._dispatch(self._thread_message_create)
+
+    @http.route("/ftiq_mobile_api/v1/thread/attachments", type="http", auth="user", methods=["GET", "POST"], csrf=False)
+    def thread_attachments(self, **kwargs):
+        if request.httprequest.method == "POST":
+            return self._dispatch(self._thread_attachment_create)
+        return self._dispatch(self._thread_attachments)
+
+    @http.route("/ftiq_mobile_api/v1/thread/followers", type="http", auth="user", methods=["GET"], csrf=False)
+    def thread_followers(self, **kwargs):
+        return self._dispatch(self._thread_followers)
 
     @http.route("/ftiq_mobile_api/v1/attendance/active", type="http", auth="user", methods=["GET"], csrf=False)
     def active_attendance(self, **kwargs):
@@ -407,6 +437,21 @@ class FtiqMobileOperationsApi(FtiqMobileApiBase):
         items = [self._serialize_purchase_order(purchase) for purchase in purchases]
         return self._ok({"items": items}, meta={"count": len(items)})
 
+    def _projects(self):
+        limit = self._args_int("limit", 30)
+        state = (request.httprequest.args.get("last_update_status") or "").strip()
+        domain = []
+        if state:
+            domain.append(("last_update_status", "=", state))
+        projects = self._search_scoped(
+            "project.project",
+            domain,
+            order="sequence asc, name asc, id asc",
+            limit=limit,
+        )
+        items = [self._serialize_project(project) for project in projects]
+        return self._ok({"items": items}, meta={"count": len(items)})
+
     def _invoice_detail(self, invoice_id):
         invoice = self._browse_scoped("account.move", invoice_id).exists()
         if not invoice:
@@ -417,6 +462,35 @@ class FtiqMobileOperationsApi(FtiqMobileApiBase):
         purchase = self._browse_scoped("purchase.order", purchase_id).exists()
         if not purchase:
             return self._error(_("Purchase order not found."), status=404, code="not_found")
+        return self._ok(self._serialize_purchase_order(purchase, detailed=True))
+
+    def _project_detail(self, project_id):
+        project = self._browse_scoped("project.project", project_id).exists()
+        if not project:
+            return self._error(_("Project not found."), status=404, code="not_found")
+        return self._ok(self._serialize_project(project, detailed=True))
+
+    def _purchase_action(self, purchase_id, action_name):
+        payload = self._json_body()
+        purchase = self._browse_scoped("purchase.order", purchase_id).exists()
+        if not purchase:
+            return self._error(_("Purchase order not found."), status=404, code="not_found")
+        self._ensure_role({"manager"}, "review this purchase order")
+        note = (payload.get("note") or "").strip()
+        if action_name == "confirm":
+            purchase.button_confirm()
+        elif action_name == "approve":
+            purchase.button_approve()
+        elif action_name == "reject":
+            purchase.button_cancel()
+        else:
+            return self._error(_("Unsupported purchase action."), code="invalid_action")
+        if note:
+            purchase.message_post(
+                body=html_escape(note).replace("\n", "<br/>"),
+                subtype_xmlid="mail.mt_comment",
+                message_type="comment",
+            )
         return self._ok(self._serialize_purchase_order(purchase, detailed=True))
 
     def _finance_workspace(self):
@@ -687,6 +761,88 @@ class FtiqMobileOperationsApi(FtiqMobileApiBase):
                 "summary": self._notification_summary(sync_live=True),
             },
             status=201,
+        )
+
+    def _thread_attachments(self):
+        model_name = (request.httprequest.args.get("model") or "").strip()
+        record_id = self._args_int("record_id", 0) or self._args_int("id", 0)
+        if not model_name or not record_id:
+            return self._error(_("model and record_id are required."))
+        if not self._is_thread_supported_model(model_name):
+            return self._error(_("This record thread is not supported."), code="invalid_target")
+        record = self._browse_thread_record(model_name, record_id)
+        if not record:
+            return self._error(_("Record not found."), status=404, code="not_found")
+        attachments = self._thread_attachments_for_record(record)
+        return self._ok(
+            {
+                "items": [
+                    self._serialize_thread_attachment(attachment)
+                    for attachment in attachments
+                ],
+                "count": len(attachments),
+            }
+        )
+
+    def _thread_attachment_create(self):
+        payload = self._json_body()
+        model_name = (payload.get("model") or "").strip()
+        try:
+            record_id = int(payload.get("record_id") or payload.get("id") or 0)
+        except Exception:
+            record_id = 0
+        if not model_name or not record_id:
+            return self._error(_("model and record_id are required."))
+        if not self._is_thread_supported_model(model_name):
+            return self._error(_("This record thread is not supported."), code="invalid_target")
+        record = self._browse_thread_record(model_name, record_id)
+        if not record:
+            return self._error(_("Record not found."), status=404, code="not_found")
+        if not self._record_has_access(record, "write"):
+            raise AccessError(_("You do not have permission to update this record."))
+        datas = (payload.get("data") or payload.get("datas") or "").strip()
+        if not datas:
+            return self._error(_("Attachment data is required."))
+        attachment_name = (payload.get("name") or "").strip() or f"{record._name.replace('.', '_')}_{record.id}.jpg"
+        mimetype = (payload.get("mimetype") or "").strip() or "image/jpeg"
+        attachment = request.env["ir.attachment"].sudo().create(
+            {
+                "name": attachment_name,
+                "type": "binary",
+                "datas": datas,
+                "mimetype": mimetype,
+                "res_model": record._name,
+                "res_id": record.id,
+                "company_id": record.company_id.id if "company_id" in record._fields and record.company_id else False,
+            }
+        )
+        return self._ok(
+            {
+                "attachment": self._serialize_thread_attachment(attachment),
+                "thread": self._serialize_thread_feed(record, limit=40),
+            },
+            status=201,
+        )
+
+    def _thread_followers(self):
+        model_name = (request.httprequest.args.get("model") or "").strip()
+        record_id = self._args_int("record_id", 0) or self._args_int("id", 0)
+        if not model_name or not record_id:
+            return self._error(_("model and record_id are required."))
+        if not self._is_thread_supported_model(model_name):
+            return self._error(_("This record thread is not supported."), code="invalid_target")
+        record = self._browse_thread_record(model_name, record_id)
+        if not record:
+            return self._error(_("Record not found."), status=404, code="not_found")
+        followers = self._thread_followers_for_record(record)
+        return self._ok(
+            {
+                "items": [
+                    self._serialize_thread_follower(partner)
+                    for partner in followers
+                ],
+                "count": len(followers),
+            }
         )
 
     def _active_attendance(self):

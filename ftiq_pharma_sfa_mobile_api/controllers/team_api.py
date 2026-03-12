@@ -12,6 +12,10 @@ class FtiqMobileTeamApi(FtiqMobileApiBase):
     def team_hub(self, **kwargs):
         return self._dispatch(self._team_hub)
 
+    @http.route("/ftiq_mobile_api/v1/team-hub/messages/<int:message_id>", type="http", auth="user", methods=["GET"], csrf=False)
+    def team_hub_message_detail(self, message_id, **kwargs):
+        return self._dispatch(lambda: self._team_hub_message_detail(message_id))
+
     @http.route("/ftiq_mobile_api/v1/team-hub/messages", type="http", auth="user", methods=["POST"], csrf=False)
     def team_hub_message_create(self, **kwargs):
         return self._dispatch(self._team_hub_message_create)
@@ -76,6 +80,12 @@ class FtiqMobileTeamApi(FtiqMobileApiBase):
                 "messages": [self._serialize_team_message(message) for message in messages],
             }
         )
+
+    def _team_hub_message_detail(self, message_id):
+        message = self._browse_scoped("ftiq.team.message", message_id).exists()
+        if not message:
+            return self._error(_("Team message not found."), status=404, code="not_found")
+        return self._ok(self._serialize_team_message(message, detailed=True))
 
     def _team_hub_message_create(self):
         self._ensure_role({"supervisor", "manager"}, "publish team messages")
