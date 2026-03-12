@@ -11,7 +11,7 @@ class AccountMove(models.Model):
     ftiq_daily_task_id = fields.Many2one('ftiq.daily.task', string='Daily Task', copy=False)
     ftiq_user_id = fields.Many2one('res.users', string='Representative', copy=False)
     ftiq_access_user_id = fields.Many2one('res.users', string='Access User', compute='_compute_ftiq_access_scope', store=True, readonly=True)
-    ftiq_team_id = fields.Many2one('crm.team', string='Sales Team', compute='_compute_ftiq_team_id', store=True, readonly=True)
+    ftiq_team_id = fields.Many2one('crm.team', string='Field Team', compute='_compute_ftiq_team_id', store=True, readonly=True)
     ftiq_partner_area_id = fields.Many2one(related='partner_id.ftiq_area_id', store=True)
     ftiq_field_notes = fields.Text(string='Field Notes')
 

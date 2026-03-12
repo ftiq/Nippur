@@ -177,6 +177,12 @@ class FtiqFirebasePushService(models.AbstractModel):
             response_text = response.text or ""
             if "UNREGISTERED" in response_text or "registration-token-not-registered" in response_text:
                 invalid_devices |= device
+                _logger.info(
+                    "FTIQ Firebase push invalidated device %s token after provider rejection: status=%s",
+                    device.id,
+                    response.status_code,
+                )
+                continue
             _logger.warning(
                 "FTIQ Firebase push rejected for device %s: status=%s body=%s",
                 device.id,

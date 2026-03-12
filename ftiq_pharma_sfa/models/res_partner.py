@@ -18,7 +18,7 @@ class ResPartner(models.Model):
     ftiq_client_category_id = fields.Many2one('ftiq.client.category', string='Client Category')
     ftiq_client_code = fields.Char(copy=False, index=True)
     ftiq_client_type = fields.Selection(FTIQ_CLIENT_TYPES, compute='_compute_ftiq_client_profile', store=True)
-    ftiq_client_type_label = fields.Char(compute='_compute_ftiq_client_profile')
+    ftiq_client_type_label = fields.Char(compute='_compute_ftiq_client_profile', store=True)
     ftiq_is_field_client = fields.Boolean(compute='_compute_ftiq_client_profile', store=True)
 
     ftiq_specialty_id = fields.Many2one('ftiq.specialty')
@@ -49,7 +49,7 @@ class ResPartner(models.Model):
     ftiq_geo_confirmed = fields.Boolean(default=False)
     ftiq_app_verified = fields.Boolean(default=False)
     ftiq_license_attached = fields.Boolean(default=False)
-    ftiq_execution_address = fields.Char(compute='_compute_ftiq_execution_readiness')
+    ftiq_execution_address = fields.Char(compute='_compute_ftiq_execution_readiness', store=True)
     ftiq_geo_ready = fields.Boolean(compute='_compute_ftiq_execution_readiness', store=True)
 
     ftiq_answer_ids = fields.One2many('ftiq.client.answer', 'partner_id')
@@ -58,7 +58,7 @@ class ResPartner(models.Model):
     ftiq_total_visits = fields.Integer(compute='_compute_ftiq_visit_stats', store=True)
     ftiq_order_count = fields.Integer(compute='_compute_ftiq_order_count', string='Orders')
     ftiq_collection_count = fields.Integer(compute='_compute_ftiq_collection_count', string='Collections')
-    ftiq_invoice_count = fields.Integer(compute='_compute_ftiq_invoice_count', string='Invoices')
+    ftiq_invoice_count = fields.Integer(compute='_compute_ftiq_invoice_count', string='Field Invoices')
     ftiq_open_invoice_amount = fields.Float(
         string='Open Invoice Residual',
         digits='Product Price',

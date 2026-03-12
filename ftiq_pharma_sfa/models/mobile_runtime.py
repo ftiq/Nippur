@@ -188,7 +188,6 @@ class FtiqMobileDevice(models.Model):
         [("active", "Active"), ("revoked", "Revoked")],
         default="active",
         required=True,
-        tracking=True,
         index=True,
     )
     app_version = fields.Char()

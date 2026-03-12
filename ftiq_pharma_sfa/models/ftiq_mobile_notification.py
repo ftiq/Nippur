@@ -283,6 +283,7 @@ class FtiqMobileNotification(models.Model):
             return self.browse()
         author_user = author if author else self.env.user
         records = self.browse()
+        push_records = self.browse()
         target_model, target_res_id, target_name = self._record_identity(target)
         source_model, source_res_id, _source_name = self._record_identity(source)
         for user in valid_users:
@@ -310,6 +311,7 @@ class FtiqMobileNotification(models.Model):
                 "read_date": False,
             }
             record = self.browse()
+            should_push = False
             for attempt in range(2):
                 try:
                     with self.env.cr.savepoint():
@@ -320,9 +322,11 @@ class FtiqMobileNotification(models.Model):
                                 update_values = self._notification_update_values(existing, values)
                                 if update_values:
                                     existing.sudo().write(update_values)
+                                    should_push = True
                         else:
                             try:
                                 record = self.sudo().create(values)
+                                should_push = True
                             except IntegrityError:
                                 if not search_domain:
                                     raise
@@ -332,6 +336,7 @@ class FtiqMobileNotification(models.Model):
                                 update_values = self._notification_update_values(record, values)
                                 if update_values:
                                     record.sudo().write(update_values)
+                                    should_push = True
                     break
                 except Exception as error:
                     if attempt >= 1 or not self._is_retryable_notification_error(error):
@@ -346,8 +351,11 @@ class FtiqMobileNotification(models.Model):
             if record.deep_link != deep_link:
                 with self.env.cr.savepoint():
                     record.sudo().write({"deep_link": deep_link})
+                should_push = True
             records |= record
-        records._dispatch_push()
+            if should_push and not self.env.context.get("ftiq_skip_push_dispatch"):
+                push_records |= record
+        push_records._dispatch_push()
         return records
 
     def _skip_existing_upsert(self, record, values):
