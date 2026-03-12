@@ -5,6 +5,7 @@ from odoo.exceptions import AccessError, ValidationError
 from odoo.fields import Command
 from odoo.http import request
 from odoo.osv import expression
+from odoo.tools import html_escape
 
 from odoo.addons.ftiq_pharma_sfa.controllers.dashboard import FtiqDashboardController
 
@@ -44,9 +45,17 @@ class FtiqMobileOperationsApi(FtiqMobileApiBase):
     def invoices(self, **kwargs):
         return self._dispatch(self._invoices)
 
+    @http.route("/ftiq_mobile_api/v1/purchases", type="http", auth="user", methods=["GET"], csrf=False)
+    def purchases(self, **kwargs):
+        return self._dispatch(self._purchases)
+
     @http.route("/ftiq_mobile_api/v1/invoices/<int:invoice_id>", type="http", auth="user", methods=["GET"], csrf=False)
     def invoice_detail(self, invoice_id, **kwargs):
         return self._dispatch(lambda: self._invoice_detail(invoice_id))
+
+    @http.route("/ftiq_mobile_api/v1/purchases/<int:purchase_id>", type="http", auth="user", methods=["GET"], csrf=False)
+    def purchase_detail(self, purchase_id, **kwargs):
+        return self._dispatch(lambda: self._purchase_detail(purchase_id))
 
     @http.route("/ftiq_mobile_api/v1/finance/workspace", type="http", auth="user", methods=["GET"], csrf=False)
     def finance_workspace(self, **kwargs):
@@ -67,6 +76,18 @@ class FtiqMobileOperationsApi(FtiqMobileApiBase):
     @http.route("/ftiq_mobile_api/v1/activities/<int:activity_id>/done", type="http", auth="user", methods=["POST"], csrf=False)
     def activity_done(self, activity_id, **kwargs):
         return self._dispatch(lambda: self._activity_done(activity_id))
+
+    @http.route("/ftiq_mobile_api/v1/thread", type="http", auth="user", methods=["GET"], csrf=False)
+    def thread(self, **kwargs):
+        return self._dispatch(self._thread)
+
+    @http.route("/ftiq_mobile_api/v1/thread/read", type="http", auth="user", methods=["POST"], csrf=False)
+    def thread_read(self, **kwargs):
+        return self._dispatch(self._thread_read)
+
+    @http.route("/ftiq_mobile_api/v1/thread/messages", type="http", auth="user", methods=["POST"], csrf=False)
+    def thread_message_create(self, **kwargs):
+        return self._dispatch(self._thread_message_create)
 
     @http.route("/ftiq_mobile_api/v1/attendance/active", type="http", auth="user", methods=["GET"], csrf=False)
     def active_attendance(self, **kwargs):
@@ -126,9 +147,17 @@ class FtiqMobileOperationsApi(FtiqMobileApiBase):
     def tasks(self, **kwargs):
         return self._dispatch(self._tasks)
 
+    @http.route("/ftiq_mobile_api/v1/project-tasks", type="http", auth="user", methods=["GET"], csrf=False)
+    def project_tasks(self, **kwargs):
+        return self._dispatch(self._project_tasks)
+
     @http.route("/ftiq_mobile_api/v1/tasks/<int:task_id>", type="http", auth="user", methods=["GET"], csrf=False)
     def task_detail(self, task_id, **kwargs):
         return self._dispatch(lambda: self._task_detail(task_id))
+
+    @http.route("/ftiq_mobile_api/v1/project-tasks/<int:project_task_id>", type="http", auth="user", methods=["GET"], csrf=False)
+    def project_task_detail(self, project_task_id, **kwargs):
+        return self._dispatch(lambda: self._project_task_detail(project_task_id))
 
     @http.route("/ftiq_mobile_api/v1/tasks/<int:task_id>/save", type="http", auth="user", methods=["POST"], csrf=False)
     def task_save(self, task_id, **kwargs):
@@ -360,11 +389,35 @@ class FtiqMobileOperationsApi(FtiqMobileApiBase):
         items = [self._serialize_invoice(invoice) for invoice in invoices]
         return self._ok({"items": items}, meta={"count": len(items)})
 
+    def _purchases(self):
+        limit = self._args_int("limit", 40)
+        partner_id = self._args_int("partner_id", 0)
+        state = request.httprequest.args.get("state")
+        domain = []
+        if partner_id:
+            domain.append(("partner_id", "=", partner_id))
+        if state:
+            domain.append(("state", "=", state))
+        purchases = self._search_scoped(
+            "purchase.order",
+            domain,
+            order="date_order desc, id desc",
+            limit=limit,
+        )
+        items = [self._serialize_purchase_order(purchase) for purchase in purchases]
+        return self._ok({"items": items}, meta={"count": len(items)})
+
     def _invoice_detail(self, invoice_id):
         invoice = self._browse_scoped("account.move", invoice_id).exists()
         if not invoice:
             return self._error(_("Invoice not found."), status=404, code="not_found")
         return self._ok(self._serialize_invoice(invoice, detailed=True))
+
+    def _purchase_detail(self, purchase_id):
+        purchase = self._browse_scoped("purchase.order", purchase_id).exists()
+        if not purchase:
+            return self._error(_("Purchase order not found."), status=404, code="not_found")
+        return self._ok(self._serialize_purchase_order(purchase, detailed=True))
 
     def _finance_workspace(self):
         self._sync_live_activity_notifications()
@@ -561,6 +614,81 @@ class FtiqMobileOperationsApi(FtiqMobileApiBase):
             }
         )
 
+    def _thread(self):
+        self._sync_live_activity_notifications()
+        model_name = (request.httprequest.args.get("model") or "").strip()
+        record_id = self._args_int("record_id", 0) or self._args_int("id", 0)
+        if not model_name or not record_id:
+            return self._error(_("model and record_id are required."))
+        if not self._is_thread_supported_model(model_name):
+            return self._error(_("This record thread is not supported."), code="invalid_target")
+        record = self._browse_thread_record(model_name, record_id)
+        if not record:
+            return self._error(_("Record not found."), status=404, code="not_found")
+        limit = self._args_int("limit", 40)
+        return self._ok(self._serialize_thread_feed(record, limit=limit))
+
+    def _thread_read(self):
+        payload = self._json_body()
+        model_name = (payload.get("model") or "").strip()
+        try:
+            record_id = int(payload.get("record_id") or payload.get("id") or 0)
+        except Exception:
+            record_id = 0
+        if not model_name or not record_id:
+            return self._error(_("model and record_id are required."))
+        if not self._is_thread_supported_model(model_name):
+            return self._error(_("This record thread is not supported."), code="invalid_target")
+        record = self._browse_thread_record(model_name, record_id)
+        if not record:
+            return self._error(_("Record not found."), status=404, code="not_found")
+        message_ids = [
+            int(item)
+            for item in (payload.get("message_ids") or [])
+            if str(item).strip().isdigit()
+        ]
+        notifications = self._mark_thread_read_notifications(
+            record,
+            message_ids=message_ids or None,
+        )
+        return self._ok(
+            {
+                "updated": len(notifications),
+                "summary": self._notification_summary(),
+            }
+        )
+
+    def _thread_message_create(self):
+        payload = self._json_body()
+        model_name = (payload.get("model") or "").strip()
+        try:
+            record_id = int(payload.get("record_id") or payload.get("id") or 0)
+        except Exception:
+            record_id = 0
+        body = (payload.get("body") or "").strip()
+        if not model_name or not record_id:
+            return self._error(_("model and record_id are required."))
+        if not body:
+            return self._error(_("body is required."))
+        if not self._is_thread_supported_model(model_name):
+            return self._error(_("This record thread is not supported."), code="invalid_target")
+        record = self._browse_thread_record(model_name, record_id)
+        if not record:
+            return self._error(_("Record not found."), status=404, code="not_found")
+        message = record.message_post(
+            body=html_escape(body).replace("\n", "<br/>"),
+            subtype_xmlid="mail.mt_comment",
+            message_type="comment",
+        )
+        return self._ok(
+            {
+                "message": self._serialize_thread_message(message),
+                "thread": self._serialize_thread_feed(record, limit=40),
+                "summary": self._notification_summary(sync_live=True),
+            },
+            status=201,
+        )
+
     def _active_attendance(self):
         user = self._current_user()
         attendance = request.env["ftiq.field.attendance"].get_active_attendance(
@@ -729,11 +857,38 @@ class FtiqMobileOperationsApi(FtiqMobileApiBase):
         items = [self._serialize_task(task) for task in tasks]
         return self._ok({"items": items}, meta={"count": len(items)})
 
+    def _project_tasks(self):
+        limit = self._args_int("limit", 20)
+        project_id = self._args_int("project_id", 0)
+        stage_id = self._args_int("stage_id", 0)
+        domain = []
+        if project_id:
+            domain.append(("project_id", "=", project_id))
+        if stage_id:
+            domain.append(("stage_id", "=", stage_id))
+        project_tasks = self._search_scoped(
+            "project.task",
+            domain,
+            order="priority desc, date_deadline asc, id desc",
+            limit=limit,
+        )
+        items = [
+            self._serialize_project_task(project_task)
+            for project_task in project_tasks
+        ]
+        return self._ok({"items": items}, meta={"count": len(items)})
+
     def _task_detail(self, task_id):
         task = self._browse_scoped("ftiq.daily.task", task_id).exists()
         if not task:
             return self._error(_("Task not found."), status=404, code="not_found")
         return self._ok(self._serialize_task(task, detailed=True))
+
+    def _project_task_detail(self, project_task_id):
+        project_task = self._browse_scoped("project.task", project_task_id).exists()
+        if not project_task:
+            return self._error(_("Project task not found."), status=404, code="not_found")
+        return self._ok(self._serialize_project_task(project_task, detailed=True))
 
     def _task_save(self, task_id):
         payload = self._json_body()

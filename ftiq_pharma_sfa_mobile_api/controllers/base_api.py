@@ -23,6 +23,18 @@ class FtiqMobileApiBase(http.Controller):
         "account.payment": "ftiq_user_id",
         "hr.expense": "ftiq_user_id",
     }
+    _THREAD_SUPPORTED_MODELS = {
+        "ftiq.daily.task",
+        "ftiq.visit",
+        "ftiq.weekly.plan",
+        "sale.order",
+        "purchase.order",
+        "project.task",
+        "account.payment",
+        "account.move",
+        "hr.expense",
+        "ftiq.stock.check",
+    }
 
     def _ok(self, data=None, meta=None, status=200):
         payload = {
@@ -304,6 +316,40 @@ class FtiqMobileApiBase(http.Controller):
                     ]),
                 ])
             return expression.AND([base, [("user_id", "=", user.id)]])
+        if model_name == "purchase.order":
+            base = [("company_id", "=", user.company_id.id)]
+            if role == "manager":
+                return base
+            return expression.AND([
+                base,
+                expression.OR([
+                    [("user_id", "=", user.id)],
+                    [("create_uid", "=", user.id)],
+                ]),
+            ])
+        if model_name == "project.task":
+            base = [("company_id", "=", user.company_id.id)]
+            if role == "manager":
+                return base
+            if role == "supervisor":
+                return expression.AND([
+                    base,
+                    expression.OR([
+                        [("user_ids", "in", [user.id])],
+                        [("create_uid", "=", user.id)],
+                        [("ftiq_daily_task_id.user_id", "=", user.id)],
+                        [("ftiq_daily_task_id.team_id.user_id", "=", user.id)],
+                        [("ftiq_plan_id.team_id.user_id", "=", user.id)],
+                    ]),
+                ])
+            return expression.AND([
+                base,
+                expression.OR([
+                    [("user_ids", "in", [user.id])],
+                    [("create_uid", "=", user.id)],
+                    [("ftiq_daily_task_id.user_id", "=", user.id)],
+                ]),
+            ])
         if model_name == "account.payment":
             base = [("is_field_collection", "=", True)]
             if role == "manager":
@@ -452,6 +498,133 @@ class FtiqMobileApiBase(http.Controller):
         scoped_record = self._safe_related_record(record, field_name, model_name)
         return scoped_record.id if scoped_record else False
 
+    def _is_thread_supported_model(self, model_name):
+        return (model_name or "").strip() in self._THREAD_SUPPORTED_MODELS
+
+    def _browse_thread_record(self, model_name, record_id):
+        if not self._is_thread_supported_model(model_name):
+            return request.env[model_name]
+        return self._browse_scoped(model_name, record_id).exists()
+
+    def _thread_notification_domain(self, record, message_ids=None):
+        domain = [
+            ("res_partner_id", "=", self._current_user().partner_id.id),
+            ("notification_type", "=", "inbox"),
+            ("mail_message_id.model", "=", record._name),
+            ("mail_message_id.res_id", "=", record.id),
+        ]
+        if message_ids:
+            domain.append(("mail_message_id", "in", list(message_ids)))
+        return domain
+
+    def _mark_thread_read_notifications(self, record, message_ids=None):
+        notifications = request.env["mail.notification"].search(
+            expression.AND(
+                [
+                    self._thread_notification_domain(record, message_ids=message_ids),
+                    [("is_read", "=", False)],
+                ]
+            )
+        )
+        if notifications:
+            notifications.write({"is_read": True})
+        return notifications
+
+    def _serialize_thread_author(self, message):
+        partner = message.author_id
+        user = partner.user_ids[:1] if partner else request.env["res.users"]
+        return {
+            "user_id": user.id if user else False,
+            "partner_id": partner.id if partner else False,
+            "name": partner.display_name if partner else message.email_from or "",
+        }
+
+    def _serialize_thread_message(self, message, notification_map=None):
+        notification = (notification_map or {}).get(message.id)
+        body = html2plaintext(message.body or "").strip()
+        return {
+            "id": message.id,
+            "subject": message.subject or "",
+            "body": body,
+            "preview": (message.preview or body)[:280],
+            "message_type": message.message_type or "",
+            "subtype": {
+                "id": message.subtype_id.id if message.subtype_id else False,
+                "name": message.subtype_id.display_name if message.subtype_id else "",
+            },
+            "author": self._serialize_thread_author(message),
+            "date": fields.Datetime.to_string(message.date) if message.date else None,
+            "is_read": bool(notification.is_read) if notification else True,
+            "notification_id": notification.id if notification else False,
+        }
+
+    def _serialize_thread_record(self, record):
+        partner = self._safe_related_record(record, "partner_id", "res.partner")
+        user = request.env["res.users"]
+        for field_name in ("user_id", "ftiq_user_id"):
+            user = self._safe_related_record(record, field_name, "res.users")
+            if user:
+                break
+        state = ""
+        try:
+            state = getattr(record, "state", "") or ""
+        except AccessError:
+            state = ""
+        date_value = ""
+        for field_name in (
+            "scheduled_date",
+            "visit_date",
+            "week_start",
+            "date_order",
+            "invoice_date",
+            "date",
+        ):
+            try:
+                value = getattr(record, field_name, False)
+            except AccessError:
+                value = False
+            if value:
+                date_value = str(value)
+                break
+        return {
+            "model": record._name,
+            "id": record.id,
+            "name": record.display_name,
+            "state": state,
+            "date": date_value,
+            "partner": self._serialize_partner_card(partner) if partner else {},
+            "user": self._serialize_user(user) if user else {},
+        }
+
+    def _serialize_thread_feed(self, record, limit=40):
+        messages = request.env["mail.message"].search(
+            [
+                ("model", "=", record._name),
+                ("res_id", "=", record.id),
+                ("message_type", "!=", "user_notification"),
+            ],
+            order="id desc",
+            limit=limit,
+        )
+        ordered_messages = messages.sorted(key=lambda message: message.id)
+        notifications = request.env["mail.notification"].sudo().search(
+            self._thread_notification_domain(record, message_ids=ordered_messages.ids)
+        )
+        notification_map = {
+            notification.mail_message_id.id: notification for notification in notifications
+        }
+        unread_count = len(
+            [notification for notification in notifications if not notification.is_read]
+        )
+        return {
+            "record": self._serialize_thread_record(record),
+            "messages": [
+                self._serialize_thread_message(message, notification_map=notification_map)
+                for message in ordered_messages
+            ],
+            "unread_count": unread_count,
+        }
+
     def _message_deep_link(self, message, task_record=None):
         task = task_record if task_record is not None else self._safe_related_record(
             message,
@@ -462,8 +635,9 @@ class FtiqMobileApiBase(http.Controller):
             return f"ftiq://task?id={task.id}&message_id={message.id}"
         return f"ftiq://notifications?message_id={message.id}"
 
-    def _notification_summary(self):
-        self._sync_live_activity_notifications()
+    def _notification_summary(self, sync_live=False):
+        if sync_live:
+            self._sync_live_activity_notifications()
         unread_domain = [("is_read", "=", False)]
         return {
             "unread_count": self._search_scoped(
@@ -480,9 +654,19 @@ class FtiqMobileApiBase(http.Controller):
         return self._OWNER_FIELD_BY_MODEL.get(model_name)
 
     def _sync_live_activity_notifications(self):
-        request.env["ftiq.mobile.notification"].sync_live_activities_for_user(
-            self._current_user()
-        )
+        notification_model = request.env["ftiq.mobile.notification"]
+        current_user = self._current_user()
+        for sync_method, sync_name in (
+            (notification_model.sync_live_activities_for_user, "activities"),
+            (notification_model.sync_live_mail_notifications_for_user, "mail_notifications"),
+        ):
+            try:
+                sync_method(current_user)
+            except Exception:
+                _logger.exception(
+                    "FTIQ mobile live notification sync failed: %s",
+                    sync_name,
+                )
 
     def _record_owner(self, record):
         field_name = self._owner_field_for(record)
@@ -864,6 +1048,11 @@ class FtiqMobileApiBase(http.Controller):
                 "sale_order_id": task.sale_order_id.id if task.sale_order_id else False,
                 "payment_id": task.payment_id.id if task.payment_id else False,
                 "stock_check_id": task.stock_check_id.id if task.stock_check_id else False,
+                "project_task_id": self._safe_related_scoped_id(
+                    task,
+                    "project_task_id",
+                    "project.task",
+                ),
             },
             "available_actions": {
                 "edit": is_owner and task.state in ("draft", "pending", "in_progress", "returned"),
@@ -872,6 +1061,58 @@ class FtiqMobileApiBase(http.Controller):
                 "submit": is_owner and task.state in ("in_progress", "completed", "returned") and task.confirmation_required,
                 "confirm": task.state == "submitted" and role in {"supervisor", "manager"},
                 "return": task.state == "submitted" and role in {"supervisor", "manager"},
+            },
+        }
+        if detailed:
+            data["activities"] = self._serialize_activities_for_record(task)
+        return data
+
+    def _serialize_project_task(self, task, detailed=False):
+        linked_daily_task_id = self._safe_related_scoped_id(
+            task,
+            "ftiq_daily_task_id",
+            "ftiq.daily.task",
+        )
+        linked_plan_id = self._safe_related_scoped_id(
+            task,
+            "ftiq_plan_id",
+            "ftiq.weekly.plan",
+        )
+        data = {
+            "id": task.id,
+            "name": task.display_name,
+            "project": {
+                "id": task.project_id.id if task.project_id else False,
+                "name": task.project_id.display_name if task.project_id else "",
+            },
+            "partner": self._serialize_partner_card(task.partner_id) if task.partner_id else {},
+            "company": {
+                "id": task.company_id.id if task.company_id else False,
+                "name": task.company_id.display_name if task.company_id else "",
+            },
+            "stage": {
+                "id": task.stage_id.id if task.stage_id else False,
+                "name": task.stage_id.display_name if task.stage_id else "",
+            },
+            "priority": task.priority or "",
+            "date_deadline": str(task.date_deadline or ""),
+            "planned_date_begin": fields.Datetime.to_string(task.planned_date_begin)
+            if getattr(task, "planned_date_begin", False)
+            else None,
+            "description": html2plaintext(task.description or "").strip(),
+            "assigned_users": [
+                {
+                    "id": user.id,
+                    "name": user.display_name,
+                }
+                for user in task.user_ids
+            ],
+            "linked_records": {
+                "daily_task_id": linked_daily_task_id,
+                "plan_id": linked_plan_id,
+            },
+            "available_actions": {
+                "open_daily_task": bool(linked_daily_task_id),
             },
         }
         if detailed:
@@ -1039,10 +1280,61 @@ class FtiqMobileApiBase(http.Controller):
             data["activities"] = self._serialize_activities_for_record(order)
         return data
 
+    def _serialize_purchase_order(self, order, detailed=False):
+        data = {
+            "id": order.id,
+            "name": order.name or order.display_name,
+            "state": order.state,
+            "date_order": fields.Datetime.to_string(order.date_order) if order.date_order else None,
+            "partner": self._serialize_partner_card(order.partner_id) if order.partner_id else {},
+            "user": {
+                "id": order.user_id.id if order.user_id else False,
+                "name": order.user_id.display_name if order.user_id else "",
+            },
+            "company": {
+                "id": order.company_id.id if order.company_id else False,
+                "name": order.company_id.display_name if order.company_id else "",
+            },
+            "currency": {
+                "id": order.currency_id.id if order.currency_id else False,
+                "name": order.currency_id.name if order.currency_id else "",
+                "symbol": order.currency_id.symbol if order.currency_id else "",
+            },
+            "amount_total": order.amount_total,
+            "amount_untaxed": order.amount_untaxed,
+            "amount_tax": order.amount_tax,
+            "partner_ref": order.partner_ref or "",
+            "origin": order.origin or "",
+            "notes": getattr(order, "notes", False) or getattr(order, "note", False) or "",
+        }
+        if detailed:
+            lines = order.order_line.filtered(lambda line: not line.display_type)
+            data["lines"] = [
+                {
+                    "id": line.id,
+                    "product_id": line.product_id.id if line.product_id else False,
+                    "product_name": line.product_id.display_name if line.product_id else line.name or "",
+                    "description": line.name or "",
+                    "quantity": line.product_qty,
+                    "received_qty": line.qty_received,
+                    "invoiced_qty": line.qty_invoiced,
+                    "uom": line.product_uom.display_name if line.product_uom else "",
+                    "price_unit": line.price_unit,
+                    "subtotal": line.price_subtotal,
+                    "date_planned": fields.Datetime.to_string(line.date_planned)
+                    if getattr(line, "date_planned", False)
+                    else None,
+                }
+                for line in lines
+            ]
+            data["activities"] = self._serialize_activities_for_record(order)
+        return data
+
     def _serialize_invoice(self, invoice, detailed=False):
         due_date = invoice.invoice_date_due
         today = fields.Date.context_today(invoice)
         is_overdue = bool(due_date and invoice.amount_residual > 0 and due_date < today)
+        journal = self._safe_related_record(invoice, "journal_id", "account.journal")
         data = {
             "id": invoice.id,
             "name": invoice.name or invoice.display_name,
@@ -1076,8 +1368,8 @@ class FtiqMobileApiBase(http.Controller):
                 {
                     "partner": self._serialize_partner_card(invoice.partner_id) if invoice.partner_id else {},
                     "journal": {
-                        "id": invoice.journal_id.id if invoice.journal_id else False,
-                        "name": invoice.journal_id.display_name if invoice.journal_id else "",
+                        "id": journal.id if journal else False,
+                        "name": journal.display_name if journal else "",
                     },
                     "user": {
                         "id": invoice.ftiq_access_user_id.id if invoice.ftiq_access_user_id else False,

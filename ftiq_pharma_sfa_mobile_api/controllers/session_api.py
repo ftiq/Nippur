@@ -79,16 +79,15 @@ class FtiqMobileSessionApi(FtiqMobileApiBase):
         registry = odoo.modules.registry.Registry(db)
         with registry.cursor() as cr:
             env = api.Environment(cr, request.session.uid, request.session.context)
-            if not request.db:
-                odoo_http.root.session_store.rotate(request.session, env)
-                request.future_response.set_cookie(
-                    "session_id",
-                    request.session.sid,
-                    max_age=odoo_http.get_session_max_inactivity(env),
-                    httponly=True,
-                    secure=request.httprequest.scheme == "https",
-                    samesite="Lax",
-                )
+            odoo_http.root.session_store.rotate(request.session, env)
+            request.future_response.set_cookie(
+                "session_id",
+                request.session.sid,
+                max_age=odoo_http.get_session_max_inactivity(env),
+                httponly=True,
+                secure=request.httprequest.scheme == "https",
+                samesite="Lax",
+            )
             user = env.user
             denied = self._ensure_mobile_access(user)
             if denied:
