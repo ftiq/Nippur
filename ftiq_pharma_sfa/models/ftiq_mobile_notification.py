@@ -1,6 +1,12 @@
 import json
+import logging
+
+from psycopg2 import IntegrityError
 
 from odoo import api, fields, models
+
+
+_logger = logging.getLogger(__name__)
 
 
 class FtiqMobileNotification(models.Model):
@@ -96,8 +102,10 @@ class FtiqMobileNotification(models.Model):
         return {
             "ftiq.daily.task": "task",
             "ftiq.visit": "visit",
+            "ftiq.weekly.plan": "plan",
             "sale.order": "order",
             "purchase.order": "purchase",
+            "project.task": "task",
             "account.payment": "collection",
             "account.move": "invoice",
             "hr.expense": "expense",
@@ -118,8 +126,14 @@ class FtiqMobileNotification(models.Model):
             return with_query(f"ftiq://task?id={target_res_id}")
         if target_model == "ftiq.visit" and target_res_id:
             return with_query(f"ftiq://visit?id={target_res_id}")
+        if target_model == "ftiq.weekly.plan" and target_res_id:
+            return with_query(f"ftiq://plan?id={target_res_id}")
         if target_model == "sale.order" and target_res_id:
             return with_query(f"ftiq://order?id={target_res_id}")
+        if target_model == "purchase.order" and target_res_id:
+            return with_query(f"ftiq://purchase?id={target_res_id}")
+        if target_model == "project.task" and target_res_id:
+            return with_query(f"ftiq://project-task?id={target_res_id}")
         if target_model == "account.move" and target_res_id:
             return with_query(f"ftiq://invoice?id={target_res_id}")
         if target_model == "account.payment" and target_res_id:
@@ -128,12 +142,12 @@ class FtiqMobileNotification(models.Model):
             return with_query(f"ftiq://expense?id={target_res_id}")
         if target_model == "ftiq.stock.check" and target_res_id:
             return with_query(f"ftiq://stock-check?id={target_res_id}")
+        if target_model == "ftiq.team.message" and target_res_id:
+            return with_query(f"ftiq://notifications?message_id={target_res_id}")
         return with_query("ftiq://notifications")
 
     def _build_deep_link(self):
         self.ensure_one()
-        if self.target_model == "ftiq.team.message" and self.target_res_id:
-            return f"ftiq://notifications?message_id={self.target_res_id}&notification_id={self.id}"
         return self.build_target_deep_link(
             target_model=self.target_model,
             target_res_id=self.target_res_id,
@@ -215,6 +229,41 @@ class FtiqMobileNotification(models.Model):
         return activities
 
     @api.model
+    def sync_live_mail_notifications_for_user(self, user=False, limit=120):
+        target_user = user if user else self.env.user
+        partner = target_user.partner_id if target_user else self.env["res.partner"]
+        if not partner or not partner.id:
+            return self.env["mail.notification"]
+        notifications = self.env["mail.notification"].search(
+            [
+                ("res_partner_id", "=", partner.id),
+                ("notification_type", "=", "inbox"),
+                ("notification_status", "not in", ("bounce", "exception")),
+                (
+                    "mail_message_id.model",
+                    "in",
+                    [
+                        "ftiq.daily.task",
+                        "ftiq.visit",
+                        "ftiq.weekly.plan",
+                        "sale.order",
+                        "purchase.order",
+                        "project.task",
+                        "account.payment",
+                        "account.move",
+                        "hr.expense",
+                        "ftiq.stock.check",
+                    ],
+                ),
+            ],
+            order="mail_message_id desc, res_partner_id desc",
+            limit=limit,
+        )
+        if notifications:
+            notifications._sync_mobile_notifications()
+        return notifications
+
+    @api.model
     def create_for_users(
         self,
         users,
@@ -238,6 +287,10 @@ class FtiqMobileNotification(models.Model):
         source_model, source_res_id, _source_name = self._record_identity(source)
         for user in valid_users:
             company = self._company_for(user=user, target=target, source=source, author=author_user)
+            search_domain = [
+                ("user_id", "=", user.id),
+                ("event_key", "=", event_key),
+            ] if event_key else []
             values = {
                 "name": title,
                 "body": body,
@@ -256,24 +309,70 @@ class FtiqMobileNotification(models.Model):
                 "is_read": False,
                 "read_date": False,
             }
-            existing = self.sudo().search(
-                [
-                    ("user_id", "=", user.id),
-                    ("event_key", "=", event_key),
-                ],
-                limit=1,
-            ) if event_key else self.browse()
-            if existing:
-                existing.sudo().write(values)
-                record = existing
-            else:
-                record = self.sudo().create(values)
+            record = self.browse()
+            for attempt in range(2):
+                try:
+                    with self.env.cr.savepoint():
+                        existing = self.sudo().search(search_domain, limit=1) if search_domain else self.browse()
+                        if existing:
+                            record = existing
+                            if not self._skip_existing_upsert(existing, values):
+                                update_values = self._notification_update_values(existing, values)
+                                if update_values:
+                                    existing.sudo().write(update_values)
+                        else:
+                            try:
+                                record = self.sudo().create(values)
+                            except IntegrityError:
+                                if not search_domain:
+                                    raise
+                                record = self.sudo().search(search_domain, limit=1)
+                                if not record:
+                                    raise
+                                update_values = self._notification_update_values(record, values)
+                                if update_values:
+                                    record.sudo().write(update_values)
+                    break
+                except Exception as error:
+                    if attempt >= 1 or not self._is_retryable_notification_error(error):
+                        raise
+                    _logger.warning(
+                        "FTIQ mobile notification upsert retry for event %s user %s after %s",
+                        event_key,
+                        user.id,
+                        error.__class__.__name__,
+                    )
             deep_link = record._build_deep_link()
             if record.deep_link != deep_link:
-                record.sudo().write({"deep_link": deep_link})
+                with self.env.cr.savepoint():
+                    record.sudo().write({"deep_link": deep_link})
             records |= record
         records._dispatch_push()
         return records
+
+    def _skip_existing_upsert(self, record, values):
+        source_model = (values.get("source_model") or "").strip()
+        if source_model in {"mail.activity", "mail.notification"}:
+            return True
+        return False
+
+    def _notification_update_values(self, record, values):
+        update_values = {}
+        for field_name, value in values.items():
+            if field_name in {"is_read", "read_date"}:
+                continue
+            field = record._fields.get(field_name)
+            if not field:
+                continue
+            current_value = record[field_name]
+            if field.type == "many2one":
+                current_value = current_value.id or False
+            if current_value != value:
+                update_values[field_name] = value
+        return update_values
+
+    def _is_retryable_notification_error(self, error):
+        return error.__class__.__name__ in {"SerializationFailure", "DeadlockDetected"}
 
     def action_mark_read(self):
         unread = self.filtered(lambda notification: not notification.is_read)

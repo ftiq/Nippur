@@ -22,6 +22,7 @@ from . import daily_task_refactor
 from . import project
 from . import activity_feed
 from . import mail_activity
+from . import mail_notification
 from . import team_message
 from . import ftiq_mobile_notification
 from . import firebase_push

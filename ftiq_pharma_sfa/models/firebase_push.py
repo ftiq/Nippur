@@ -197,7 +197,7 @@ class FtiqFirebasePushService(models.AbstractModel):
         message.ensure_one()
         if message.task_id:
             return f"ftiq://task?id={message.task_id.id}&message_id={message.id}"
-        return f"ftiq://notifications?message_id={message.id}"
+        return f"ftiq://team-hub?message_id={message.id}"
 
     def send_team_message_push(self, message):
         message.ensure_one()

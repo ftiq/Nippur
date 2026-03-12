@@ -14,6 +14,7 @@ class FtiqFieldAttendance(models.Model):
     entry_reference = fields.Reference(
         selection=[
             ('ftiq.visit', 'Visit'),
+            ('ftiq.daily.task', 'Task'),
             ('sale.order', 'Field Order'),
             ('account.payment', 'Collection'),
             ('ftiq.stock.check', 'Stock Check'),
