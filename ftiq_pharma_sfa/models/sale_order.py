@@ -7,8 +7,8 @@ class SaleOrder(models.Model):
     is_field_order = fields.Boolean(string='Field Order', default=False, tracking=True)
     ftiq_visit_id = fields.Many2one('ftiq.visit', string='Related Visit', copy=False)
     ftiq_attendance_id = fields.Many2one('ftiq.field.attendance', string='Attendance', copy=False)
-    ftiq_latitude = fields.Float(string='Latitude', digits=(10, 7))
-    ftiq_longitude = fields.Float(string='Longitude', digits=(10, 7))
+    ftiq_latitude = fields.Float(string='Field Latitude', digits=(10, 7))
+    ftiq_longitude = fields.Float(string='Field Longitude', digits=(10, 7))
     ftiq_daily_task_id = fields.Many2one('ftiq.daily.task', string='Daily Task', copy=False)
     ftiq_priority = fields.Selection([
         ('0', 'Normal'),

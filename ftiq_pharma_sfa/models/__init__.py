@@ -12,6 +12,7 @@ from . import visit
 from . import weekly_plan
 from . import weekly_plan_refactor
 from . import sale_order
+from . import purchase_order
 from . import account_payment
 from . import account_move
 from . import hr_expense

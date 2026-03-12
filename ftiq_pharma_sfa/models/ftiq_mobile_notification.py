@@ -22,6 +22,7 @@ class FtiqMobileNotification(models.Model):
             ("activity", "Activity"),
             ("team", "Team"),
             ("task", "Task"),
+            ("project", "Project"),
             ("visit", "Visit"),
             ("plan", "Plan"),
             ("order", "Order"),
@@ -30,6 +31,7 @@ class FtiqMobileNotification(models.Model):
             ("invoice", "Invoice"),
             ("expense", "Expense"),
             ("stock_check", "Stock Check"),
+            ("team", "Team"),
             ("finance", "Finance"),
             ("system", "System"),
         ],
@@ -103,6 +105,7 @@ class FtiqMobileNotification(models.Model):
             "ftiq.daily.task": "task",
             "ftiq.visit": "visit",
             "ftiq.weekly.plan": "plan",
+            "project.project": "project",
             "sale.order": "order",
             "purchase.order": "purchase",
             "project.task": "task",
@@ -110,6 +113,7 @@ class FtiqMobileNotification(models.Model):
             "account.move": "invoice",
             "hr.expense": "expense",
             "ftiq.stock.check": "stock_check",
+            "ftiq.team.message": "team",
         }.get((model_name or "").strip(), default)
 
     @api.model
@@ -128,6 +132,8 @@ class FtiqMobileNotification(models.Model):
             return with_query(f"ftiq://visit?id={target_res_id}")
         if target_model == "ftiq.weekly.plan" and target_res_id:
             return with_query(f"ftiq://plan?id={target_res_id}")
+        if target_model == "project.project" and target_res_id:
+            return with_query(f"ftiq://project?id={target_res_id}")
         if target_model == "sale.order" and target_res_id:
             return with_query(f"ftiq://order?id={target_res_id}")
         if target_model == "purchase.order" and target_res_id:
@@ -143,7 +149,7 @@ class FtiqMobileNotification(models.Model):
         if target_model == "ftiq.stock.check" and target_res_id:
             return with_query(f"ftiq://stock-check?id={target_res_id}")
         if target_model == "ftiq.team.message" and target_res_id:
-            return with_query(f"ftiq://notifications?message_id={target_res_id}")
+            return with_query(f"ftiq://team-message?id={target_res_id}")
         return with_query("ftiq://notifications")
 
     def _build_deep_link(self):
@@ -246,6 +252,7 @@ class FtiqMobileNotification(models.Model):
                         "ftiq.daily.task",
                         "ftiq.visit",
                         "ftiq.weekly.plan",
+                        "project.project",
                         "sale.order",
                         "purchase.order",
                         "project.task",

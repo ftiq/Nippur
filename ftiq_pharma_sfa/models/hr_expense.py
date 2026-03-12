@@ -33,12 +33,15 @@ class HrExpense(models.Model):
         return records
 
     def write(self, vals):
+        old_state = {record.id: record.state for record in self}
         result = super().write(vals)
         if any(key in vals for key in (
             'is_field_expense', 'ftiq_attendance_id', 'ftiq_visit_id', 'ftiq_daily_task_id',
             'ftiq_partner_id', 'employee_id', 'date',
         )):
             self.filtered('is_field_expense')._sync_ftiq_source_fields()
+        if 'state' in vals:
+            self.filtered('is_field_expense')._notify_mobile_state_change(old_state=old_state)
         return result
 
     @api.constrains('is_field_expense', 'ftiq_attendance_id', 'ftiq_visit_id', 'ftiq_daily_task_id')
@@ -79,3 +82,45 @@ class HrExpense(models.Model):
                 vals['ftiq_longitude'] = source_visit.start_longitude
             if vals:
                 super(HrExpense, rec).write(vals)
+
+    def _expense_notification_users(self, state_value):
+        self.ensure_one()
+        notification_model = self.env['ftiq.mobile.notification']
+        if state_value == 'reported':
+            users = notification_model.approval_users_for(self)
+        else:
+            users = self.ftiq_user_id
+        users = users.filtered(lambda user: not user.share and user.active)
+        return (users - self.env.user).filtered(
+            lambda user: user.company_id == self.company_id
+        )
+
+    def _notify_mobile_state_change(self, old_state=None):
+        state_labels = dict(self._fields['state'].selection)
+        for record in self.filtered('is_field_expense'):
+            previous_state = (old_state or {}).get(record.id)
+            if previous_state == record.state:
+                continue
+            recipients = record._expense_notification_users(record.state)
+            if not recipients:
+                continue
+            if record.state == 'reported':
+                subject = _('Expense submitted')
+            elif record.state in {'approve', 'approved', 'done'}:
+                subject = _('Expense approved')
+            elif record.state in {'refused', 'cancel'}:
+                subject = _('Expense rejected')
+            else:
+                subject = _('Expense updated')
+            record.message_post(
+                subject=subject,
+                body=_(
+                    'Expense %s state is now %s.'
+                ) % (
+                    record.display_name,
+                    state_labels.get(record.state, record.state or ''),
+                ),
+                partner_ids=recipients.mapped('partner_id').ids,
+                message_type='notification',
+                subtype_xmlid='mail.mt_note',
+            )

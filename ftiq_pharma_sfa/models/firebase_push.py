@@ -201,9 +201,7 @@ class FtiqFirebasePushService(models.AbstractModel):
 
     def _message_deep_link(self, message):
         message.ensure_one()
-        if message.task_id:
-            return f"ftiq://task?id={message.task_id.id}&message_id={message.id}"
-        return f"ftiq://team-hub?message_id={message.id}"
+        return f"ftiq://team-message?id={message.id}"
 
     def send_team_message_push(self, message):
         message.ensure_one()
@@ -222,7 +220,10 @@ class FtiqFirebasePushService(models.AbstractModel):
             data={
                 "deep_link": self._message_deep_link(message),
                 "message_id": message.id,
+                "team_message_id": message.id,
                 "notification_type": message.message_type or "",
+                "target_model": "ftiq.team.message",
+                "target_id": message.id,
                 "task_id": message.task_id.id if message.task_id else "",
             },
         )

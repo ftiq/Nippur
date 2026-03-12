@@ -148,7 +148,7 @@ class FtiqTeamMessage(models.Model):
                     body=record.body,
                     category="team",
                     priority=record.priority or "normal",
-                    target=record.task_id or record,
+                    target=record,
                     source=record,
                     author=record.author_id,
                     payload={

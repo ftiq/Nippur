@@ -9,6 +9,7 @@ class MailNotification(models.Model):
         "ftiq.daily.task",
         "ftiq.visit",
         "ftiq.weekly.plan",
+        "project.project",
         "sale.order",
         "purchase.order",
         "project.task",

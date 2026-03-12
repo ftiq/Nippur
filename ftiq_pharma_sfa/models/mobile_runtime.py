@@ -1,5 +1,9 @@
+import hashlib
+import hmac
 import json
 import re
+import secrets
+from datetime import timedelta
 
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
@@ -208,6 +212,12 @@ class FtiqMobileDevice(models.Model):
     last_login_at = fields.Datetime()
     last_ip = fields.Char()
     last_user_agent = fields.Char()
+    session_token_index = fields.Char(copy=False, index=True)
+    session_token_hash = fields.Char(copy=False)
+    session_token_issued_at = fields.Datetime(copy=False)
+    session_token_last_seen_at = fields.Datetime(copy=False)
+    session_token_expires_at = fields.Datetime(copy=False)
+    session_token_revoked_at = fields.Datetime(copy=False)
 
     _sql_constraints = [
         (
@@ -237,6 +247,93 @@ class FtiqMobileDevice(models.Model):
 
     def action_revoke(self):
         self.write({"state": "revoked"})
+        self.revoke_session_token()
+
+    def session_token_state(self):
+        self.ensure_one()
+        if self.state == "revoked" or self.session_token_revoked_at:
+            return "revoked"
+        if not self.session_token_hash:
+            return "none"
+        if self.session_token_expires_at and self.session_token_expires_at < fields.Datetime.now():
+            return "expired"
+        return "active"
+
+    def revoke_session_token(self):
+        if not self:
+            return
+        now = fields.Datetime.now()
+        self.with_context(skip_mobile_session_token_sync=True).write({
+            "session_token_index": False,
+            "session_token_hash": False,
+            "session_token_issued_at": False,
+            "session_token_last_seen_at": False,
+            "session_token_expires_at": False,
+            "session_token_revoked_at": now,
+        })
+
+    def issue_session_token(self, ttl_days=90):
+        self.ensure_one()
+        if self.state == "revoked":
+            raise ValidationError(_("This device has been revoked."))
+        now = fields.Datetime.now()
+        expires_at = now + timedelta(days=max(int(ttl_days or 0), 1))
+        token = secrets.token_urlsafe(48)
+        self.with_context(skip_mobile_session_token_sync=True).write({
+            "session_token_index": token[:16],
+            "session_token_hash": hashlib.sha256(token.encode("utf-8")).hexdigest(),
+            "session_token_issued_at": now,
+            "session_token_last_seen_at": now,
+            "session_token_expires_at": expires_at,
+            "session_token_revoked_at": False,
+        })
+        return {
+            "token": token,
+            "expires_at": fields.Datetime.to_string(expires_at),
+        }
+
+    @api.model
+    def authenticate_session_token(self, token, remote_ip="", user_agent=""):
+        normalized_token = (token or "").strip()
+        if not normalized_token:
+            return self.browse()
+        token_hash = hashlib.sha256(normalized_token.encode("utf-8")).hexdigest()
+        candidates = self.sudo().search([
+            ("session_token_index", "=", normalized_token[:16]),
+            ("state", "=", "active"),
+        ])
+        now = fields.Datetime.now()
+        for device in candidates:
+            if not device.session_token_hash:
+                continue
+            if not hmac.compare_digest(device.session_token_hash, token_hash):
+                continue
+            if device.session_token_expires_at and device.session_token_expires_at < now:
+                device.revoke_session_token()
+                return self.browse()
+            if not device.user_id.active:
+                device.revoke_session_token()
+                return self.browse()
+            device.with_context(skip_mobile_session_token_sync=True).write({
+                "session_token_last_seen_at": now,
+                "last_seen_at": now,
+                "last_ip": (remote_ip or "")[:128],
+                "last_user_agent": (user_agent or "")[:512],
+            })
+            return device
+        return self.browse()
+
+    def write(self, vals):
+        revoke_token = not self.env.context.get("skip_mobile_session_token_sync") and vals.get("state") == "revoked"
+        activate_token = not self.env.context.get("skip_mobile_session_token_sync") and vals.get("state") == "active"
+        result = super().write(vals)
+        if revoke_token:
+            self.filtered(lambda device: device.state == "revoked").revoke_session_token()
+        if activate_token:
+            self.filtered(lambda device: device.state == "active").with_context(
+                skip_mobile_session_token_sync=True
+            ).write({"session_token_revoked_at": False})
+        return result
 
     @api.model
     def register_current(self, payload, remote_ip="", user_agent=""):

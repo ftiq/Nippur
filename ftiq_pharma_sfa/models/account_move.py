@@ -1,4 +1,4 @@
-from odoo import api, fields, models
+from odoo import _, api, fields, models
 
 
 class AccountMove(models.Model):
@@ -41,6 +41,11 @@ class AccountMove(models.Model):
         return records
 
     def write(self, vals):
+        old_state = {record.id: record.state for record in self}
+        old_payment_state = {
+            record.id: record.payment_state
+            for record in self
+        }
         result = super().write(vals)
         if any(key in vals for key in (
             'ftiq_visit_id',
@@ -51,6 +56,11 @@ class AccountMove(models.Model):
             'origin_payment_id',
         )):
             self._sync_ftiq_source_fields()
+        if 'state' in vals or 'payment_state' in vals:
+            self._notify_mobile_state_change(
+                old_state=old_state,
+                old_payment_state=old_payment_state,
+            )
         return result
 
     def _sync_ftiq_source_fields(self):
@@ -86,3 +96,50 @@ class AccountMove(models.Model):
                     vals['ftiq_user_id'] = source_user.id
             if vals:
                 super(AccountMove, rec).write(vals)
+
+    def _invoice_notification_users(self):
+        self.ensure_one()
+        notification_model = self.env['ftiq.mobile.notification']
+        users = (self.ftiq_user_id | notification_model.approval_users_for(self)).filtered(
+            lambda user: not user.share and user.active
+        )
+        return (users - self.env.user).filtered(
+            lambda user: user.company_id == self.company_id
+        )
+
+    def _notify_mobile_state_change(self, old_state=None, old_payment_state=None):
+        state_labels = dict(self._fields['state'].selection)
+        payment_labels = dict(self._fields['payment_state'].selection)
+        for record in self.filtered(lambda move: move.move_type == 'out_invoice'):
+            previous_state = (old_state or {}).get(record.id)
+            previous_payment_state = (old_payment_state or {}).get(record.id)
+            recipients = record._invoice_notification_users()
+            if not recipients:
+                continue
+            subject = ''
+            body = ''
+            if previous_state != record.state:
+                subject = _('Invoice updated')
+                body = _(
+                    'Invoice %s state is now %s.'
+                ) % (
+                    record.display_name,
+                    state_labels.get(record.state, record.state or ''),
+                )
+            elif previous_payment_state != record.payment_state:
+                subject = _('Invoice payment updated')
+                body = _(
+                    'Invoice %s payment status is now %s.'
+                ) % (
+                    record.display_name,
+                    payment_labels.get(record.payment_state, record.payment_state or ''),
+                )
+            if not subject or not body:
+                continue
+            record.message_post(
+                subject=subject,
+                body=body,
+                partner_ids=recipients.mapped('partner_id').ids,
+                message_type='notification',
+                subtype_xmlid='mail.mt_note',
+            )
