@@ -470,16 +470,31 @@ class FtiqMobileApiBase(http.Controller):
     def _safe_scoped_record(self, model_name, record):
         if not record:
             return request.env[model_name]
+        if getattr(record, "_name", model_name) != model_name:
+            return request.env[model_name]
+        try:
+            if len(record) > 1:
+                record = record[:1]
+        except Exception:
+            return request.env[model_name]
         try:
             record_id = record.id
-        except AccessError:
+        except (AccessError, AttributeError, ValueError):
             return request.env[model_name]
         if not record_id:
             return request.env[model_name]
         try:
-            return self._browse_scoped(model_name, record_id).exists()
+            scoped_record = self._browse_scoped(model_name, record_id).exists()
         except AccessError:
             return request.env[model_name]
+        if not scoped_record:
+            return request.env[model_name]
+        try:
+            scoped_record.check_access_rights("read")
+            scoped_record.check_access_rule("read")
+        except AccessError:
+            return request.env[model_name]
+        return scoped_record
 
     def _safe_scoped_id(self, model_name, record):
         scoped_record = self._safe_scoped_record(model_name, record)
@@ -488,9 +503,11 @@ class FtiqMobileApiBase(http.Controller):
     def _safe_related_record(self, record, field_name, model_name):
         if not record:
             return request.env[model_name]
+        if field_name not in getattr(record, "_fields", {}):
+            return request.env[model_name]
         try:
             related_record = getattr(record, field_name)
-        except AccessError:
+        except (AccessError, AttributeError):
             return request.env[model_name]
         return self._safe_scoped_record(model_name, related_record)
 
@@ -559,17 +576,39 @@ class FtiqMobileApiBase(http.Controller):
         }
 
     def _serialize_thread_record(self, record):
-        partner = self._safe_related_record(record, "partner_id", "res.partner")
+        partner = request.env["res.partner"]
+        if "partner_id" in record._fields:
+            partner = self._safe_related_record(record, "partner_id", "res.partner")
         user = request.env["res.users"]
-        for field_name in ("user_id", "ftiq_user_id"):
+        for field_name in ("user_id", "ftiq_user_id", "ftiq_access_user_id", "supervisor_id", "create_uid"):
             user = self._safe_related_record(record, field_name, "res.users")
             if user:
                 break
-        state = ""
+        if not user and "user_ids" in record._fields:
+            try:
+                for candidate in record.user_ids:
+                    scoped_candidate = self._safe_scoped_record("res.users", candidate)
+                    if scoped_candidate:
+                        user = scoped_candidate
+                        break
+            except AccessError:
+                user = request.env["res.users"]
+        if not user and "team_id" in record._fields:
+            team = self._safe_related_record(record, "team_id", "crm.team")
+            if team and team.user_id:
+                user = self._safe_scoped_record("res.users", team.user_id)
         try:
-            state = getattr(record, "state", "") or ""
+            record_name = record.display_name or ""
         except AccessError:
-            state = ""
+            record_name = ""
+        if not record_name:
+            record_name = f"{record._description or record._name} #{record.id}"
+        state = ""
+        if "state" in record._fields:
+            try:
+                state = getattr(record, "state", "") or ""
+            except AccessError:
+                state = ""
         date_value = ""
         for field_name in (
             "scheduled_date",
@@ -577,8 +616,11 @@ class FtiqMobileApiBase(http.Controller):
             "week_start",
             "date_order",
             "invoice_date",
+            "date_deadline",
             "date",
         ):
+            if field_name not in record._fields:
+                continue
             try:
                 value = getattr(record, field_name, False)
             except AccessError:
@@ -589,7 +631,7 @@ class FtiqMobileApiBase(http.Controller):
         return {
             "model": record._name,
             "id": record.id,
-            "name": record.display_name,
+            "name": record_name,
             "state": state,
             "date": date_value,
             "partner": self._serialize_partner_card(partner) if partner else {},
@@ -654,7 +696,9 @@ class FtiqMobileApiBase(http.Controller):
         return self._OWNER_FIELD_BY_MODEL.get(model_name)
 
     def _sync_live_activity_notifications(self):
-        notification_model = request.env["ftiq.mobile.notification"]
+        notification_model = request.env["ftiq.mobile.notification"].with_context(
+            ftiq_skip_push_dispatch=True
+        )
         current_user = self._current_user()
         for sync_method, sync_name in (
             (notification_model.sync_live_activities_for_user, "activities"),
