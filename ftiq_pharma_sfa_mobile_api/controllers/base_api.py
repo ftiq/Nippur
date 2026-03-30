@@ -257,6 +257,13 @@ class FtiqMobileApiBase(http.Controller):
             return ""
         return f"{self._host_url()}/web/image/{model}/{record_id}/{field_name}"
 
+    def _partner_client_type_label(self, partner):
+        if not partner:
+            return ""
+        selection = dict(partner._fields["ftiq_client_type"].selection)
+        client_type = getattr(partner, "ftiq_client_type", "") or ""
+        return selection.get(client_type, _("Client")) if client_type else ""
+
     def _geo_context_from_payload(self, payload):
         return {
             "ftiq_latitude": payload.get("latitude"),
@@ -526,6 +533,10 @@ class FtiqMobileApiBase(http.Controller):
 
     def _search_scoped(self, model_name, domain=None, order=None, limit=None):
         model = request.env[model_name]
+        try:
+            model.check_access("read")
+        except (AccessError, ValueError):
+            return model.browse()
         final_domain = expression.AND([self._scope_domain(model_name), domain or []])
         return model.search(final_domain, order=order, limit=limit)
 
@@ -555,9 +566,8 @@ class FtiqMobileApiBase(http.Controller):
         if not scoped_record:
             return request.env[model_name]
         try:
-            scoped_record.check_access_rights("read")
-            scoped_record.check_access_rule("read")
-        except AccessError:
+            scoped_record.check_access("read")
+        except (AccessError, ValueError):
             return request.env[model_name]
         return scoped_record
 
@@ -592,9 +602,8 @@ class FtiqMobileApiBase(http.Controller):
         if not record:
             return False
         try:
-            record.check_access_rights(mode)
-            record.check_access_rule(mode)
-        except AccessError:
+            record.check_access(mode)
+        except (AccessError, ValueError):
             return False
         return True
 
@@ -626,9 +635,15 @@ class FtiqMobileApiBase(http.Controller):
         if "message_partner_ids" not in getattr(record, "_fields", {}):
             return request.env["res.partner"]
         try:
-            return record.message_partner_ids
+            followers = record.message_partner_ids
         except AccessError:
             return request.env["res.partner"]
+        visible_followers = request.env["res.partner"]
+        for partner in followers:
+            scoped_partner = self._safe_scoped_record("res.partner", partner)
+            if scoped_partner:
+                visible_followers |= scoped_partner
+        return visible_followers
 
     def _serialize_thread_attachment(self, attachment):
         mimetype = (attachment.mimetype or "").strip()
@@ -651,7 +666,7 @@ class FtiqMobileApiBase(http.Controller):
         }
 
     def _serialize_thread_follower(self, partner):
-        user = partner.user_ids[:1]
+        user = self._safe_scoped_record("res.users", partner.user_ids[:1])
         return {
             "partner_id": partner.id,
             "user_id": user.id if user else False,
@@ -686,12 +701,34 @@ class FtiqMobileApiBase(http.Controller):
         return notifications
 
     def _serialize_thread_author(self, message):
-        partner = message.author_id
-        user = partner.user_ids[:1] if partner else request.env["res.users"]
+        partner = self._safe_related_record(message, "author_id", "res.partner")
+        sudo_partner = request.env["res.partner"]
+        try:
+            sudo_partner = message.sudo().author_id
+        except AccessError:
+            sudo_partner = request.env["res.partner"]
+        user_source = partner or sudo_partner
+        user = (
+            self._safe_scoped_record("res.users", user_source.user_ids[:1])
+            if user_source
+            else request.env["res.users"]
+        )
+        author_name = ""
+        if partner:
+            author_name = partner.display_name
+        elif sudo_partner:
+            author_name = sudo_partner.display_name or ""
+        if not author_name:
+            try:
+                author_name = message.email_from or ""
+            except AccessError:
+                author_name = ""
+        if not author_name:
+            author_name = _("System")
         return {
             "user_id": user.id if user else False,
             "partner_id": partner.id if partner else False,
-            "name": partner.display_name if partner else message.email_from or "",
+            "name": author_name,
         }
 
     def _serialize_thread_message(self, message, notification_map=None):
@@ -806,6 +843,7 @@ class FtiqMobileApiBase(http.Controller):
         followers = self._thread_followers_for_record(record)
         return {
             "record": self._serialize_thread_record(record),
+            "current_user_id": self._current_user().id,
             "messages": [
                 self._serialize_thread_message(message, notification_map=notification_map)
                 for message in ordered_messages
@@ -995,14 +1033,18 @@ class FtiqMobileApiBase(http.Controller):
         return data
 
     def _serialize_user(self, user):
+        user = self._safe_scoped_record("res.users", user)
+        if not user:
+            return {}
+        partner = self._safe_related_record(user, "partner_id", "res.partner")
         return {
             "id": user.id,
             "name": user.display_name,
             "login": user.login,
             "role": self._role_of(user),
-            "email": user.email or user.partner_id.email or "",
-            "phone": user.partner_id.phone or "",
-            "mobile": user.partner_id.mobile or "",
+            "email": user.email or (partner.email if partner else "") or "",
+            "phone": partner.phone if partner else "",
+            "mobile": partner.mobile if partner else "",
             "image_url": self._image_url("res.users", user.id, "avatar_128"),
             "team": {
                 "id": user.sale_team_id.id if user.sale_team_id else False,
@@ -1050,7 +1092,7 @@ class FtiqMobileApiBase(http.Controller):
             "name": partner.display_name,
             "client_code": partner.ftiq_client_code or "",
             "client_type": partner.ftiq_client_type or "client",
-            "client_type_label": partner.ftiq_client_type_label or "",
+            "client_type_label": self._partner_client_type_label(partner),
             "city": partner.ftiq_city_id.name or partner.city or "",
             "area": partner.ftiq_area_id.name or "",
             "specialty": partner.ftiq_specialty_id.name or "",
@@ -1438,6 +1480,22 @@ class FtiqMobileApiBase(http.Controller):
 
     def _serialize_team_message(self, message, detailed=False):
         task = self._safe_related_record(message, "task_id", "ftiq.daily.task")
+        notification = self._search_scoped(
+            "ftiq.mobile.notification",
+            [
+                ("target_model", "=", "ftiq.team.message"),
+                ("target_res_id", "=", message.id),
+            ],
+            order="is_read asc, create_date desc, id desc",
+            limit=1,
+        )
+        thread_message_count = request.env["mail.message"].search_count(
+            [
+                ("model", "=", "ftiq.team.message"),
+                ("res_id", "=", message.id),
+                ("message_type", "!=", "user_notification"),
+            ]
+        )
         data = {
             "id": message.id,
             "subject": message.subject or "",
@@ -1445,6 +1503,7 @@ class FtiqMobileApiBase(http.Controller):
             "message_type": message.message_type or "note",
             "priority": message.priority or "normal",
             "create_date": fields.Datetime.to_string(message.create_date) if message.create_date else None,
+            "write_date": fields.Datetime.to_string(message.write_date) if message.write_date else None,
             "author": self._serialize_user(message.author_id) if message.author_id else {},
             "team": {
                 "id": message.team_id.id if message.team_id else False,
@@ -1458,6 +1517,9 @@ class FtiqMobileApiBase(http.Controller):
             },
             "deep_link": self._message_deep_link(message, task_record=task),
             "is_team_wide": bool(message.is_team_wide),
+            "notification_id": notification.id if notification else False,
+            "is_read": bool(notification.is_read) if notification else True,
+            "thread_message_count": thread_message_count,
         }
         if detailed:
             data["activities"] = self._serialize_activities_for_record(message)

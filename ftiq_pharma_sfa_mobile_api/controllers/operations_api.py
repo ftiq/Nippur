@@ -33,6 +33,10 @@ class FtiqMobileOperationsApi(FtiqMobileApiBase):
     def clients(self, **kwargs):
         return self._dispatch(self._clients)
 
+    @http.route("/ftiq_mobile_api/v1/clients", type="http", auth="user", methods=["POST"], csrf=False)
+    def client_create(self, **kwargs):
+        return self._dispatch(self._client_create)
+
     @http.route("/ftiq_mobile_api/v1/clients/<int:partner_id>", type="http", auth="user", methods=["GET"], csrf=False)
     def client_detail(self, partner_id, **kwargs):
         return self._dispatch(lambda: self._client_detail(partner_id))
@@ -306,6 +310,7 @@ class FtiqMobileOperationsApi(FtiqMobileApiBase):
 
     def _reference_data(self):
         user = self._current_user()
+        client_type_field = request.env["res.partner"]._fields["ftiq_client_type"]
         journals = request.env["account.journal"].search([
             ("company_id", "=", user.company_id.id),
             ("type", "in", ("bank", "cash")),
@@ -316,6 +321,11 @@ class FtiqMobileOperationsApi(FtiqMobileApiBase):
             ("can_be_expensed", "=", True),
             ("active", "=", True),
         ], order="name", limit=100)
+        client_categories = request.env["ftiq.client.category"].search([], order="name")
+        specialties = request.env["ftiq.specialty"].search([], order="name")
+        classifications = request.env["ftiq.client.classification"].search([], order="name")
+        cities = request.env["ftiq.city"].search([], order="name")
+        areas = request.env["ftiq.area"].search([], order="name")
         expense_type_field = request.env["hr.expense"]._fields["ftiq_expense_type"]
         visit_field = request.env["ftiq.visit"]._fields["outcome"]
         return self._ok({
@@ -326,6 +336,19 @@ class FtiqMobileOperationsApi(FtiqMobileApiBase):
             "payment_journals": [self._serialize_payment_journal(journal) for journal in journals],
             "expense_types": [{"value": value, "label": label} for value, label in expense_type_field.selection],
             "expense_products": [self._serialize_product(product) for product in expense_products],
+            "client_types": [{"value": value, "label": label} for value, label in client_type_field.selection],
+            "client_categories": [{"id": item.id, "name": item.display_name} for item in client_categories],
+            "specialties": [{"id": item.id, "name": item.display_name} for item in specialties],
+            "classifications": [{"id": item.id, "name": item.display_name} for item in classifications],
+            "cities": [{"id": item.id, "name": item.display_name} for item in cities],
+            "areas": [
+                {
+                    "id": item.id,
+                    "name": item.display_name,
+                    "city_id": item.city_id.id if item.city_id else False,
+                }
+                for item in areas
+            ],
         })
 
     def _catalog_products(self):
@@ -365,6 +388,9 @@ class FtiqMobileOperationsApi(FtiqMobileApiBase):
         client_code = request.httprequest.args.get("client_code", "")
         city_id = self._args_int("city_id", 0)
         area_id = self._args_int("area_id", 0)
+        client_category_id = self._args_int("client_category_id", 0)
+        specialty_id = self._args_int("specialty_id", 0)
+        classification_id = self._args_int("classification_id", 0)
         latitude = self._args_float("latitude", 0.0)
         longitude = self._args_float("longitude", 0.0)
         radius_km = self._args_float("radius_km", 0.0)
@@ -373,12 +399,66 @@ class FtiqMobileOperationsApi(FtiqMobileApiBase):
             client_code=client_code,
             city_id=city_id or False,
             area_id=area_id or False,
+            client_category_id=client_category_id or False,
+            specialty_id=specialty_id or False,
+            classification_id=classification_id or False,
             latitude=latitude or False,
             longitude=longitude or False,
             radius_km=radius_km,
             limit=limit,
         )
         return self._ok({"items": items}, meta={"count": len(items)})
+
+    def _client_create(self):
+        payload = self._json_body()
+        current_user = self._current_user()
+        client_type = (payload.get("client_type") or "client").strip()
+        name = (payload.get("name") or "").strip()
+        if not name:
+            return self._error(_("Client name is required."), code="validation_error")
+        if client_type not in {"doctor", "center", "pharmacy", "client"}:
+            return self._error(_("Invalid client type."), code="validation_error")
+        category_id = payload.get("client_category_id") or False
+        if client_type == "client" and not category_id:
+            return self._error(_("Client category is required."), code="validation_error")
+        city_id = payload.get("city_id") or False
+        area_id = payload.get("area_id") or False
+        if area_id and city_id:
+            area = request.env["ftiq.area"].browse(int(area_id)).exists()
+            if area and area.city_id and area.city_id.id != int(city_id):
+                return self._error(_("The selected area does not belong to the selected city."), code="validation_error")
+        values = {
+            "name": name,
+            "email": (payload.get("email") or "").strip() or False,
+            "phone": (payload.get("phone") or "").strip() or False,
+            "mobile": (payload.get("mobile") or "").strip() or False,
+            "street": (payload.get("street") or "").strip() or False,
+            "city": (payload.get("city_name") or "").strip() or False,
+            "comment": (payload.get("notes") or "").strip() or False,
+            "ftiq_general_note": (payload.get("notes") or "").strip() or False,
+            "company_id": current_user.company_id.id,
+            "country_id": payload.get("country_id") or current_user.company_id.country_id.id or False,
+            "user_id": current_user.id,
+            "customer_rank": 1,
+            "ftiq_city_id": city_id,
+            "ftiq_area_id": area_id,
+            "ftiq_specialty_id": payload.get("specialty_id") or False,
+            "ftiq_classification_id": payload.get("classification_id") or False,
+            "ftiq_client_category_id": category_id,
+            "partner_latitude": payload.get("latitude") or False,
+            "partner_longitude": payload.get("longitude") or False,
+            "ftiq_geo_confirmed": self._payload_bool(payload, "geo_confirmed", False),
+            "is_ftiq_doctor": client_type == "doctor",
+            "is_ftiq_center": client_type == "center",
+            "is_ftiq_pharmacy": client_type == "pharmacy",
+        }
+        partner = request.env["res.partner"].sudo().with_context(
+            tracking_disable=True,
+            mail_create_nolog=True,
+            mail_notrack=True,
+        ).create(values)
+        partner.message_subscribe(partner_ids=[current_user.partner_id.id])
+        return self._ok(self._serialize_partner_card(partner), status=201)
 
     def _client_detail(self, partner_id):
         service = request.env["ftiq.client.search.service"]
