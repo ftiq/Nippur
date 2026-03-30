@@ -10,6 +10,11 @@ class FtiqClientSearchService(models.AbstractModel):
     def _get_client_base_domain(self):
         return self.env["ftiq.plan.candidate.service"].get_client_base_domain()
 
+    def _client_type_label(self, partner):
+        selection = dict(partner._fields["ftiq_client_type"].selection)
+        client_type = partner.ftiq_client_type or ""
+        return selection.get(client_type, _("Client")) if client_type else ""
+
     @staticmethod
     def _distance_km(latitude_1, longitude_1, latitude_2, longitude_2):
         if None in (latitude_1, longitude_1, latitude_2, longitude_2):
@@ -43,7 +48,7 @@ class FtiqClientSearchService(models.AbstractModel):
             "name": partner.display_name,
             "client_code": partner.ftiq_client_code or "",
             "client_type": partner.ftiq_client_type or "client",
-            "client_type_label": partner.ftiq_client_type_label or _("Client"),
+            "client_type_label": self._client_type_label(partner),
             "category": partner.ftiq_client_category_id.name or "",
             "specialty": partner.ftiq_specialty_id.name or "",
             "classification": partner.ftiq_classification_id.name or "",
@@ -75,6 +80,9 @@ class FtiqClientSearchService(models.AbstractModel):
         country_id=False,
         city_id=False,
         area_id=False,
+        client_category_id=False,
+        specialty_id=False,
+        classification_id=False,
         latitude=False,
         longitude=False,
         radius_km=0.0,
@@ -99,6 +107,12 @@ class FtiqClientSearchService(models.AbstractModel):
             domain.append(("ftiq_city_id", "=", city_id))
         if area_id:
             domain.append(("ftiq_area_id", "=", area_id))
+        if client_category_id:
+            domain.append(("ftiq_client_category_id", "=", client_category_id))
+        if specialty_id:
+            domain.append(("ftiq_specialty_id", "=", specialty_id))
+        if classification_id:
+            domain.append(("ftiq_classification_id", "=", classification_id))
         partners = self.env["res.partner"].search(domain, order="name")
         if latitude and longitude:
             partners = partners.filtered(lambda partner: partner.partner_latitude and partner.partner_longitude)

@@ -260,6 +260,7 @@ class FtiqMobileNotification(models.Model):
                         "account.move",
                         "hr.expense",
                         "ftiq.stock.check",
+                        "ftiq.team.message",
                     ],
                 ),
             ],

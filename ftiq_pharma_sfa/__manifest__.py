@@ -34,6 +34,7 @@ Features:
         'sales_team',
         'sale_management',
         'sale_stock',
+        'purchase',
         'account',
         'hr_expense',
         'stock',
@@ -47,9 +48,10 @@ Features:
         'data/client_category_data.xml',
         'data/task_profile_data.xml',
         'data/firebase_config_data.xml',
-        'demo/demo_data.xml',
-        'demo/demo_operational_data.xml',
-        'demo/demo_arabic_showcase.xml',
+       'demo/demo_data.xml',
+    'demo/demo_team_data.xml',
+      # 'demo/demo_operational_data.xml',
+       #'demo/demo_arabic_showcase.xml',
 
 
 

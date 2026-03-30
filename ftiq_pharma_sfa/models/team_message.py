@@ -129,13 +129,16 @@ class FtiqTeamMessage(models.Model):
     def _post_initial_chatter_message(self):
         for record in self:
             recipients = record._recipient_partners()
+            author = record.author_id or self.env.user
+            poster = record.with_user(author).sudo()
             if recipients:
-                record.message_subscribe(partner_ids=recipients.ids)
-            record.message_post(
+                poster.message_subscribe(partner_ids=recipients.ids)
+            poster.message_post(
                 subject=record.subject,
                 body=record.body,
                 partner_ids=recipients.ids,
                 subtype_xmlid="mail.mt_note",
+                author_id=record.author_id.partner_id.id if record.author_id and record.author_id.partner_id else False,
             )
 
     def _dispatch_push_notifications(self):

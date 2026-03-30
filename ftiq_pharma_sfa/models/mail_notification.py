@@ -17,7 +17,19 @@ class MailNotification(models.Model):
         "account.move",
         "hr.expense",
         "ftiq.stock.check",
+        "ftiq.team.message",
     }
+
+    def _mobile_is_initial_team_message(self):
+        self.ensure_one()
+        message = self.mail_message_id
+        if not message or message.model != "ftiq.team.message" or not message.res_id:
+            return False
+        record = self.env["ftiq.team.message"].browse(message.res_id).exists()
+        if not record:
+            return False
+        first_message = record.message_ids.sorted(key=lambda candidate: candidate.id)[:1]
+        return bool(first_message and first_message.id == message.id)
 
     def _mobile_target_record(self):
         self.ensure_one()
@@ -100,6 +112,7 @@ class MailNotification(models.Model):
             and self.res_partner_id
             and message
             and message.model in self._FTIQ_MOBILE_SUPPORTED_MODELS
+            and not self._mobile_is_initial_team_message()
         )
 
     def _mobile_existing_notifications(self):

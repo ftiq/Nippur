@@ -193,18 +193,26 @@ class AccountPayment(models.Model):
 
     def action_post(self):
         field_collections = self.filtered('is_field_collection')
+        regular_payments = self - field_collections
         field_collections._capture_ftiq_location_from_context()
         field_collections._ensure_ftiq_operational_attendance()
         field_collections._validate_ftiq_collection_before_post()
-        result = super().action_post()
-        posted_collections = field_collections.filtered(lambda payment: payment.state in FTIQ_PAYMENT_POSTED_STATES and payment.move_id)
+        result = True
+        if regular_payments:
+            result = super(AccountPayment, regular_payments).action_post()
+        field_result = True
+        if field_collections:
+            field_result = super(AccountPayment, field_collections.with_user(self.env.user).sudo()).action_post()
+        posted_collections = self.with_user(self.env.user).sudo().browse(field_collections.ids).filtered(
+            lambda payment: payment.state in FTIQ_PAYMENT_POSTED_STATES and payment.move_id
+        )
         posted_collections._sync_invoice_ids_from_collection_lines()
         posted_collections._reconcile_ftiq_collection_allocations()
         posted_collections.filtered(lambda payment: payment.ftiq_collection_state == 'draft').write({
             'ftiq_collection_state': 'collected',
         })
         posted_collections._complete_ftiq_tasks()
-        return result
+        return field_result if field_result not in (None, True) else result
 
     def _validate_ftiq_collection_before_post(self):
         for rec in self.filtered('is_field_collection'):

@@ -32,13 +32,21 @@ class SaleOrder(models.Model):
         return super().create(vals_list)
 
     def action_confirm(self):
-        self._ensure_ftiq_operational_attendance()
-        result = super().action_confirm()
-        completed_tasks = self.filtered('ftiq_daily_task_id').mapped('ftiq_daily_task_id')
+        field_orders = self.filtered('is_field_order')
+        regular_orders = self - field_orders
+        result = True
+        if regular_orders:
+            result = super(SaleOrder, regular_orders).action_confirm()
+        if not field_orders:
+            return result
+        field_orders._ensure_ftiq_operational_attendance()
+        field_result = super(SaleOrder, field_orders.with_user(self.env.user).sudo()).action_confirm()
+        confirmed_field_orders = self.browse(field_orders.ids)
+        completed_tasks = confirmed_field_orders.filtered('ftiq_daily_task_id').mapped('ftiq_daily_task_id')
         if completed_tasks:
             completed_tasks._mark_linked_execution_confirmed(fields.Datetime.now())
-        self._notify_mobile_order_confirmed()
-        return result
+        confirmed_field_orders._notify_mobile_order_confirmed()
+        return field_result if field_result not in (None, True) else result
 
     def _create_invoices(self, grouped=False, final=False, date=None):
         moves = super()._create_invoices(grouped=grouped, final=final, date=date)

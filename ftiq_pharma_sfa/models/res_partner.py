@@ -83,6 +83,14 @@ class ResPartner(models.Model):
             rec.ftiq_is_field_client = bool(client_type)
             rec.ftiq_client_type_label = selection_map.get(client_type, _('Client')) if client_type else ''
 
+    def init(self):
+        self.env.cr.execute(
+            """
+            ALTER TABLE res_partner
+            ADD COLUMN IF NOT EXISTS ftiq_client_type_label varchar
+            """
+        )
+
     @api.depends(
         'street',
         'city',
@@ -107,6 +115,7 @@ class ResPartner(models.Model):
     @api.model_create_multi
     def create(self, vals_list):
         records = super().create(vals_list)
+        records._ensure_ftiq_partner_accounts()
         records._ensure_ftiq_client_code()
         return records
 
@@ -144,6 +153,39 @@ class ResPartner(models.Model):
     def _ensure_ftiq_client_code(self):
         for rec in self.filtered(lambda partner: partner._get_ftiq_client_type_key() and not partner.ftiq_client_code):
             rec.ftiq_client_code = rec._generate_ftiq_client_code()
+
+    def _ensure_ftiq_partner_accounts(self):
+        account_model = self.env['account.account']
+        company_accounts = {}
+        for rec in self.filtered(lambda partner: partner.company_id and (partner.customer_rank > 0 or partner.supplier_rank > 0)):
+            company = rec.company_id
+            accounts = company_accounts.get(company.id)
+            if accounts is None:
+                receivable = account_model.search([
+                    ('company_ids', 'in', [company.id]),
+                    ('account_type', '=', 'asset_receivable'),
+                    ('deprecated', '=', False),
+                ], order='id', limit=1)
+                payable = account_model.search([
+                    ('company_ids', 'in', [company.id]),
+                    ('account_type', '=', 'liability_payable'),
+                    ('deprecated', '=', False),
+                ], order='id', limit=1)
+                company_accounts[company.id] = (receivable, payable)
+                accounts = company_accounts[company.id]
+            receivable, payable = accounts
+            company_partner = company.partner_id.with_company(company)
+            vals = {}
+            if rec.customer_rank > 0 and not rec.with_company(company).property_account_receivable_id:
+                fallback_receivable = company_partner.property_account_receivable_id or receivable
+                if fallback_receivable:
+                    vals['property_account_receivable_id'] = fallback_receivable.id
+            if rec.supplier_rank > 0 and not rec.with_company(company).property_account_payable_id:
+                fallback_payable = company_partner.property_account_payable_id or payable
+                if fallback_payable:
+                    vals['property_account_payable_id'] = fallback_payable.id
+            if vals:
+                rec.with_company(company).write(vals)
 
     @api.onchange('country_id')
     def _onchange_ftiq_country_id(self):

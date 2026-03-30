@@ -149,7 +149,7 @@ class FtiqDashboardController(http.Controller):
             sum(collections_month.mapped('amount')) / sum(orders_month.mapped('amount_total')) * 100.0
             if orders_month and sum(orders_month.mapped('amount_total')) else 0.0
         )
-        month_progress = today.day / month_end.day * 100.0 if month_end.day else 0.0
+        month_progress = plan_compliance
 
         area_rows = self._build_area_rows(
             plan_lines_month,
