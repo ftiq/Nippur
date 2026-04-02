@@ -695,6 +695,7 @@ class FtiqMobileOperationsApi(FtiqMobileApiBase):
         return self._ok(data)
 
     def _notifications(self):
+        self._ensure_mobile_permission("workspace", "notifications", "open notifications")
         self._sync_live_activity_notifications()
         limit = self._args_int("limit", 40)
         unread_only = self._args_bool("unread_only", False)
@@ -723,6 +724,7 @@ class FtiqMobileOperationsApi(FtiqMobileApiBase):
         )
 
     def _notifications_read(self):
+        self._ensure_mobile_permission("workspace", "notifications", "update notifications")
         payload = self._json_body()
         mark_all = self._payload_bool(payload, "mark_all", False)
         ids = [
@@ -1378,7 +1380,7 @@ class FtiqMobileOperationsApi(FtiqMobileApiBase):
         expense = self._browse_scoped("hr.expense", expense_id).exists()
         if not expense:
             return self._error(_("Expense not found."), status=404, code="not_found")
-        if method_name == "action_submit":
+        if method_name == "action_submit_expenses":
             self._ensure_mobile_permission("action", "expense.submit", "submit this expense")
         self._ensure_current_user_owns(expense, "submit this expense")
         getattr(expense, method_name)()

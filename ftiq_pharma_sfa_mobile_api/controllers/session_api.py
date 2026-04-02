@@ -264,6 +264,7 @@ class FtiqMobileSessionApi(FtiqMobileApiBase):
         })
 
     def _session_devices(self):
+        self._ensure_mobile_permission("workspace", "device_sessions", "open device sessions")
         installation_id = request.httprequest.args.get("installation_id", "")
         current_device = self._current_mobile_device(installation_id).exists()
         devices = request.env["ftiq.mobile.device"].search(
@@ -282,6 +283,7 @@ class FtiqMobileSessionApi(FtiqMobileApiBase):
         })
 
     def _session_device_revoke(self, device_id):
+        self._ensure_mobile_permission("workspace", "device_sessions", "manage device sessions")
         device = request.env["ftiq.mobile.device"].search([
             ("id", "=", device_id),
             ("user_id", "=", self._current_user().id),

@@ -285,8 +285,9 @@ class FtiqMobileApiBase(http.Controller):
         target_user = user or self._current_user()
         if not target_user:
             return {}
+        env = getattr(target_user, "env", request.env)
         try:
-            user_record = request.env["res.users"].browse(target_user.id).exists()
+            user_record = env["res.users"].browse(target_user.id).exists()
         except (AccessError, AttributeError, ValueError):
             return {}
         if not user_record:
