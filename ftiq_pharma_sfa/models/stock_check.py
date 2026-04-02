@@ -80,6 +80,8 @@ class FtiqStockCheck(models.Model):
                 'expiry_date': line.expiry_date,
                 'batch_number': line.batch_number,
                 'shelf_position': line.shelf_position,
+                'shelf_photo': line.shelf_photo,
+                'shelf_photo_name': line.shelf_photo_name,
                 'competitor_product_id': line.competitor_product_id.id,
                 'competitor_product': line.competitor_product,
                 'competitor_qty': line.competitor_qty,
@@ -92,21 +94,17 @@ class FtiqStockCheck(models.Model):
             if not (rec.latitude and rec.longitude):
                 rec._capture_location_from_context()
             if not rec.attendance_id and rec.user_id:
-                rec.attendance_id = self.env['ftiq.field.attendance'].ensure_operation_attendance(
-                    rec.user_id.id,
-                    attendance_date=fields.Datetime.to_datetime(rec.check_date or fields.Datetime.now()).date(),
-                    latitude=rec.latitude or self.env.context.get('ftiq_latitude'),
-                    longitude=rec.longitude or self.env.context.get('ftiq_longitude'),
-                    accuracy=self.env.context.get('ftiq_accuracy', 0),
-                    is_mock=self.env.context.get('ftiq_is_mock', False),
-                    entry_reference=f'{rec._name},{rec.id}',
-                ).id
+                attendance = self.env['ftiq.field.attendance'].search([
+                    ('user_id', '=', rec.user_id.id),
+                    ('date', '=', fields.Datetime.to_datetime(rec.check_date or fields.Datetime.now()).date()),
+                    ('state', '=', 'checked_in'),
+                ], limit=1)
+                if attendance:
+                    rec.attendance_id = attendance.id
             if rec.state != 'draft':
                 raise UserError(_('Only draft stock checks can be submitted.'))
             if not rec.line_ids:
                 raise UserError(_('Add at least one stock line before submitting the stock check.'))
-            if not (rec.latitude and rec.longitude):
-                raise UserError(_('GPS coordinates are required before submitting the stock check.'))
         self.write({'state': 'submitted'})
         self.filtered('ftiq_daily_task_id').mapped('ftiq_daily_task_id')._mark_linked_execution_submitted(fields.Datetime.now())
         self._notify_mobile_status_change('submitted')
@@ -188,6 +186,8 @@ class FtiqStockCheckLine(models.Model):
     expiry_date = fields.Date(string='Expiry Date')
     batch_number = fields.Char(string='Batch Number')
     shelf_position = fields.Char(string='Shelf Position')
+    shelf_photo = fields.Binary(string='Shelf Photo', attachment=True)
+    shelf_photo_name = fields.Char(string='Shelf Photo Name')
     competitor_product_id = fields.Many2one('product.product', string='Competitor Product Reference')
     competitor_product = fields.Char(string='Competitor Product')
     competitor_qty = fields.Float(string='Competitor Qty')
