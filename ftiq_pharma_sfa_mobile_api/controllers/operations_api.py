@@ -1982,13 +1982,23 @@ class FtiqMobileOperationsApi(FtiqMobileApiBase):
             product_id = item.get("product_id")
             if not product_id:
                 continue
+            competitor_product_id = item.get("competitor_product_id") or False
+            try:
+                competitor_product_id = int(competitor_product_id) if competitor_product_id else False
+            except Exception:
+                competitor_product_id = False
+            competitor_product = (item.get("competitor_product") or "").strip()
+            if competitor_product_id and not competitor_product:
+                competitor_product_record = request.env["product.product"].browse(competitor_product_id).exists()
+                competitor_product = competitor_product_record.display_name if competitor_product_record else ""
             commands.append(Command.create({
                 "product_id": product_id,
                 "stock_qty": item.get("stock_qty") or 0.0,
                 "expiry_date": item.get("expiry_date") or False,
                 "batch_number": item.get("batch_number") or "",
                 "shelf_position": item.get("shelf_position") or "",
-                "competitor_product": item.get("competitor_product") or "",
+                "competitor_product_id": competitor_product_id,
+                "competitor_product": competitor_product,
                 "competitor_qty": item.get("competitor_qty") or 0.0,
                 "note": item.get("note") or "",
                 "sequence": item.get("sequence") or (index * 10),

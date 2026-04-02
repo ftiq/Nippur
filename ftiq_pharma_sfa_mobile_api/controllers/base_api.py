@@ -1757,7 +1757,18 @@ class FtiqMobileApiBase(http.Controller):
         task = request.env["ftiq.daily.task"]
         if notification.target_model == "ftiq.daily.task" and notification.target_res_id:
             task = self._browse_scoped("ftiq.daily.task", notification.target_res_id).exists()
+            if task:
+                payload.update(
+                    {
+                        key: value
+                        for key, value in request.env["ftiq.mobile.notification"]
+                        ._task_notification_payload(task)
+                        .items()
+                        if value not in (False, None, "")
+                    }
+                )
         message_type = payload.get("message_type") or ("alert" if notification.priority == "urgent" else "note")
+        deep_link = notification._build_deep_link()
         return {
             "id": notification.id,
             "subject": notification.name or "",
@@ -1782,7 +1793,7 @@ class FtiqMobileApiBase(http.Controller):
             },
             "source_model": notification.source_model or "",
             "source_res_id": notification.source_res_id or False,
-            "deep_link": notification.deep_link or "",
+            "deep_link": deep_link,
             "payload": payload,
         }
 
@@ -2329,11 +2340,36 @@ class FtiqMobileApiBase(http.Controller):
                 "id": line.id,
                 "product_id": line.product_id.id,
                 "product_name": line.product_id.display_name,
+                "product_image_url": (
+                    self._image_url("product.product", line.product_id.id, "image_128")
+                    if getattr(line.product_id, "image_128", False)
+                    else (
+                        self._image_url("product.template", line.product_id.product_tmpl_id.id, "image_128")
+                        if line.product_id.product_tmpl_id and getattr(line.product_id.product_tmpl_id, "image_128", False)
+                        else ""
+                    )
+                ),
                 "stock_qty": line.stock_qty,
                 "expiry_date": str(line.expiry_date or ""),
                 "batch_number": line.batch_number or "",
                 "shelf_position": line.shelf_position or "",
-                "competitor_product": line.competitor_product or "",
+                "competitor_product_id": line.competitor_product_id.id if getattr(line, "competitor_product_id", False) else False,
+                "competitor_product": (
+                    line.competitor_product_id.display_name
+                    if getattr(line, "competitor_product_id", False)
+                    else line.competitor_product or ""
+                ),
+                "competitor_product_image_url": (
+                    self._image_url("product.product", line.competitor_product_id.id, "image_128")
+                    if getattr(line, "competitor_product_id", False) and getattr(line.competitor_product_id, "image_128", False)
+                    else (
+                        self._image_url("product.template", line.competitor_product_id.product_tmpl_id.id, "image_128")
+                        if getattr(line, "competitor_product_id", False)
+                        and line.competitor_product_id.product_tmpl_id
+                        and getattr(line.competitor_product_id.product_tmpl_id, "image_128", False)
+                        else ""
+                    )
+                ),
                 "competitor_qty": line.competitor_qty,
                 "note": line.note or "",
                 "sequence": line.sequence,
@@ -2351,6 +2387,11 @@ class FtiqMobileApiBase(http.Controller):
             or ""
         )
         currency = request.env.company.currency_id
+        image_url = ""
+        if getattr(product, "image_128", False):
+            image_url = self._image_url("product.product", product.id, "image_128")
+        elif template and getattr(template, "image_128", False):
+            image_url = self._image_url("product.template", template.id, "image_128")
         return {
             "id": product.id,
             "name": product.display_name,
@@ -2361,7 +2402,7 @@ class FtiqMobileApiBase(http.Controller):
             "list_price": product.lst_price,
             "currency_symbol": currency.symbol if currency else "",
             "uom": product.uom_id.display_name if product.uom_id else "",
-            "image_url": self._image_url("product.product", product.id, "image_128") if getattr(product, "image_128", False) else "",
+            "image_url": image_url,
         }
 
     def _serialize_call_reason(self, call_reason):
