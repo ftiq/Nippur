@@ -189,6 +189,10 @@ class FtiqMobileOperationsApi(FtiqMobileApiBase):
     def task_detail(self, task_id, **kwargs):
         return self._dispatch(lambda: self._task_detail(task_id))
 
+    @http.route("/ftiq_mobile_api/v1/tasks/<int:task_id>/execution-target", type="http", auth="user", methods=["POST"], csrf=False)
+    def task_execution_target(self, task_id, **kwargs):
+        return self._dispatch(lambda: self._task_execution_target(task_id))
+
     @http.route("/ftiq_mobile_api/v1/project-tasks/<int:project_task_id>", type="http", auth="user", methods=["GET"], csrf=False)
     def project_task_detail(self, project_task_id, **kwargs):
         return self._dispatch(lambda: self._project_task_detail(project_task_id))
@@ -1170,6 +1174,15 @@ class FtiqMobileOperationsApi(FtiqMobileApiBase):
             return self._error(_("Task not found."), status=404, code="not_found")
         return self._ok(self._serialize_task(task, detailed=True))
 
+    def _task_execution_target(self, task_id):
+        task = self._browse_scoped("ftiq.daily.task", task_id).exists()
+        if not task:
+            return self._error(_("Task not found."), status=404, code="not_found")
+        if self._current_role() not in {"supervisor", "manager"}:
+            self._ensure_current_user_owns(task, "open this task execution")
+        task = self._ensure_task_execution_target(task)
+        return self._ok(self._serialize_task_execution_target(task))
+
     def _project_task_detail(self, project_task_id):
         project_task = self._browse_scoped("project.task", project_task_id).exists()
         if not project_task:
@@ -1237,6 +1250,76 @@ class FtiqMobileOperationsApi(FtiqMobileApiBase):
         getattr(task.with_context(**self._geo_context_from_payload(payload)), method_name)()
         self._remember_mobile_request(payload, task)
         return self._ok(self._serialize_task(task, detailed=True))
+
+    def _ensure_task_execution_target(self, task):
+        task.ensure_one()
+        if task.task_type == "visit":
+            if not task.visit_id:
+                attendance = task._find_attendance_for(task.user_id.id)
+                visit = request.env["ftiq.visit"].create({
+                    "partner_id": task.partner_id.id,
+                    "user_id": task.user_id.id,
+                    "visit_date": fields.Datetime.to_datetime(task.scheduled_date).date() if task.scheduled_date else fields.Date.context_today(task),
+                    "plan_line_id": task.plan_line_id.id,
+                    "attendance_id": attendance.id if attendance else False,
+                })
+                task.write({"visit_id": visit.id})
+        elif task.task_type == "order":
+            if not task.sale_order_id:
+                task.action_create_order()
+        elif task.task_type == "collection":
+            if not task.payment_id:
+                task.action_create_collection()
+        elif task.task_type == "stock":
+            if not task.stock_check_id:
+                task.action_create_stock_check()
+        elif task.task_type == "delivery":
+            if not task.sale_order_id:
+                task.action_create_order()
+        elif task.task_type == "report":
+            if task.project_id and not task.project_task_id:
+                task.action_create_project_task()
+        task.invalidate_recordset()
+        task.flush_recordset()
+        return task.exists()
+
+    def _serialize_task_execution_target(self, task):
+        task.ensure_one()
+        target_model = "ftiq.daily.task"
+        target_id = task.id
+        if task.task_type == "visit" and task.visit_id:
+            target_model = "ftiq.visit"
+            target_id = task.visit_id.id
+        elif task.task_type in {"order", "delivery"} and task.sale_order_id:
+            target_model = "sale.order"
+            target_id = task.sale_order_id.id
+        elif task.task_type == "collection" and task.payment_id:
+            target_model = "account.payment"
+            target_id = task.payment_id.id
+        elif task.task_type == "stock" and task.stock_check_id:
+            target_model = "ftiq.stock.check"
+            target_id = task.stock_check_id.id
+        elif task.project_task_id:
+            target_model = "project.task"
+            target_id = task.project_task_id.id
+        elif task.stock_check_id:
+            target_model = "ftiq.stock.check"
+            target_id = task.stock_check_id.id
+        elif task.payment_id:
+            target_model = "account.payment"
+            target_id = task.payment_id.id
+        elif task.sale_order_id:
+            target_model = "sale.order"
+            target_id = task.sale_order_id.id
+        elif task.visit_id:
+            target_model = "ftiq.visit"
+            target_id = task.visit_id.id
+        return {
+            "task_id": task.id,
+            "task_type": task.task_type or "",
+            "target_model": target_model,
+            "target_id": target_id,
+        }
 
     def _expenses(self):
         limit = self._args_int("limit", 20)
