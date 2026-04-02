@@ -1173,6 +1173,7 @@ class FtiqMobileApiBase(http.Controller):
         can_check_out = bool(
             attendance.state == "checked_in"
             and self._mobile_permission("workspace", "attendance")
+            and self._mobile_permission("action", "attendance.check_out")
         )
         return {
             "id": attendance.id,
@@ -1198,7 +1199,9 @@ class FtiqMobileApiBase(http.Controller):
             "available_actions": {
                 "check_out": can_check_out,
             },
-            "ui_actions": [],
+            "ui_actions": self._build_ui_actions(
+                ("attendance.check_out", can_check_out, "primary"),
+            ),
         }
 
     def _serialize_partner_card(self, partner):
@@ -1806,6 +1809,10 @@ class FtiqMobileApiBase(http.Controller):
             target_model=activity.res_model,
             target_res_id=target_id,
         )
+        can_mark_done = bool(
+            activity.can_write
+            and self._mobile_permission("action", "activity.mark_done")
+        )
         return {
             "id": activity.id,
             "summary": activity.summary or activity.activity_type_id.display_name or "",
@@ -1826,11 +1833,11 @@ class FtiqMobileApiBase(http.Controller):
             },
             "deep_link": deep_link,
             "available_actions": {
-                "mark_done": bool(
-                    activity.can_write
-                    and self._mobile_permission("action", "activity.mark_done")
-                ),
+                "mark_done": can_mark_done,
             },
+            "ui_actions": self._build_ui_actions(
+                ("activity.mark_done", can_mark_done, "primary"),
+            ),
         }
 
     def _serialize_activities_for_record(self, record):
@@ -1887,6 +1894,11 @@ class FtiqMobileApiBase(http.Controller):
                     "ftiq.daily.task",
                 ),
             },
+            "visible_sections": self._enabled_sections(
+                "order.details",
+                "order.lines",
+                "order.thread",
+            ),
             "available_actions": {
                 "edit": can_edit,
                 "confirm": can_confirm,
@@ -1957,6 +1969,13 @@ class FtiqMobileApiBase(http.Controller):
             "date_planned": fields.Datetime.to_string(order.date_planned)
             if getattr(order, "date_planned", False)
             else None,
+            "visible_sections": self._enabled_sections(
+                "purchase.summary",
+                "purchase.actions",
+                "purchase.lines",
+                "purchase.activities",
+                "purchase.thread",
+            ),
             "available_actions": {
                 "confirm": can_confirm,
                 "approve": can_approve,
@@ -1996,6 +2015,11 @@ class FtiqMobileApiBase(http.Controller):
         today = fields.Date.context_today(invoice)
         is_overdue = bool(due_date and invoice.amount_residual > 0 and due_date < today)
         journal = self._safe_related_record(invoice, "journal_id", "account.journal")
+        can_create_collection = bool(
+            invoice.partner_id
+            and invoice.amount_residual > 0
+            and self._mobile_permission("action", "invoice.create_collection")
+        )
         data = {
             "id": invoice.id,
             "name": invoice.name or invoice.display_name,
@@ -2014,9 +2038,20 @@ class FtiqMobileApiBase(http.Controller):
                 "symbol": invoice.currency_id.symbol,
             },
             "is_overdue": is_overdue,
+            "visible_sections": self._enabled_sections(
+                "invoice.summary",
+                "invoice.lines",
+                "invoice.activities",
+                "invoice.thread",
+                "invoice.payment_history",
+                "invoice.linked_operations",
+            ),
             "available_actions": {
-                "create_collection": bool(invoice.partner_id and invoice.amount_residual > 0),
+                "create_collection": can_create_collection,
             },
+            "ui_actions": self._build_ui_actions(
+                ("invoice.create_collection", can_create_collection, "primary"),
+            ),
         }
         if detailed:
             collection_lines = self._search_scoped(
@@ -2168,6 +2203,11 @@ class FtiqMobileApiBase(http.Controller):
                 "latitude": expense.ftiq_latitude,
                 "longitude": expense.ftiq_longitude,
             },
+            "visible_sections": self._enabled_sections(
+                "expense.details",
+                "expense.receipt",
+                "expense.thread",
+            ),
             "available_actions": {
                 "edit": can_edit,
                 "submit": can_submit,
@@ -2244,6 +2284,12 @@ class FtiqMobileApiBase(http.Controller):
                 ),
             },
             "receipt_image_url": self._image_url("account.payment", payment.id, "ftiq_receipt_image") if payment.ftiq_receipt_image else "",
+            "visible_sections": self._enabled_sections(
+                "collection.details",
+                "collection.receipt",
+                "collection.allocations",
+                "collection.thread",
+            ),
             "available_actions": {
                 "edit": can_edit,
                 "collect": can_collect,
@@ -2322,6 +2368,11 @@ class FtiqMobileApiBase(http.Controller):
                     "ftiq.daily.task",
                 ),
             },
+            "visible_sections": self._enabled_sections(
+                "stock_check.details",
+                "stock_check.lines",
+                "stock_check.thread",
+            ),
             "available_actions": {
                 "edit": can_edit,
                 "submit": can_submit,
