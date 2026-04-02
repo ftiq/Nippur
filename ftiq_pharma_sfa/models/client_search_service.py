@@ -86,6 +86,7 @@ class FtiqClientSearchService(models.AbstractModel):
         latitude=False,
         longitude=False,
         radius_km=0.0,
+        offset=0,
         limit=25,
     ):
         domain = list(self._get_client_base_domain())
@@ -113,7 +114,17 @@ class FtiqClientSearchService(models.AbstractModel):
             domain.append(("ftiq_specialty_id", "=", specialty_id))
         if classification_id:
             domain.append(("ftiq_classification_id", "=", classification_id))
-        partners = self.env["res.partner"].search(domain, order="name")
+        offset = max(int(offset or 0), 0)
+        limit = max(int(limit or 0), 0)
+        if latitude and longitude:
+            partners = self.env["res.partner"].search(domain, order="name")
+        else:
+            partners = self.env["res.partner"].search(
+                domain,
+                order="name",
+                offset=offset,
+                limit=limit or None,
+            )
         if latitude and longitude:
             partners = partners.filtered(lambda partner: partner.partner_latitude and partner.partner_longitude)
             partners = partners.sorted(
@@ -133,7 +144,7 @@ class FtiqClientSearchService(models.AbstractModel):
                         partner.partner_longitude,
                     ) <= radius_km
                 )
-        partners = partners[:limit]
+            partners = partners[offset: offset + limit if limit else None]
         return [self._serialize_partner(partner, latitude=latitude, longitude=longitude) for partner in partners]
 
     def search_nearby_clients(self, latitude, longitude, radius_km=5.0, limit=25):
