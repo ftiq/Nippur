@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="report_visit_template">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="visit">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <h2>Visit Report: <t t-out="visit.name"/></h2>
+                        <div class="row mt-3">
+                            <div class="col-6">
+                                <strong>Client:</strong> <t t-out="visit.partner_id.name"/><br/>
+                                <strong>Specialty:</strong> <t t-out="visit.partner_specialty_id.name or ''"/><br/>
+                                <strong>Classification:</strong> <t t-out="visit.partner_classification_id.name or ''"/><br/>
+                                <strong>Area:</strong> <t t-out="visit.partner_area_id.name or ''"/>
+                            </div>
+                            <div class="col-6">
+                                <strong>Representative:</strong> <t t-out="visit.user_id.name"/><br/>
+                                <strong>Date:</strong> <t t-out="visit.visit_date"/><br/>
+                                <strong>Outcome:</strong> <t t-out="visit.outcome or ''"/><br/>
+                                <strong>State:</strong> <t t-out="visit.state"/>
+                            </div>
+                        </div>
+
+                        <div class="row mt-3">
+                            <div class="col-3">
+                                <strong>Detail Lines:</strong> <t t-out="visit.detail_line_count"/>
+                            </div>
+                            <div class="col-3">
+                                <strong>Materials Logged:</strong> <t t-out="visit.material_log_count"/>
+                            </div>
+                            <div class="col-3">
+                                <strong>Samples:</strong> <t t-out="visit.total_samples_distributed"/>
+                            </div>
+                            <div class="col-3">
+                                <strong>Material Minutes:</strong> <t t-out="'%.1f' % visit.total_material_minutes"/>
+                            </div>
+                        </div>
+
+                        <t t-if="visit.product_line_ids">
+                            <h4 class="mt-4">Product Details</h4>
+                            <table class="table table-sm table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>Product</th>
+                                        <th>Call Reason</th>
+                                        <th>Outcome</th>
+                                        <th>Samples</th>
+                                        <th>Stock on Hand</th>
+                                        <th>Feedback</th>
+                                        <th>Notes</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="visit.product_line_ids" t-as="line">
+                                        <tr>
+                                            <td><t t-out="line.product_id.name"/></td>
+                                            <td><t t-out="line.call_reason_id.name or ''"/></td>
+                                            <td><t t-out="line.outcome or ''"/></td>
+                                            <td><t t-out="line.samples_distributed"/></td>
+                                            <td><t t-out="line.stock_on_hand"/></td>
+                                            <td><t t-out="line.feedback or ''"/></td>
+                                            <td><t t-out="line.detail_notes or ''"/></td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+                        </t>
+
+                        <t t-if="visit.material_view_log_ids">
+                            <h4 class="mt-4">Material View Log</h4>
+                            <table class="table table-sm table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>Material</th>
+                                        <th>Scope</th>
+                                        <th>Type</th>
+                                        <th>Product</th>
+                                        <th>Detail Line</th>
+                                        <th>Start</th>
+                                        <th>End</th>
+                                        <th>Duration (min)</th>
+                                        <th>Note</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="visit.material_view_log_ids" t-as="log">
+                                        <tr>
+                                            <td><t t-out="log.material_id.name"/></td>
+                                            <td><t t-out="log.material_scope or ''"/></td>
+                                            <td><t t-out="log.material_type or ''"/></td>
+                                            <td><t t-out="log.product_id.name"/></td>
+                                            <td><t t-out="log.product_line_id.product_id.name or ''"/></td>
+                                            <td><t t-out="log.start_time"/></td>
+                                            <td><t t-out="log.end_time"/></td>
+                                            <td><t t-out="'%.1f' % log.duration"/></td>
+                                            <td><t t-out="log.note or ''"/></td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+                        </t>
+
+                        <t t-if="visit.has_linked_operations">
+                            <h4 class="mt-4">Linked Operations</h4>
+                            <p>
+                                Orders: <t t-out="visit.sale_order_count"/>
+                                <span class="ms-3">Collections: <t t-out="visit.payment_count"/></span>
+                                <span class="ms-3">Invoices: <t t-out="visit.invoice_count"/></span>
+                                <span class="ms-3">Stock Checks: <t t-out="visit.stock_check_count"/></span>
+                            </p>
+                        </t>
+
+                        <t t-if="visit.general_feedback">
+                            <h4 class="mt-4">General Feedback</h4>
+                            <p><t t-out="visit.general_feedback"/></p>
+                        </t>
+
+                        <div class="row mt-3" t-if="visit.start_latitude or visit.end_latitude">
+                            <div class="col-6">
+                                <strong>Start GPS:</strong>
+                                <t t-out="visit.start_latitude"/>, <t t-out="visit.start_longitude"/>
+                            </div>
+                            <div class="col-6">
+                                <strong>End GPS:</strong>
+                                <t t-out="visit.end_latitude"/>, <t t-out="visit.end_longitude"/>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>

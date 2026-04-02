@@ -1,0 +1,289 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="ftiq_weekly_plan_form" model="ir.ui.view">
+        <field name="name">ftiq.weekly.plan.form</field>
+        <field name="model">ftiq.weekly.plan</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_submit" type="object" string="Submit"
+                            class="btn-primary" invisible="state != 'draft'"/>
+                    <button name="action_approve" type="object" string="Approve"
+                            class="btn-success" invisible="state != 'submitted'"
+                            groups="ftiq_pharma_sfa.group_ftiq_supervisor"/>
+                    <button name="action_return" type="object" string="Return"
+                            class="btn-danger" invisible="state != 'submitted'"
+                            groups="ftiq_pharma_sfa.group_ftiq_supervisor"/>
+                    <button name="action_reset_draft" type="object" string="Reset to Draft"
+                            invisible="state != 'returned'"/>
+                    <button name="action_mark_missed" type="object" string="Mark Missed"
+                            invisible="state != 'approved'"
+                            groups="ftiq_pharma_sfa.group_ftiq_supervisor"/>
+                    <button name="action_sync_project" type="object" string="Sync Project"
+                            class="btn-secondary"
+                            groups="ftiq_pharma_sfa.group_ftiq_supervisor"/>
+                    <button name="action_open_project" type="object" string="Open Project"
+                            class="btn-outline-primary"
+                            invisible="not project_id"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,submitted,approved"/>
+                </header>
+                <sheet>
+                    <field name="allowed_team_ids" invisible="1"/>
+                    <field name="allowed_user_ids" invisible="1"/>
+                    <div class="oe_title">
+                        <h1><field name="name"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="team_id" required="1" options="{'no_create': True}"/>
+                            <field name="user_id" readonly="1"/>
+                            <field name="supervisor_id"/>
+                            <field name="task_profile_id"/>
+                            <field name="task_type_id" invisible="1"/>
+                            <field name="task_generation_policy"/>
+                            <field name="project_id" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="week_start"/>
+                            <field name="week_end"/>
+                            <field name="note"/>
+                        </group>
+                    </group>
+                    <group string="Statistics">
+                        <group>
+                            <field name="planned_count"/>
+                            <field name="completed_count"/>
+                            <field name="project_task_count"/>
+                        </group>
+                        <group>
+                            <field name="missed_count"/>
+                            <field name="daily_task_count"/>
+                            <field name="compliance_rate" widget="progressbar"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Plan Lines">
+                            <field name="line_ids">
+                                <list editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="user_id" domain="[('id', 'in', parent.allowed_user_ids)]" required="1"/>
+                                    <field name="partner_id"/>
+                                    <field name="scheduled_date"/>
+                                    <field name="day_of_week"/>
+                                    <field name="partner_specialty_id" optional="show"/>
+                                    <field name="partner_classification_id" optional="show"/>
+                                    <field name="partner_area_id" optional="show"/>
+                                    <field name="note" optional="hide"/>
+                                    <field name="visit_id" optional="show"/>
+                                    <field name="daily_task_id" optional="show"/>
+                                    <field name="execution_state" widget="badge"
+                                           decoration-info="execution_state == 'in_progress'"
+                                           decoration-primary="execution_state == 'submitted'"
+                                           decoration-success="execution_state in ('approved', 'confirmed', 'completed')"
+                                           decoration-warning="execution_state == 'returned'"
+                                           decoration-muted="execution_state in ('not_ready', 'pending')"
+                                           optional="show"/>
+                                    <field name="project_task_id" optional="show"/>
+                                    <field name="state" widget="badge"
+                                           decoration-success="state == 'completed'"
+                                           decoration-danger="state == 'missed'"
+                                           decoration-muted="state == 'pending'"/>
+                                    <button name="action_create_visit" type="object" string="Create Visit"
+                                            icon="fa-plus" invisible="visit_id or parent.state != 'approved' or not user_id"/>
+                                    <button name="action_create_visit" type="object" string="Open Visit"
+                                            icon="fa-external-link" invisible="not visit_id"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="ftiq_weekly_plan_list" model="ir.ui.view">
+        <field name="name">ftiq.weekly.plan.list</field>
+        <field name="model">ftiq.weekly.plan</field>
+        <field name="arch" type="xml">
+            <list decoration-success="state == 'approved'"
+                  decoration-warning="state == 'returned'"
+                  decoration-muted="state == 'draft'">
+                <field name="name"/>
+                <field name="team_id"/>
+                <field name="user_id"/>
+                <field name="supervisor_id" optional="show"/>
+                <field name="task_profile_id"/>
+                <field name="task_generation_policy" optional="show"/>
+                <field name="week_start"/>
+                <field name="week_end"/>
+                <field name="planned_count"/>
+                <field name="completed_count"/>
+                <field name="compliance_rate" widget="progressbar"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'approved'"
+                       decoration-warning="state == 'returned'"
+                       decoration-primary="state == 'submitted'"
+                       decoration-muted="state == 'draft'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="ftiq_weekly_plan_kanban" model="ir.ui.view">
+        <field name="name">ftiq.weekly.plan.kanban</field>
+        <field name="model">ftiq.weekly.plan</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="state" class="o_kanban_small_column">
+                <field name="name"/>
+                <field name="team_id"/>
+                <field name="user_id"/>
+                <field name="task_profile_id"/>
+                <field name="task_generation_policy"/>
+                <field name="week_start"/>
+                <field name="week_end"/>
+                <field name="planned_count"/>
+                <field name="completed_count"/>
+                <field name="missed_count"/>
+                <field name="compliance_rate"/>
+                <field name="state"/>
+                <field name="activity_state"/>
+                <progressbar field="activity_state" colors='{"planned": "success", "today": "warning", "overdue": "danger"}'/>
+                <templates>
+                    <t t-name="card">
+                        <div class="oe_kanban_content">
+                            <div class="o_kanban_record_top mb-0">
+                                <div class="o_kanban_record_headings">
+                                    <strong class="o_kanban_record_title">
+                                        <field name="name"/>
+                                    </strong>
+                                </div>
+                                <field name="state" widget="label_selection" options="{'classes': {'draft': 'default', 'submitted': 'primary', 'approved': 'success', 'returned': 'warning'}}"/>
+                            </div>
+                            <div class="o_kanban_record_body">
+                                <div>
+                                    <i class="fa fa-users me-1"/><field name="team_id"/>
+                                </div>
+                                <div>
+                                    <i class="fa fa-user me-1"/><field name="user_id"/>
+                                </div>
+                                <div t-if="record.task_profile_id.raw_value">
+                                    <i class="fa fa-tasks me-1"/><field name="task_profile_id"/>
+                                </div>
+                                <div>
+                                    <i class="fa fa-calendar me-1"/>
+                                    <field name="week_start"/> - <field name="week_end"/>
+                                </div>
+                                <div class="mt-1">
+                                    <span class="badge text-bg-primary me-1"><field name="planned_count"/> planned</span>
+                                    <span class="badge text-bg-success me-1"><field name="completed_count"/> done</span>
+                                    <span t-if="record.missed_count.raw_value" class="badge text-bg-danger"><field name="missed_count"/> missed</span>
+                                </div>
+                                <div class="mt-1">
+                                    <field name="compliance_rate" widget="progressbar"/>
+                                </div>
+                            </div>
+                            <div class="o_kanban_record_bottom">
+                                <div class="oe_kanban_bottom_left">
+                                    <field name="activity_ids" widget="kanban_activity"/>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <record id="ftiq_weekly_plan_search" model="ir.ui.view">
+        <field name="name">ftiq.weekly.plan.search</field>
+        <field name="model">ftiq.weekly.plan</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="team_id"/>
+                <field name="user_id"/>
+                <filter name="draft" string="Draft" domain="[('state', '=', 'draft')]"/>
+                <filter name="submitted" string="Submitted" domain="[('state', '=', 'submitted')]"/>
+                <filter name="approved" string="Approved" domain="[('state', '=', 'approved')]"/>
+                <separator/>
+                <group expand="0" string="Group By">
+                    <filter name="group_team" string="Sales Team" context="{'group_by': 'team_id'}"/>
+                    <filter name="group_user" string="Representative" context="{'group_by': 'user_id'}"/>
+                    <filter name="group_state" string="State" context="{'group_by': 'state'}"/>
+                    <filter name="group_week" string="Week" context="{'group_by': 'week_start'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_ftiq_weekly_plan" model="ir.actions.act_window">
+        <field name="name">Weekly Plans</field>
+        <field name="res_model">ftiq.weekly.plan</field>
+        <field name="view_mode">list,kanban,form</field>
+        <field name="search_view_id" ref="ftiq_weekly_plan_search"/>
+    </record>
+
+    <record id="action_ftiq_my_plans" model="ir.actions.act_window">
+        <field name="name">My Plans</field>
+        <field name="res_model">ftiq.weekly.plan</field>
+        <field name="view_mode">list,kanban,form</field>
+        <field name="domain">[('line_ids.user_id', '=', uid)]</field>
+    </record>
+
+    <record id="action_ftiq_plans_to_approve" model="ir.actions.act_window">
+        <field name="name">Plans to Approve</field>
+        <field name="res_model">ftiq.weekly.plan</field>
+        <field name="view_mode">list,kanban,form</field>
+        <field name="domain">[('state', '=', 'submitted')]</field>
+    </record>
+
+    <record id="ftiq_weekly_plan_line_list" model="ir.ui.view">
+        <field name="name">ftiq.weekly.plan.line.list</field>
+        <field name="model">ftiq.weekly.plan.line</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="plan_id"/>
+                <field name="team_id"/>
+                <field name="user_id"/>
+                <field name="partner_id"/>
+                <field name="scheduled_date"/>
+                <field name="day_of_week"/>
+                <field name="partner_specialty_id"/>
+                <field name="partner_classification_id"/>
+                <field name="partner_area_id"/>
+                <field name="execution_state" widget="badge"
+                       decoration-info="execution_state == 'in_progress'"
+                       decoration-primary="execution_state == 'submitted'"
+                       decoration-success="execution_state in ('approved', 'confirmed', 'completed')"
+                       decoration-warning="execution_state == 'returned'"
+                       decoration-muted="execution_state in ('not_ready', 'pending')"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'completed'"
+                       decoration-danger="state == 'missed'"
+                       decoration-muted="state == 'pending'"/>
+                <field name="visit_id"/>
+                <field name="daily_task_id"/>
+                <field name="project_task_id"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="ftiq_weekly_plan_line_pivot" model="ir.ui.view">
+        <field name="name">ftiq.weekly.plan.line.pivot</field>
+        <field name="model">ftiq.weekly.plan.line</field>
+        <field name="arch" type="xml">
+            <pivot>
+                <field name="user_id" type="row"/>
+                <field name="state" type="col"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="action_ftiq_plan_line_report" model="ir.actions.act_window">
+        <field name="name">Plan Compliance Report</field>
+        <field name="res_model">ftiq.weekly.plan.line</field>
+        <field name="view_mode">pivot,list</field>
+    </record>
+
+</odoo>

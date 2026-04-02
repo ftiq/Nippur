@@ -1,0 +1,695 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="ftiq_attendance_rule_rep" model="ir.rule">
+        <field name="name">Attendance: Rep sees own</field>
+        <field name="model_id" ref="model_ftiq_field_attendance"/>
+        <field name="domain_force">[('user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_rep'))]"/>
+    </record>
+
+    <record id="ftiq_attendance_rule_supervisor" model="ir.rule">
+        <field name="name">Attendance: Supervisor sees team</field>
+        <field name="model_id" ref="model_ftiq_field_attendance"/>
+        <field name="domain_force">['|', ('user_id', '=', user.id), ('user_id.sale_team_id.user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_supervisor'))]"/>
+    </record>
+
+    <record id="ftiq_attendance_rule_manager" model="ir.rule">
+        <field name="name">Attendance: Manager sees all</field>
+        <field name="model_id" ref="model_ftiq_field_attendance"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_manager'))]"/>
+    </record>
+
+    <record id="ftiq_visit_rule_rep" model="ir.rule">
+        <field name="name">Visit: Rep sees own</field>
+        <field name="model_id" ref="model_ftiq_visit"/>
+        <field name="domain_force">[('user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_rep'))]"/>
+    </record>
+
+    <record id="ftiq_visit_rule_supervisor" model="ir.rule">
+        <field name="name">Visit: Supervisor sees team</field>
+        <field name="model_id" ref="model_ftiq_visit"/>
+        <field name="domain_force">['|', ('user_id', '=', user.id), ('team_id.user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_supervisor'))]"/>
+    </record>
+
+    <record id="ftiq_visit_rule_manager" model="ir.rule">
+        <field name="name">Visit: Manager sees all</field>
+        <field name="model_id" ref="model_ftiq_visit"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_manager'))]"/>
+    </record>
+
+    <record id="ftiq_plan_rule_rep" model="ir.rule">
+        <field name="name">Plan: Rep sees own</field>
+        <field name="model_id" ref="model_ftiq_weekly_plan"/>
+        <field name="domain_force">[('line_ids.user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_rep'))]"/>
+    </record>
+
+    <record id="ftiq_plan_rule_supervisor" model="ir.rule">
+        <field name="name">Plan: Supervisor sees team</field>
+        <field name="model_id" ref="model_ftiq_weekly_plan"/>
+        <field name="domain_force">['|', ('line_ids.user_id', '=', user.id), ('team_id.user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_supervisor'))]"/>
+    </record>
+
+    <record id="ftiq_plan_rule_manager" model="ir.rule">
+        <field name="name">Plan: Manager sees all</field>
+        <field name="model_id" ref="model_ftiq_weekly_plan"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_manager'))]"/>
+    </record>
+
+    <record id="ftiq_stock_check_rule_rep" model="ir.rule">
+        <field name="name">Stock Check: Rep sees own</field>
+        <field name="model_id" ref="model_ftiq_stock_check"/>
+        <field name="domain_force">[('user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_rep'))]"/>
+    </record>
+    <record id="ftiq_stock_check_rule_supervisor" model="ir.rule">
+        <field name="name">Stock Check: Supervisor sees team</field>
+        <field name="model_id" ref="model_ftiq_stock_check"/>
+        <field name="domain_force">['|', ('user_id', '=', user.id), ('team_id.user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_supervisor'))]"/>
+    </record>
+    <record id="ftiq_stock_check_rule_manager" model="ir.rule">
+        <field name="name">Stock Check: Manager sees all</field>
+        <field name="model_id" ref="model_ftiq_stock_check"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_manager'))]"/>
+    </record>
+
+    <record id="ftiq_target_rule_rep" model="ir.rule">
+        <field name="name">Target: Rep sees own</field>
+        <field name="model_id" ref="model_ftiq_sales_target"/>
+        <field name="domain_force">[('user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_rep'))]"/>
+    </record>
+    <record id="ftiq_target_rule_supervisor" model="ir.rule">
+        <field name="name">Target: Supervisor sees team</field>
+        <field name="model_id" ref="model_ftiq_sales_target"/>
+        <field name="domain_force">['|', ('user_id', '=', user.id), ('team_id.user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_supervisor'))]"/>
+    </record>
+    <record id="ftiq_target_rule_manager" model="ir.rule">
+        <field name="name">Target: Manager sees all</field>
+        <field name="model_id" ref="model_ftiq_sales_target"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_manager'))]"/>
+    </record>
+
+    <record id="ftiq_task_rule_rep" model="ir.rule">
+        <field name="name">Task: Rep sees own</field>
+        <field name="model_id" ref="model_ftiq_daily_task"/>
+        <field name="domain_force">[('user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_rep'))]"/>
+    </record>
+    <record id="ftiq_task_rule_supervisor" model="ir.rule">
+        <field name="name">Task: Supervisor sees team</field>
+        <field name="model_id" ref="model_ftiq_daily_task"/>
+        <field name="domain_force">['|', ('user_id', '=', user.id), ('team_id.user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_supervisor'))]"/>
+    </record>
+    <record id="ftiq_task_rule_manager" model="ir.rule">
+        <field name="name">Task: Manager sees all</field>
+        <field name="model_id" ref="model_ftiq_daily_task"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_manager'))]"/>
+    </record>
+
+    <record id="ftiq_team_message_rule_rep" model="ir.rule">
+        <field name="name">Team Message: Rep sees direct and team broadcasts</field>
+        <field name="model_id" ref="model_ftiq_team_message"/>
+        <field name="domain_force">[('company_id', '=', user.company_id.id), '|', ('target_user_id', '=', user.id), '&amp;', ('is_team_wide', '=', True), ('team_id.member_ids', 'in', [user.id])]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_rep'))]"/>
+    </record>
+    <record id="ftiq_team_message_rule_supervisor" model="ir.rule">
+        <field name="name">Team Message: Supervisor sees managed teams</field>
+        <field name="model_id" ref="model_ftiq_team_message"/>
+        <field name="domain_force">[('company_id', '=', user.company_id.id), '|', '|', ('author_id', '=', user.id), ('target_user_id', '=', user.id), ('team_id.user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_supervisor'))]"/>
+    </record>
+    <record id="ftiq_team_message_rule_manager" model="ir.rule">
+        <field name="name">Team Message: Manager sees company</field>
+        <field name="model_id" ref="model_ftiq_team_message"/>
+        <field name="domain_force">[('company_id', '=', user.company_id.id)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_manager'))]"/>
+    </record>
+
+    <record id="ftiq_plan_line_rule_rep" model="ir.rule">
+        <field name="name">Plan Line: Rep sees own</field>
+        <field name="model_id" ref="model_ftiq_weekly_plan_line"/>
+        <field name="domain_force">[('user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_rep'))]"/>
+    </record>
+    <record id="ftiq_plan_line_rule_supervisor" model="ir.rule">
+        <field name="name">Plan Line: Supervisor sees team</field>
+        <field name="model_id" ref="model_ftiq_weekly_plan_line"/>
+        <field name="domain_force">['|', ('user_id', '=', user.id), ('team_id.user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_supervisor'))]"/>
+    </record>
+    <record id="ftiq_plan_line_rule_manager" model="ir.rule">
+        <field name="name">Plan Line: Manager sees all</field>
+        <field name="model_id" ref="model_ftiq_weekly_plan_line"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_manager'))]"/>
+    </record>
+
+    <record id="ftiq_visit_product_line_rule_rep" model="ir.rule">
+        <field name="name">Visit Product Line: Rep sees own</field>
+        <field name="model_id" ref="model_ftiq_visit_product_line"/>
+        <field name="domain_force">[('visit_id.user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_rep'))]"/>
+    </record>
+    <record id="ftiq_visit_product_line_rule_supervisor" model="ir.rule">
+        <field name="name">Visit Product Line: Supervisor sees team</field>
+        <field name="model_id" ref="model_ftiq_visit_product_line"/>
+        <field name="domain_force">['|', ('visit_id.user_id', '=', user.id), ('visit_id.team_id.user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_supervisor'))]"/>
+    </record>
+    <record id="ftiq_visit_product_line_rule_manager" model="ir.rule">
+        <field name="name">Visit Product Line: Manager sees all</field>
+        <field name="model_id" ref="model_ftiq_visit_product_line"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_manager'))]"/>
+    </record>
+
+    <record id="ftiq_material_view_log_rule_rep" model="ir.rule">
+        <field name="name">Material View Log: Rep sees own</field>
+        <field name="model_id" ref="model_ftiq_material_view_log"/>
+        <field name="domain_force">[('visit_id.user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_rep'))]"/>
+    </record>
+    <record id="ftiq_material_view_log_rule_supervisor" model="ir.rule">
+        <field name="name">Material View Log: Supervisor sees team</field>
+        <field name="model_id" ref="model_ftiq_material_view_log"/>
+        <field name="domain_force">['|', ('visit_id.user_id', '=', user.id), ('visit_id.team_id.user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_supervisor'))]"/>
+    </record>
+    <record id="ftiq_material_view_log_rule_manager" model="ir.rule">
+        <field name="name">Material View Log: Manager sees all</field>
+        <field name="model_id" ref="model_ftiq_material_view_log"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_manager'))]"/>
+    </record>
+
+    <record id="ftiq_stock_check_line_rule_rep" model="ir.rule">
+        <field name="name">Stock Check Line: Rep sees own</field>
+        <field name="model_id" ref="model_ftiq_stock_check_line"/>
+        <field name="domain_force">[('check_id.user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_rep'))]"/>
+    </record>
+    <record id="ftiq_stock_check_line_rule_supervisor" model="ir.rule">
+        <field name="name">Stock Check Line: Supervisor sees team</field>
+        <field name="model_id" ref="model_ftiq_stock_check_line"/>
+        <field name="domain_force">['|', ('check_id.user_id', '=', user.id), ('check_id.team_id.user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_supervisor'))]"/>
+    </record>
+    <record id="ftiq_stock_check_line_rule_manager" model="ir.rule">
+        <field name="name">Stock Check Line: Manager sees all</field>
+        <field name="model_id" ref="model_ftiq_stock_check_line"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_manager'))]"/>
+    </record>
+
+    <record id="ftiq_sales_target_line_rule_rep" model="ir.rule">
+        <field name="name">Sales Target Line: Rep sees own</field>
+        <field name="model_id" ref="model_ftiq_sales_target_line"/>
+        <field name="domain_force">[('target_id.user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_rep'))]"/>
+    </record>
+    <record id="ftiq_sales_target_line_rule_supervisor" model="ir.rule">
+        <field name="name">Sales Target Line: Supervisor sees team</field>
+        <field name="model_id" ref="model_ftiq_sales_target_line"/>
+        <field name="domain_force">['|', ('target_id.user_id', '=', user.id), ('target_id.team_id.user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_supervisor'))]"/>
+    </record>
+    <record id="ftiq_sales_target_line_rule_manager" model="ir.rule">
+        <field name="name">Sales Target Line: Manager sees all</field>
+        <field name="model_id" ref="model_ftiq_sales_target_line"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_manager'))]"/>
+    </record>
+
+    <record id="ftiq_client_answer_rule_rep" model="ir.rule">
+        <field name="name">Client Answer: Rep sees own</field>
+        <field name="model_id" ref="model_ftiq_client_answer"/>
+        <field name="domain_force">['|', ('create_uid', '=', user.id), ('partner_id.user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_rep'))]"/>
+    </record>
+    <record id="ftiq_client_answer_rule_supervisor" model="ir.rule">
+        <field name="name">Client Answer: Supervisor sees team</field>
+        <field name="model_id" ref="model_ftiq_client_answer"/>
+        <field name="domain_force">['|', '|', '|', ('create_uid', '=', user.id), ('create_uid.sale_team_id.user_id', '=', user.id), ('partner_id.user_id', '=', user.id), ('partner_id.user_id.sale_team_id.user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_supervisor'))]"/>
+    </record>
+    <record id="ftiq_client_answer_rule_manager" model="ir.rule">
+        <field name="name">Client Answer: Manager sees all</field>
+        <field name="model_id" ref="model_ftiq_client_answer"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_manager'))]"/>
+    </record>
+
+    <record id="ftiq_res_partner_mobile_visibility_rule" model="ir.rule">
+        <field name="name">FTIQ Partner: Mobile roles read field clients and user contacts</field>
+        <field name="model_id" ref="base.model_res_partner"/>
+        <field name="domain_force">['&amp;', '|', ('company_id', '=', False), ('company_id', '=', user.company_id.id), '|', ('commercial_partner_id.ftiq_is_field_client', '=', True), ('user_ids', '!=', False)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_rep')), (4, ref('group_ftiq_supervisor'))]"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="ftiq_res_partner_manager_visibility_rule" model="ir.rule">
+        <field name="name">FTIQ Partner: Manager reads all contacts</field>
+        <field name="model_id" ref="base.model_res_partner"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_manager'))]"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="ftiq_res_users_mobile_visibility_rule" model="ir.rule">
+        <field name="name">FTIQ Users: Mobile roles read internal company users</field>
+        <field name="model_id" ref="base.model_res_users"/>
+        <field name="domain_force">[('share', '=', False), ('company_ids', 'in', [user.company_id.id])]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_rep')), (4, ref('group_ftiq_supervisor')), (4, ref('group_ftiq_manager'))]"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="ftiq_collection_line_rule_rep" model="ir.rule">
+        <field name="name">Collection Line: Rep sees own</field>
+        <field name="model_id" ref="model_ftiq_collection_line"/>
+        <field name="domain_force">[('payment_id.ftiq_user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_rep'))]"/>
+    </record>
+    <record id="ftiq_collection_line_rule_supervisor" model="ir.rule">
+        <field name="name">Collection Line: Supervisor sees team</field>
+        <field name="model_id" ref="model_ftiq_collection_line"/>
+        <field name="domain_force">['|', ('payment_id.ftiq_user_id', '=', user.id), ('payment_id.ftiq_team_id.user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_supervisor'))]"/>
+    </record>
+    <record id="ftiq_collection_line_rule_manager" model="ir.rule">
+        <field name="name">Collection Line: Manager sees all</field>
+        <field name="model_id" ref="model_ftiq_collection_line"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_manager'))]"/>
+    </record>
+
+    <record id="ftiq_core_product_rule" model="ir.rule">
+        <field name="name">FTIQ Product: Active sale or expense items</field>
+        <field name="model_id" ref="product.model_product_product"/>
+        <field name="domain_force">[('active', '=', True), '|', ('sale_ok', '=', True), ('can_be_expensed', '=', True)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_rep')), (4, ref('group_ftiq_supervisor')), (4, ref('group_ftiq_manager'))]"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="ftiq_core_product_template_rule" model="ir.rule">
+        <field name="name">FTIQ Product Template: Active sale or expense items</field>
+        <field name="model_id" ref="product.model_product_template"/>
+        <field name="domain_force">[('active', '=', True), '|', ('sale_ok', '=', True), ('can_be_expensed', '=', True)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_rep')), (4, ref('group_ftiq_supervisor')), (4, ref('group_ftiq_manager'))]"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="ftiq_core_pricelist_rule" model="ir.rule">
+        <field name="name">FTIQ Pricelist: Current company only</field>
+        <field name="model_id" ref="product.model_product_pricelist"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', '=', user.company_id.id)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_rep')), (4, ref('group_ftiq_supervisor')), (4, ref('group_ftiq_manager'))]"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="ftiq_core_pricelist_item_rule" model="ir.rule">
+        <field name="name">FTIQ Pricelist Item: Current company only</field>
+        <field name="model_id" ref="product.model_product_pricelist_item"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', '=', user.company_id.id)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_rep')), (4, ref('group_ftiq_supervisor')), (4, ref('group_ftiq_manager'))]"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="ftiq_core_uom_rule" model="ir.rule">
+        <field name="name">FTIQ UoM: Read only</field>
+        <field name="model_id" ref="uom.model_uom_uom"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_rep')), (4, ref('group_ftiq_supervisor')), (4, ref('group_ftiq_manager'))]"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="ftiq_core_payment_journal_rule" model="ir.rule">
+        <field name="name">FTIQ Payment Journal: Current company cash and bank</field>
+        <field name="model_id" ref="account.model_account_journal"/>
+        <field name="domain_force">[('company_id', 'in', company_ids), ('type', 'in', ('bank', 'cash')), ('active', '=', True)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_rep')), (4, ref('group_ftiq_supervisor')), (4, ref('group_ftiq_manager'))]"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="ftiq_mobile_runtime_policy_rule_rep" model="ir.rule">
+        <field name="name">Mobile Runtime Policy: Rep reads company policy</field>
+        <field name="model_id" ref="model_ftiq_mobile_runtime_policy"/>
+        <field name="domain_force">[('company_id', '=', user.company_id.id)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_rep'))]"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="ftiq_mobile_runtime_policy_rule_supervisor" model="ir.rule">
+        <field name="name">Mobile Runtime Policy: Supervisor reads company policy</field>
+        <field name="model_id" ref="model_ftiq_mobile_runtime_policy"/>
+        <field name="domain_force">[('company_id', '=', user.company_id.id)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_supervisor'))]"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="ftiq_mobile_runtime_policy_rule_manager" model="ir.rule">
+        <field name="name">Mobile Runtime Policy: Manager manages company policy</field>
+        <field name="model_id" ref="model_ftiq_mobile_runtime_policy"/>
+        <field name="domain_force">[('company_id', '=', user.company_id.id)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_manager'))]"/>
+    </record>
+
+    <record id="ftiq_mobile_device_rule_rep" model="ir.rule">
+        <field name="name">Mobile Device: Rep sees own devices</field>
+        <field name="model_id" ref="model_ftiq_mobile_device"/>
+        <field name="domain_force">[('user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_rep'))]"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="ftiq_mobile_device_rule_supervisor" model="ir.rule">
+        <field name="name">Mobile Device: Supervisor sees team devices</field>
+        <field name="model_id" ref="model_ftiq_mobile_device"/>
+        <field name="domain_force">['|', ('user_id', '=', user.id), ('team_id.user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_supervisor'))]"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="ftiq_mobile_device_rule_manager" model="ir.rule">
+        <field name="name">Mobile Device: Manager sees all company devices</field>
+        <field name="model_id" ref="model_ftiq_mobile_device"/>
+        <field name="domain_force">[('company_id', '=', user.company_id.id)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_manager'))]"/>
+    </record>
+
+    <record id="ftiq_mobile_request_log_rule_rep" model="ir.rule">
+        <field name="name">Mobile Request Log: Rep sees own requests</field>
+        <field name="model_id" ref="model_ftiq_mobile_request_log"/>
+        <field name="domain_force">[('company_id', '=', user.company_id.id), ('user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_rep'))]"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="ftiq_mobile_request_log_rule_supervisor" model="ir.rule">
+        <field name="name">Mobile Request Log: Supervisor sees own requests</field>
+        <field name="model_id" ref="model_ftiq_mobile_request_log"/>
+        <field name="domain_force">[('company_id', '=', user.company_id.id), ('user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_supervisor'))]"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="ftiq_mobile_request_log_rule_manager" model="ir.rule">
+        <field name="name">Mobile Request Log: Manager sees own requests</field>
+        <field name="model_id" ref="model_ftiq_mobile_request_log"/>
+        <field name="domain_force">[('company_id', '=', user.company_id.id), ('user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_manager'))]"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="ftiq_mobile_notification_rule_rep" model="ir.rule">
+        <field name="name">Mobile Notification: Rep sees own notifications</field>
+        <field name="model_id" ref="model_ftiq_mobile_notification"/>
+        <field name="domain_force">[('company_id', '=', user.company_id.id), ('user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_rep'))]"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="ftiq_mobile_notification_rule_supervisor" model="ir.rule">
+        <field name="name">Mobile Notification: Supervisor sees own notifications</field>
+        <field name="model_id" ref="model_ftiq_mobile_notification"/>
+        <field name="domain_force">[('company_id', '=', user.company_id.id), ('user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_supervisor'))]"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="ftiq_mobile_notification_rule_manager" model="ir.rule">
+        <field name="name">Mobile Notification: Manager sees own notifications</field>
+        <field name="model_id" ref="model_ftiq_mobile_notification"/>
+        <field name="domain_force">[('company_id', '=', user.company_id.id), ('user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_manager'))]"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="ftiq_sale_order_rule_rep" model="ir.rule">
+        <field name="name">Sale Order: Rep sees own field orders</field>
+        <field name="model_id" ref="sale.model_sale_order"/>
+        <field name="domain_force">[('is_field_order', '=', True), ('user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_rep'))]"/>
+    </record>
+
+    <record id="ftiq_sale_order_rule_supervisor" model="ir.rule">
+        <field name="name">Sale Order: Supervisor sees team field orders</field>
+        <field name="model_id" ref="sale.model_sale_order"/>
+        <field name="domain_force">[('is_field_order', '=', True), '|', '|', ('user_id', '=', user.id), ('user_id.sale_team_id.user_id', '=', user.id), ('ftiq_visit_id.team_id.user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_supervisor'))]"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="ftiq_sale_order_rule_manager" model="ir.rule">
+        <field name="name">Sale Order: Manager sees all field orders</field>
+        <field name="model_id" ref="sale.model_sale_order"/>
+        <field name="domain_force">[('is_field_order', '=', True)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_manager'))]"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="ftiq_sale_order_line_rule_rep" model="ir.rule">
+        <field name="name">Sale Order Line: Rep sees own field order lines</field>
+        <field name="model_id" ref="sale.model_sale_order_line"/>
+        <field name="domain_force">[('order_id.is_field_order', '=', True), ('order_id.user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_rep'))]"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="ftiq_sale_order_line_rule_supervisor" model="ir.rule">
+        <field name="name">Sale Order Line: Supervisor sees team field order lines</field>
+        <field name="model_id" ref="sale.model_sale_order_line"/>
+        <field name="domain_force">[('order_id.is_field_order', '=', True), '|', '|', ('order_id.user_id', '=', user.id), ('order_id.user_id.sale_team_id.user_id', '=', user.id), ('order_id.ftiq_visit_id.team_id.user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_supervisor'))]"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="ftiq_sale_order_line_rule_manager" model="ir.rule">
+        <field name="name">Sale Order Line: Manager sees all field order lines</field>
+        <field name="model_id" ref="sale.model_sale_order_line"/>
+        <field name="domain_force">[('order_id.is_field_order', '=', True)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_manager'))]"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="ftiq_account_payment_rule_rep" model="ir.rule">
+        <field name="name">Account Payment: Rep sees own field collections</field>
+        <field name="model_id" ref="account.model_account_payment"/>
+        <field name="domain_force">[('is_field_collection', '=', True), ('ftiq_user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_rep'))]"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="ftiq_account_payment_rule_supervisor" model="ir.rule">
+        <field name="name">Account Payment: Supervisor sees team field collections</field>
+        <field name="model_id" ref="account.model_account_payment"/>
+        <field name="domain_force">[('is_field_collection', '=', True), '|', ('ftiq_user_id', '=', user.id), ('ftiq_team_id.user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_supervisor'))]"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="ftiq_account_payment_rule_manager" model="ir.rule">
+        <field name="name">Account Payment: Manager sees all field collections</field>
+        <field name="model_id" ref="account.model_account_payment"/>
+        <field name="domain_force">[('is_field_collection', '=', True)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_manager'))]"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="ftiq_hr_expense_rule_supervisor" model="ir.rule">
+        <field name="name">Expense: Supervisor sees team field expenses</field>
+        <field name="model_id" ref="hr_expense.model_hr_expense"/>
+        <field name="domain_force">[('is_field_expense', '=', True), '|', '|', ('ftiq_user_id', '=', user.id), ('employee_id.user_id', '=', user.id), ('ftiq_team_id.user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_supervisor'))]"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="ftiq_hr_expense_rule_manager" model="ir.rule">
+        <field name="name">Expense: Manager sees all field expenses</field>
+        <field name="model_id" ref="hr_expense.model_hr_expense"/>
+        <field name="domain_force">[('is_field_expense', '=', True)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_manager'))]"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="ftiq_account_move_invoice_rule_rep" model="ir.rule">
+        <field name="name">Account Move: Rep reads own field invoices</field>
+        <field name="model_id" ref="account.model_account_move"/>
+        <field name="domain_force">[('is_field_invoice', '=', True), ('ftiq_access_user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_rep'))]"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="ftiq_account_move_invoice_rule_supervisor" model="ir.rule">
+        <field name="name">Account Move: Supervisor reads team field invoices</field>
+        <field name="model_id" ref="account.model_account_move"/>
+        <field name="domain_force">[('is_field_invoice', '=', True), '|', ('ftiq_access_user_id', '=', user.id), ('ftiq_team_id.user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_supervisor'))]"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="ftiq_account_move_invoice_rule_manager" model="ir.rule">
+        <field name="name">Account Move: Manager reads all field invoices</field>
+        <field name="model_id" ref="account.model_account_move"/>
+        <field name="domain_force">[('is_field_invoice', '=', True)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_manager'))]"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="ftiq_account_move_payment_rule_rep" model="ir.rule">
+        <field name="name">Account Move: Rep manages own field payment entries</field>
+        <field name="model_id" ref="account.model_account_move"/>
+        <field name="domain_force">[('origin_payment_id.is_field_collection', '=', True), ('origin_payment_id.ftiq_user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_rep'))]"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="ftiq_account_move_payment_rule_supervisor" model="ir.rule">
+        <field name="name">Account Move: Supervisor manages team field payment entries</field>
+        <field name="model_id" ref="account.model_account_move"/>
+        <field name="domain_force">[('origin_payment_id.is_field_collection', '=', True), '|', ('origin_payment_id.ftiq_user_id', '=', user.id), ('origin_payment_id.ftiq_team_id.user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_supervisor'))]"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="ftiq_account_move_payment_rule_manager" model="ir.rule">
+        <field name="name">Account Move: Manager manages all field payment entries</field>
+        <field name="model_id" ref="account.model_account_move"/>
+        <field name="domain_force">[('origin_payment_id.is_field_collection', '=', True)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_manager'))]"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="ftiq_account_move_line_invoice_rule_rep" model="ir.rule">
+        <field name="name">Account Move Line: Rep reads own field invoice lines</field>
+        <field name="model_id" ref="account.model_account_move_line"/>
+        <field name="domain_force">[('move_id.is_field_invoice', '=', True), ('move_id.ftiq_access_user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_rep'))]"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="ftiq_account_move_line_invoice_rule_supervisor" model="ir.rule">
+        <field name="name">Account Move Line: Supervisor reads team field invoice lines</field>
+        <field name="model_id" ref="account.model_account_move_line"/>
+        <field name="domain_force">[('move_id.is_field_invoice', '=', True), '|', ('move_id.ftiq_access_user_id', '=', user.id), ('move_id.ftiq_team_id.user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_supervisor'))]"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="ftiq_account_move_line_invoice_rule_manager" model="ir.rule">
+        <field name="name">Account Move Line: Manager reads all field invoice lines</field>
+        <field name="model_id" ref="account.model_account_move_line"/>
+        <field name="domain_force">[('move_id.is_field_invoice', '=', True)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_manager'))]"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="ftiq_account_move_line_payment_rule_rep" model="ir.rule">
+        <field name="name">Account Move Line: Rep manages own field payment lines</field>
+        <field name="model_id" ref="account.model_account_move_line"/>
+        <field name="domain_force">[('payment_id.is_field_collection', '=', True), ('payment_id.ftiq_user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_rep'))]"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="ftiq_account_move_line_payment_rule_supervisor" model="ir.rule">
+        <field name="name">Account Move Line: Supervisor manages team field payment lines</field>
+        <field name="model_id" ref="account.model_account_move_line"/>
+        <field name="domain_force">[('payment_id.is_field_collection', '=', True), '|', ('payment_id.ftiq_user_id', '=', user.id), ('payment_id.ftiq_team_id.user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_supervisor'))]"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="ftiq_account_move_line_payment_rule_manager" model="ir.rule">
+        <field name="name">Account Move Line: Manager manages all field payment lines</field>
+        <field name="model_id" ref="account.model_account_move_line"/>
+        <field name="domain_force">[('payment_id.is_field_collection', '=', True)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_manager'))]"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="ftiq_partial_reconcile_rule_rep" model="ir.rule">
+        <field name="name">Partial Reconcile: Rep creates own field reconciliations</field>
+        <field name="model_id" ref="account.model_account_partial_reconcile"/>
+        <field name="domain_force">['|', '|', '|', '&amp;', ('debit_move_id.payment_id.is_field_collection', '=', True), ('debit_move_id.payment_id.ftiq_user_id', '=', user.id), '&amp;', ('credit_move_id.payment_id.is_field_collection', '=', True), ('credit_move_id.payment_id.ftiq_user_id', '=', user.id), '&amp;', ('debit_move_id.move_id.is_field_invoice', '=', True), ('debit_move_id.move_id.ftiq_access_user_id', '=', user.id), '&amp;', ('credit_move_id.move_id.is_field_invoice', '=', True), ('credit_move_id.move_id.ftiq_access_user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_rep'))]"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="ftiq_partial_reconcile_rule_supervisor" model="ir.rule">
+        <field name="name">Partial Reconcile: Supervisor creates team field reconciliations</field>
+        <field name="model_id" ref="account.model_account_partial_reconcile"/>
+        <field name="domain_force">['|', '|', '|', '&amp;', '|', ('debit_move_id.payment_id.ftiq_user_id', '=', user.id), ('debit_move_id.payment_id.ftiq_team_id.user_id', '=', user.id), ('debit_move_id.payment_id.is_field_collection', '=', True), '&amp;', '|', ('credit_move_id.payment_id.ftiq_user_id', '=', user.id), ('credit_move_id.payment_id.ftiq_team_id.user_id', '=', user.id), ('credit_move_id.payment_id.is_field_collection', '=', True), '&amp;', '|', ('debit_move_id.move_id.ftiq_access_user_id', '=', user.id), ('debit_move_id.move_id.ftiq_team_id.user_id', '=', user.id), ('debit_move_id.move_id.is_field_invoice', '=', True), '&amp;', '|', ('credit_move_id.move_id.ftiq_access_user_id', '=', user.id), ('credit_move_id.move_id.ftiq_team_id.user_id', '=', user.id), ('credit_move_id.move_id.is_field_invoice', '=', True)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_supervisor'))]"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="ftiq_partial_reconcile_rule_manager" model="ir.rule">
+        <field name="name">Partial Reconcile: Manager creates all field reconciliations</field>
+        <field name="model_id" ref="account.model_account_partial_reconcile"/>
+        <field name="domain_force">['|', '|', '|', ('debit_move_id.payment_id.is_field_collection', '=', True), ('credit_move_id.payment_id.is_field_collection', '=', True), ('debit_move_id.move_id.is_field_invoice', '=', True), ('credit_move_id.move_id.is_field_invoice', '=', True)]</field>
+        <field name="groups" eval="[(4, ref('group_ftiq_manager'))]"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+</odoo>

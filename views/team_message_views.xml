@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="ftiq_team_message_list" model="ir.ui.view">
+        <field name="name">ftiq.team.message.list</field>
+        <field name="model">ftiq.team.message</field>
+        <field name="arch" type="xml">
+            <list string="Team Messages" create="1" delete="0">
+                <field name="create_date" string="Created"/>
+                <field name="message_type"/>
+                <field name="priority"/>
+                <field name="subject"/>
+                <field name="team_id"/>
+                <field name="target_user_id"/>
+                <field name="task_id"/>
+                <field name="author_id"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="ftiq_team_message_form" model="ir.ui.view">
+        <field name="name">ftiq.team.message.form</field>
+        <field name="model">ftiq.team.message</field>
+        <field name="arch" type="xml">
+            <form string="Team Message">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="message_type"/>
+                            <field name="priority"/>
+                            <field name="subject"/>
+                            <field name="team_id"/>
+                        </group>
+                        <group>
+                            <field name="author_id" readonly="1"/>
+                            <field name="target_user_id"/>
+                            <field name="task_id"/>
+                            <field name="is_team_wide"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="body" widget="text"/>
+                    </group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_ftiq_team_message" model="ir.actions.act_window">
+        <field name="name">Team Messages</field>
+        <field name="res_model">ftiq.team.message</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+</odoo>

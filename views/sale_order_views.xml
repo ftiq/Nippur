@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="ftiq_sale_order_form_inherit" model="ir.ui.view">
+        <field name="name">sale.order.form.ftiq.inherit</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='payment_term_id']" position="after">
+                <field name="is_field_order" invisible="1"/>
+                <field name="ftiq_visit_id" invisible="not is_field_order"/>
+                <field name="ftiq_attendance_id" invisible="not is_field_order"/>
+                <field name="ftiq_daily_task_id" invisible="not is_field_order"/>
+                <field name="ftiq_priority" invisible="not is_field_order" widget="priority"/>
+            </xpath>
+            <xpath expr="//field[@name='note']" position="after">
+                <field name="ftiq_delivery_notes" invisible="not is_field_order" placeholder="Field delivery notes..."/>
+            </xpath>
+            <xpath expr="//field[@name='partner_id']" position="after">
+                <field name="ftiq_latitude" invisible="1"/>
+                <field name="ftiq_longitude" invisible="1"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="ftiq_sale_order_search" model="ir.ui.view">
+        <field name="name">sale.order.search.ftiq.field</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.sale_order_view_search_inherit_sale"/>
+        <field name="arch" type="xml">
+            <xpath expr="//search" position="inside">
+                <filter name="field_orders" string="Field Orders" domain="[('is_field_order', '=', True)]"/>
+                <separator/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="action_ftiq_field_orders" model="ir.actions.act_window">
+        <field name="name">Field Orders</field>
+        <field name="res_model">sale.order</field>
+        <field name="view_mode">list,form,kanban,pivot,graph</field>
+        <field name="domain">[('is_field_order', '=', True)]</field>
+        <field name="context">{'default_is_field_order': True, 'search_default_field_orders': 1}</field>
+    </record>
+
+    <record id="action_ftiq_my_field_orders" model="ir.actions.act_window">
+        <field name="name">My Field Orders</field>
+        <field name="res_model">sale.order</field>
+        <field name="view_mode">list,form,kanban</field>
+        <field name="domain">[('is_field_order', '=', True), ('user_id', '=', uid)]</field>
+        <field name="context">{'default_is_field_order': True}</field>
+    </record>
+
+</odoo>

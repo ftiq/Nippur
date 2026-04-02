@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="ftiq_hr_expense_form_inherit" model="ir.ui.view">
+        <field name="name">hr.expense.form.ftiq.inherit</field>
+        <field name="model">hr.expense</field>
+        <field name="inherit_id" ref="hr_expense.hr_expense_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='product_id']" position="before">
+                <field name="is_field_expense" invisible="1"/>
+                <field name="ftiq_expense_type" invisible="not is_field_expense"/>
+            </xpath>
+            <xpath expr="//field[@name='date']" position="after">
+                <field name="ftiq_attendance_id" invisible="not is_field_expense"/>
+                <field name="ftiq_visit_id" invisible="not is_field_expense"/>
+                <field name="ftiq_daily_task_id" invisible="not is_field_expense"/>
+                <field name="ftiq_partner_id" invisible="not is_field_expense"/>
+                <field name="ftiq_user_id" invisible="not is_field_expense"/>
+                <field name="ftiq_team_id" invisible="not is_field_expense"/>
+                <field name="ftiq_latitude" invisible="not is_field_expense"/>
+                <field name="ftiq_longitude" invisible="not is_field_expense"/>
+                <field name="ftiq_receipt_image_name" invisible="not is_field_expense"/>
+                <field name="ftiq_receipt_image"
+                       widget="image"
+                       filename="ftiq_receipt_image_name"
+                       invisible="not is_field_expense"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="action_ftiq_field_expenses" model="ir.actions.act_window">
+        <field name="name">Field Expenses</field>
+        <field name="res_model">hr.expense</field>
+        <field name="view_mode">list,form,kanban</field>
+        <field name="domain">[('is_field_expense', '=', True)]</field>
+        <field name="context">{'default_is_field_expense': True}</field>
+    </record>
+
+    <record id="action_ftiq_my_expenses" model="ir.actions.act_window">
+        <field name="name">My Field Expenses</field>
+        <field name="res_model">hr.expense</field>
+        <field name="view_mode">list,form,kanban</field>
+        <field name="domain">[('is_field_expense', '=', True), ('employee_id.user_id', '=', uid)]</field>
+        <field name="context">{'default_is_field_expense': True}</field>
+    </record>
+
+</odoo>

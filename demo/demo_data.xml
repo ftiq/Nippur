@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+
+        <record id="demo_user_manager" model="res.users">
+            <field name="name">أحمد المدير</field>
+            <field name="login">ahmed_manager</field>
+            <field name="password">11</field>
+            <field name="email">ahmed.manager@demo.com</field>
+            <field name="groups_id" eval="[(4, ref('ftiq_pharma_sfa.group_ftiq_manager')), (4, ref('base.group_user'))]"/>
+            <field name="ftiq_is_medical_rep" eval="False"/>
+            <field name="ftiq_mobile_access_enabled" eval="True"/>
+            <field name="ftiq_mobile_access_profile_id" ref="ftiq_pharma_sfa.mobile_access_profile_manager"/>
+        </record>
+
+        <record id="demo_user_supervisor1" model="res.users">
+            <field name="name">خالد المشرف</field>
+            <field name="login">khaled_supervisor</field>
+            <field name="password">11</field>
+            <field name="email">khaled.supervisor@demo.com</field>
+            <field name="groups_id" eval="[(4, ref('ftiq_pharma_sfa.group_ftiq_supervisor')), (4, ref('base.group_user'))]"/>
+            <field name="ftiq_is_medical_rep" eval="False"/>
+            <field name="ftiq_mobile_access_enabled" eval="True"/>
+            <field name="ftiq_mobile_access_profile_id" ref="ftiq_pharma_sfa.mobile_access_profile_supervisor"/>
+        </record>
+
+        <record id="demo_user_supervisor2" model="res.users">
+            <field name="name">سامي المشرف</field>
+            <field name="login">sami_supervisor</field>
+            <field name="password">11</field>
+            <field name="email">sami.supervisor@demo.com</field>
+            <field name="groups_id" eval="[(4, ref('ftiq_pharma_sfa.group_ftiq_supervisor')), (4, ref('base.group_user'))]"/>
+            <field name="ftiq_is_medical_rep" eval="False"/>
+            <field name="ftiq_mobile_access_enabled" eval="True"/>
+            <field name="ftiq_mobile_access_profile_id" ref="ftiq_pharma_sfa.mobile_access_profile_supervisor"/>
+        </record>
+
+        <record id="demo_user_rep1" model="res.users">
+            <field name="name">محمد المندوب</field>
+            <field name="login">mohammed_rep</field>
+            <field name="password">11</field>
+            <field name="email">mohammed.rep@demo.com</field>
+            <field name="groups_id" eval="[(4, ref('ftiq_pharma_sfa.group_ftiq_rep')), (4, ref('base.group_user'))]"/>
+            <field name="ftiq_is_medical_rep" eval="True"/>
+            <field name="ftiq_supervisor_id" ref="demo_user_supervisor1"/>
+            <field name="ftiq_mobile_access_enabled" eval="True"/>
+            <field name="ftiq_mobile_access_profile_id" ref="ftiq_pharma_sfa.mobile_access_profile_representative"/>
+        </record>
+
+        <record id="demo_user_rep2" model="res.users">
+            <field name="name">علي المندوب</field>
+            <field name="login">ali_rep</field>
+            <field name="password">11</field>
+            <field name="email">ali.rep@demo.com</field>
+            <field name="groups_id" eval="[(4, ref('ftiq_pharma_sfa.group_ftiq_rep')), (4, ref('base.group_user'))]"/>
+            <field name="ftiq_is_medical_rep" eval="True"/>
+            <field name="ftiq_supervisor_id" ref="demo_user_supervisor1"/>
+            <field name="ftiq_mobile_access_enabled" eval="True"/>
+            <field name="ftiq_mobile_access_profile_id" ref="ftiq_pharma_sfa.mobile_access_profile_representative"/>
+        </record>
+
+        <record id="demo_user_rep3" model="res.users">
+            <field name="name">عمر المندوب</field>
+            <field name="login">omar_rep</field>
+            <field name="password">11</field>
+            <field name="email">omar.rep@demo.com</field>
+            <field name="groups_id" eval="[(4, ref('ftiq_pharma_sfa.group_ftiq_rep')), (4, ref('base.group_user'))]"/>
+            <field name="ftiq_is_medical_rep" eval="True"/>
+            <field name="ftiq_supervisor_id" ref="demo_user_supervisor2"/>
+            <field name="ftiq_mobile_access_enabled" eval="True"/>
+            <field name="ftiq_mobile_access_profile_id" ref="ftiq_pharma_sfa.mobile_access_profile_representative"/>
+        </record>
+
+        
+        <record id="demo_product_amoxil" model="product.template">
+
+            <field name="name">أموكسيل 500 مجم</field>
+            <field name="default_code">AMOX500</field>
+            <field name="type">consu</field>
+            <field name="list_price">25.00</field>
+            <field name="description">كبسولات أموكسيسيلين 500 مجم - مضاد حيوي واسع المجال</field>
+        </record>
+        <record id="demo_product_augmentin" model="product.template">
+            <field name="name">أوجمنتين 1 جم</field>
+            <field name="default_code">AUG1G</field>
+            <field name="type">consu</field>
+            <field name="list_price">45.00</field>
+            <field name="description">أقراص أموكسيسيلين + كلافيولانيك أسيد 1 جم - مضاد حيوي</field>
+        </record>
+        <record id="demo_product_lipitor" model="product.template">
+            <field name="name">ليبيتور 20 مجم</field>
+            <field name="default_code">LIP20</field>
+            <field name="type">consu</field>
+            <field name="list_price">60.00</field>
+            <field name="description">أقراص أتورفاستاتين 20 مجم - لخفض الكوليسترول</field>
+        </record>
+        <record id="demo_product_concor" model="product.template">
+            <field name="name">كونكور 5 مجم</field>
+            <field name="default_code">CON5</field>
+            <field name="type">consu</field>
+            <field name="list_price">35.00</field>
+            <field name="description">أقراص بيسوبرولول 5 مجم - لعلاج ضغط الدم والقلب</field>
+        </record>
+        <record id="demo_product_nexium" model="product.template">
+            <field name="name">نيكسيوم 40 مجم</field>
+            <field name="default_code">NEX40</field>
+            <field name="type">consu</field>
+            <field name="list_price">55.00</field>
+            <field name="description">كبسولات إيزوميبرازول 40 مجم - لعلاج قرحة المعدة</field>
+        </record>
+        <record id="demo_product_glucophage" model="product.template">
+            <field name="name">جلوكوفاج 850 مجم</field>
+            <field name="default_code">GLU850</field>
+            <field name="type">consu</field>
+            <field name="list_price">20.00</field>
+            <field name="description">أقراص ميتفورمين 850 مجم - لعلاج السكري من النوع الثاني</field>
+        </record>
+        <record id="demo_product_voltaren" model="product.template">
+            <field name="name">فولتارين 50 مجم</field>
+            <field name="default_code">VOL50</field>
+            <field name="type">consu</field>
+            <field name="list_price">15.00</field>
+            <field name="description">أقراص ديكلوفيناك 50 مجم - مسكن ومضاد للالتهاب</field>
+        </record>
+        <record id="demo_product_zithromax" model="product.template">
+            <field name="name">زيثروماكس 500 مجم</field>
+            <field name="default_code">ZIT500</field>
+            <field name="type">consu</field>
+            <field name="list_price">40.00</field>
+            <field name="description">أقراص أزيثروميسين 500 مجم - مضاد حيوي</field>
+        </record>
+
+
+
+    </data>
+</odoo>

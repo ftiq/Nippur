@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="ftiq_marketing_material_form" model="ir.ui.view">
+        <field name="name">ftiq.marketing.material.form</field>
+        <field name="model">ftiq.marketing.material</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="product_id"/>
+                            <field name="call_reason_id"/>
+                            <field name="material_scope"/>
+                            <field name="material_type"/>
+                            <field name="sequence"/>
+                        </group>
+                        <group>
+                            <field name="active" invisible="1"/>
+                            <field name="description"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group>
+                            <field name="image" widget="image"/>
+                        </group>
+                        <group>
+                            <field name="file" filename="file_name"/>
+                            <field name="file_name" invisible="1"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="ftiq_marketing_material_list" model="ir.ui.view">
+        <field name="name">ftiq.marketing.material.list</field>
+        <field name="model">ftiq.marketing.material</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="product_id"/>
+                <field name="call_reason_id" optional="show"/>
+                <field name="material_scope" widget="badge"/>
+                <field name="material_type" optional="show"/>
+                <field name="image" widget="image" options="{'size': [50, 50]}"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="ftiq_marketing_material_search" model="ir.ui.view">
+        <field name="name">ftiq.marketing.material.search</field>
+        <field name="model">ftiq.marketing.material</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="product_id"/>
+                <field name="call_reason_id"/>
+                <filter name="visit_scope" string="Visit Level" domain="[('material_scope', '=', 'visit')]"/>
+                <filter name="product_scope" string="Product Scope" domain="[('material_scope', '=', 'product')]"/>
+                <group expand="0" string="Group By">
+                    <filter name="group_product" string="Product" context="{'group_by': 'product_id'}"/>
+                    <filter name="group_scope" string="Scope" context="{'group_by': 'material_scope'}"/>
+                    <filter name="group_type" string="Type" context="{'group_by': 'material_type'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="ftiq_marketing_material_kanban" model="ir.ui.view">
+        <field name="name">ftiq.marketing.material.kanban</field>
+        <field name="model">ftiq.marketing.material</field>
+        <field name="arch" type="xml">
+            <kanban>
+                <field name="name"/>
+                <field name="product_id"/>
+                <field name="image"/>
+                <field name="material_scope"/>
+                <field name="material_type"/>
+                <templates>
+                    <t t-name="card">
+                        <field name="image" widget="image" options="{'size': [120, 120]}"/>
+                        <div>
+                            <strong><field name="name"/></strong>
+                        </div>
+                        <div>
+                            <field name="product_id"/>
+                        </div>
+                        <div class="text-muted">
+                            <field name="material_scope"/> · <field name="material_type"/>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <record id="action_ftiq_marketing_material" model="ir.actions.act_window">
+        <field name="name">Marketing Materials</field>
+        <field name="res_model">ftiq.marketing.material</field>
+        <field name="view_mode">kanban,list,form</field>
+    </record>
+
+</odoo>

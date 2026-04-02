@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <record id="ftiq_task_profile_visit" model="ftiq.task.profile">
+        <field name="name">Planned Visit</field>
+        <field name="code">visit</field>
+        <field name="sequence">10</field>
+        <field name="description">Field visit that requires check-in and supervisor confirmation.</field>
+        <field name="requires_partner" eval="True"/>
+        <field name="requires_user" eval="True"/>
+        <field name="requires_check_in" eval="True"/>
+        <field name="requires_confirmation" eval="True"/>
+    </record>
+
+    <record id="ftiq_task_profile_order" model="ftiq.task.profile">
+        <field name="name">Field Order</field>
+        <field name="code">order</field>
+        <field name="sequence">20</field>
+        <field name="description">Create and confirm a field sales order during execution.</field>
+        <field name="requires_partner" eval="True"/>
+        <field name="requires_user" eval="True"/>
+        <field name="requires_check_in" eval="True"/>
+    </record>
+
+    <record id="ftiq_task_profile_collection" model="ftiq.task.profile">
+        <field name="name">Collection Run</field>
+        <field name="code">collection</field>
+        <field name="sequence">30</field>
+        <field name="description">Collect and allocate customer payment in the field.</field>
+        <field name="requires_partner" eval="True"/>
+        <field name="requires_user" eval="True"/>
+        <field name="requires_check_in" eval="True"/>
+        <field name="requires_photos" eval="True"/>
+        <field name="required_photo_count">1</field>
+    </record>
+
+    <record id="ftiq_task_profile_stock" model="ftiq.task.profile">
+        <field name="name">Shelf Stock Check</field>
+        <field name="code">stock</field>
+        <field name="sequence">40</field>
+        <field name="description">Capture stock and shelf evidence for a field client.</field>
+        <field name="requires_partner" eval="True"/>
+        <field name="requires_user" eval="True"/>
+        <field name="requires_check_in" eval="True"/>
+        <field name="requires_confirmation" eval="True"/>
+        <field name="requires_photos" eval="True"/>
+        <field name="required_photo_count">1</field>
+    </record>
+
+    <record id="ftiq_task_profile_report" model="ftiq.task.profile">
+        <field name="name">Field Report</field>
+        <field name="code">report</field>
+        <field name="sequence">50</field>
+        <field name="description">Standalone reporting task that can be completed manually.</field>
+        <field name="requires_partner" eval="False"/>
+        <field name="requires_user" eval="True"/>
+        <field name="requires_check_in" eval="False"/>
+        <field name="allow_manual_completion" eval="True"/>
+    </record>
+
+    <record id="ftiq_task_profile_other" model="ftiq.task.profile">
+        <field name="name">Other Field Task</field>
+        <field name="code">other</field>
+        <field name="sequence">90</field>
+        <field name="description">Fallback profile for tasks that do not match a dedicated execution flow.</field>
+        <field name="requires_partner" eval="False"/>
+        <field name="requires_user" eval="True"/>
+        <field name="requires_check_in" eval="False"/>
+        <field name="allow_manual_completion" eval="True"/>
+    </record>
+
+</odoo>

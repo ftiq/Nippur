@@ -1,0 +1,345 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="ftiq_plan_wizard_form" model="ir.ui.view">
+        <field name="name">ftiq.plan.wizard.form</field>
+        <field name="model">ftiq.plan.wizard</field>
+        <field name="arch" type="xml">
+            <form class="ftiq_plan_wizard_form">
+                <field name="step" invisible="1"/>
+                <field name="selection_mode" invisible="1"/>
+                <field name="allowed_team_ids" invisible="1"/>
+                <field name="allowed_user_ids" invisible="1"/>
+                <field name="team_id" invisible="1"/>
+                <field name="geo_polygon" invisible="1"/>
+                <field name="geo_client_count" invisible="1"/>
+                <field name="candidate_partner_ids" invisible="1"/>
+                <field name="candidate_partner_count" invisible="1"/>
+                <div class="ftiq_plan_wizard_shell">
+                    <div class="ftiq_plan_wizard_hero">
+                        <div class="ftiq_plan_wizard_intro">
+                            <span class="ftiq_eyebrow">Execution Planner</span>
+                            <h2>New Plan Wizard</h2>
+                            <p>Choose the client source, review the matching list, then create the final weekly plan.</p>
+                        </div>
+                        <div class="ftiq_plan_wizard_progress">
+                            <div class="ftiq_plan_wizard_progress_step is-current" invisible="step != 'type'">
+                                <span class="ftiq_plan_wizard_progress_index">1</span>
+                                <span class="ftiq_plan_wizard_progress_label">Type</span>
+                            </div>
+                            <div class="ftiq_plan_wizard_progress_step is-done" invisible="step == 'type'">
+                                <span class="ftiq_plan_wizard_progress_index">1</span>
+                                <span class="ftiq_plan_wizard_progress_label">Type</span>
+                            </div>
+                            <div class="ftiq_plan_wizard_progress_step" invisible="step != 'type'">
+                                <span class="ftiq_plan_wizard_progress_index">2</span>
+                                <span class="ftiq_plan_wizard_progress_label">Configure</span>
+                            </div>
+                            <div class="ftiq_plan_wizard_progress_step is-current" invisible="step != 'configure'">
+                                <span class="ftiq_plan_wizard_progress_index">2</span>
+                                <span class="ftiq_plan_wizard_progress_label">Configure</span>
+                            </div>
+                            <div class="ftiq_plan_wizard_progress_step is-done" invisible="step != 'clients' and step != 'setup'">
+                                <span class="ftiq_plan_wizard_progress_index">2</span>
+                                <span class="ftiq_plan_wizard_progress_label">Configure</span>
+                            </div>
+                            <div class="ftiq_plan_wizard_progress_step" invisible="step != 'type' and step != 'configure'">
+                                <span class="ftiq_plan_wizard_progress_index">3</span>
+                                <span class="ftiq_plan_wizard_progress_label">Clients</span>
+                            </div>
+                            <div class="ftiq_plan_wizard_progress_step is-current" invisible="step != 'clients'">
+                                <span class="ftiq_plan_wizard_progress_index">3</span>
+                                <span class="ftiq_plan_wizard_progress_label">Clients</span>
+                            </div>
+                            <div class="ftiq_plan_wizard_progress_step is-done" invisible="step != 'setup'">
+                                <span class="ftiq_plan_wizard_progress_index">3</span>
+                                <span class="ftiq_plan_wizard_progress_label">Clients</span>
+                            </div>
+                            <div class="ftiq_plan_wizard_progress_step" invisible="step == 'setup'">
+                                <span class="ftiq_plan_wizard_progress_index">4</span>
+                                <span class="ftiq_plan_wizard_progress_label">Set</span>
+                            </div>
+                            <div class="ftiq_plan_wizard_progress_step is-current" invisible="step != 'setup'">
+                                <span class="ftiq_plan_wizard_progress_index">4</span>
+                                <span class="ftiq_plan_wizard_progress_label">Set</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="ftiq_plan_wizard_stage" invisible="step != 'type'">
+                        <div class="alert alert-info" role="status">
+                            Choose how the target clients should be gathered for this plan.
+                        </div>
+                        <div class="ftiq_plan_wizard_mode_grid">
+                            <button name="action_choose_filter" type="object"
+                                    class="btn ftiq_plan_wizard_mode_card ftiq_plan_wizard_mode_card_active"
+                                    invisible="selection_mode != 'filter'">
+                                <span class="ftiq_plan_wizard_mode_icon">
+                                    <i class="fa fa-sliders"/>
+                                </span>
+                                <span class="ftiq_plan_wizard_mode_body">
+                                    <span class="ftiq_plan_wizard_mode_title">Clients Select</span>
+                                    <span class="ftiq_plan_wizard_mode_text">Filter by country, city, area, category, specialty, and other client attributes.</span>
+                                </span>
+                            </button>
+                            <button name="action_choose_geo" type="object"
+                                    class="btn ftiq_plan_wizard_mode_card"
+                                    invisible="selection_mode == 'geo'">
+                                <span class="ftiq_plan_wizard_mode_icon">
+                                    <i class="fa fa-map-marker"/>
+                                </span>
+                                <span class="ftiq_plan_wizard_mode_body">
+                                    <span class="ftiq_plan_wizard_mode_title">Clients GEO</span>
+                                    <span class="ftiq_plan_wizard_mode_text">Open the map, draw an area, and review only the clients located inside that zone.</span>
+                                </span>
+                            </button>
+                            <button name="action_choose_filter" type="object"
+                                    class="btn ftiq_plan_wizard_mode_card"
+                                    invisible="selection_mode != 'geo'">
+                                <span class="ftiq_plan_wizard_mode_icon">
+                                    <i class="fa fa-sliders"/>
+                                </span>
+                                <span class="ftiq_plan_wizard_mode_body">
+                                    <span class="ftiq_plan_wizard_mode_title">Clients Select</span>
+                                    <span class="ftiq_plan_wizard_mode_text">Filter by country, city, area, category, specialty, and other client attributes.</span>
+                                </span>
+                            </button>
+                            <button name="action_choose_geo" type="object"
+                                    class="btn ftiq_plan_wizard_mode_card ftiq_plan_wizard_mode_card_active"
+                                    invisible="selection_mode != 'geo'">
+                                <span class="ftiq_plan_wizard_mode_icon">
+                                    <i class="fa fa-map-marker"/>
+                                </span>
+                                <span class="ftiq_plan_wizard_mode_body">
+                                    <span class="ftiq_plan_wizard_mode_title">Clients GEO</span>
+                                    <span class="ftiq_plan_wizard_mode_text">Open the map, draw an area, and review only the clients located inside that zone.</span>
+                                </span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="ftiq_plan_wizard_stage" invisible="step != 'configure' or selection_mode != 'filter'">
+                        <div class="alert alert-info" role="status">
+                            Configure how clients are gathered for this plan.
+                        </div>
+                        <div class="ftiq_plan_wizard_card">
+                            <div class="ftiq_plan_wizard_card_head">
+                                <span class="ftiq_eyebrow">Client Filters</span>
+                                <h3>Filter Matching Clients</h3>
+                            </div>
+                            <div class="ftiq_plan_wizard_filter_cards">
+                                <div class="ftiq_plan_wizard_filter_card">
+                                    <div class="ftiq_plan_wizard_filter_card_head">
+                                        <span class="ftiq_eyebrow">Client</span>
+                                        <h4>Identity &amp; Location</h4>
+                                    </div>
+                                    <div class="ftiq_plan_wizard_field_grid">
+                                        <div class="ftiq_plan_wizard_field ftiq_plan_wizard_field_span_2">
+                                            <label for="filter_partner_id" string="Client"/>
+                                            <field name="filter_partner_id"
+                                                   nolabel="1"
+                                                   domain="['|', '|', ('is_ftiq_doctor', '=', True), ('is_ftiq_center', '=', True), ('is_ftiq_pharmacy', '=', True)]"
+                                                   options="{'no_create': True, 'no_open': True}"
+                                                   placeholder="Select client"/>
+                                        </div>
+                                        <div class="ftiq_plan_wizard_field">
+                                            <label for="filter_name" string="Client Keyword"/>
+                                            <field name="filter_name" nolabel="1" placeholder="Search keyword"/>
+                                        </div>
+                                        <div class="ftiq_plan_wizard_field">
+                                            <label for="filter_client_code" string="Client Code"/>
+                                            <field name="filter_client_code" nolabel="1" placeholder="Search by code"/>
+                                        </div>
+                                        <div class="ftiq_plan_wizard_field">
+                                            <label for="filter_address" string="Address"/>
+                                            <field name="filter_address" nolabel="1" placeholder="Keyword"/>
+                                        </div>
+                                        <div class="ftiq_plan_wizard_field">
+                                            <label for="filter_country_id" string="Country"/>
+                                            <field name="filter_country_id" nolabel="1"/>
+                                        </div>
+                                        <div class="ftiq_plan_wizard_field">
+                                            <label for="filter_city_id" string="City"/>
+                                            <field name="filter_city_id" nolabel="1" domain="[('country_id', '=', filter_country_id)]"/>
+                                        </div>
+                                        <div class="ftiq_plan_wizard_field">
+                                            <label for="filter_area_id" string="Area"/>
+                                            <field name="filter_area_id" nolabel="1" domain="[('city_id', '=', filter_city_id)]"/>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="ftiq_plan_wizard_filter_card">
+                                    <div class="ftiq_plan_wizard_filter_card_head">
+                                        <span class="ftiq_eyebrow">Classification</span>
+                                        <h4>Segment &amp; Specialty</h4>
+                                    </div>
+                                    <div class="ftiq_plan_wizard_field_grid">
+                                        <div class="ftiq_plan_wizard_field">
+                                            <label for="filter_client_category_id" string="Category"/>
+                                            <field name="filter_client_category_id" nolabel="1" placeholder="All categories"/>
+                                        </div>
+                                        <div class="ftiq_plan_wizard_field">
+                                            <label for="filter_classification_id" string="Classification"/>
+                                            <field name="filter_classification_id" nolabel="1"/>
+                                        </div>
+                                        <div class="ftiq_plan_wizard_field">
+                                            <label for="filter_specialty_id" string="Specialty"/>
+                                            <field name="filter_specialty_id" nolabel="1"/>
+                                        </div>
+                                        <div class="ftiq_plan_wizard_field">
+                                            <label for="filter_subspecialty_id" string="Subcategory"/>
+                                            <field name="filter_subspecialty_id" nolabel="1" domain="[('specialty_id', '=', filter_specialty_id)]"/>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="ftiq_plan_wizard_filter_card">
+                                    <div class="ftiq_plan_wizard_filter_card_head">
+                                        <span class="ftiq_eyebrow">Activity</span>
+                                        <h4>Operations Signals</h4>
+                                    </div>
+                                    <div class="ftiq_plan_wizard_field_grid">
+                                        <div class="ftiq_plan_wizard_field">
+                                            <label for="filter_has_cashed" string="Has Cashed"/>
+                                            <field name="filter_has_cashed" nolabel="1"/>
+                                        </div>
+                                        <div class="ftiq_plan_wizard_field">
+                                            <label for="filter_has_tasks" string="Has Tasks"/>
+                                            <field name="filter_has_tasks" nolabel="1"/>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="ftiq_plan_wizard_filter_card">
+                                    <div class="ftiq_plan_wizard_filter_card_head">
+                                        <span class="ftiq_eyebrow">Verification</span>
+                                        <h4>Field Readiness</h4>
+                                    </div>
+                                    <div class="ftiq_plan_wizard_toggle_list">
+                                        <div class="ftiq_plan_wizard_toggle_item">
+                                            <label for="filter_geo_confirmed" string="Confirmed GEO"/>
+                                            <field name="filter_geo_confirmed" nolabel="1"/>
+                                        </div>
+                                        <div class="ftiq_plan_wizard_toggle_item">
+                                            <label for="filter_app_verified" string="App Verified"/>
+                                            <field name="filter_app_verified" nolabel="1"/>
+                                        </div>
+                                        <div class="ftiq_plan_wizard_toggle_item">
+                                            <label for="filter_license_attached" string="License Attached"/>
+                                            <field name="filter_license_attached" nolabel="1"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="ftiq_plan_wizard_stage" invisible="step != 'configure' or selection_mode != 'geo'">
+                        <div class="alert alert-info" role="status">
+                            Draw a closed area on the map, then continue to review the clients inside it.
+                        </div>
+                        <div class="ftiq_plan_wizard_card ftiq_plan_wizard_geo_card">
+                            <div class="ftiq_plan_wizard_geo_field">
+                                <field name="geo_map_field" widget="ftiq_geo_plan_map" nolabel="1" class="w-100"/>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="ftiq_plan_wizard_stage" invisible="step != 'clients'">
+                        <div class="ftiq_plan_wizard_card">
+                            <div class="ftiq_plan_wizard_card_head ftiq_plan_wizard_card_head_inline">
+                                <div>
+                                    <span class="ftiq_eyebrow">Client Selection</span>
+                                    <h3>Review the matching clients</h3>
+                                    <div class="ftiq_plan_wizard_result_meta">
+                                        <div class="ftiq_plan_wizard_result_chip">
+                                            <span>Available:</span>
+                                            <field name="candidate_partner_count" readonly="1" nolabel="1" class="oe_inline"/>
+                                        </div>
+                                        <div class="ftiq_plan_wizard_result_chip" invisible="selection_mode != 'geo'">
+                                            <span>Inside map:</span>
+                                            <field name="geo_client_count" readonly="1" nolabel="1" class="oe_inline"/>
+                                        </div>
+                                        <span class="ftiq_plan_wizard_result_chip" invisible="selection_mode == 'geo'">Mode: Clients Select</span>
+                                        <span class="ftiq_plan_wizard_result_chip" invisible="selection_mode != 'geo'">Mode: Clients GEO</span>
+                                    </div>
+                                </div>
+                                <div class="ftiq_plan_wizard_toolbar">
+                                    <button name="action_select_all" type="object" string="Select All"
+                                            class="btn ftiq_btn_secondary me-2"/>
+                                    <button name="action_deselect_all" type="object" string="Deselect All"
+                                            class="btn ftiq_btn_secondary"/>
+                                </div>
+                            </div>
+                            <div class="ftiq_plan_wizard_client_search">
+                                <field name="client_review_name" string="Filter by client name" placeholder="Search in matching clients"/>
+                            </div>
+                            <div class="ftiq_plan_wizard_clients">
+                                <field name="partner_ids"
+                                       widget="many2many_checkboxes"
+                                       domain="[('id', 'in', candidate_partner_ids), ('name', 'ilike', client_review_name)]"
+                                       nolabel="1"
+                                       options="{'no_create': True}"/>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="ftiq_plan_wizard_stage" invisible="step != 'setup'">
+                        <div class="alert alert-info" role="status">
+                            Set task details to apply to all selected clients.
+                        </div>
+                        <div class="ftiq_plan_wizard_grid ftiq_plan_wizard_grid_2">
+                            <div class="ftiq_plan_wizard_card">
+                                <div class="ftiq_plan_wizard_card_head">
+                                    <span class="ftiq_eyebrow">Plan Setup</span>
+                                    <h3>Basic Details</h3>
+                                </div>
+                                <group>
+                                    <field name="plan_name" string="Plan Name"/>
+                                    <field name="team_id" string="Sales Team" domain="[('id', 'in', allowed_team_ids)]" options="{'no_create': True}"/>
+                                    <field name="user_id" string="Rep" domain="[('id', 'in', allowed_user_ids)]" placeholder="Leave empty for all"/>
+                                    <field name="task_profile_id" string="Task Profile"/>
+                                    <field name="task_type_id" invisible="1"/>
+                                    <field name="task_generation_policy" string="Generation Policy"/>
+                                    <field name="schedule_date" string="Schedule Date"/>
+                                </group>
+                            </div>
+                            <div class="ftiq_plan_wizard_card">
+                                <div class="ftiq_plan_wizard_card_head">
+                                    <span class="ftiq_eyebrow">Execution Note</span>
+                                    <h3>Shared Note</h3>
+                                </div>
+                                <group>
+                                    <field name="note" placeholder="Optional note for all tasks"/>
+                                </group>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <footer class="ftiq_plan_wizard_footer">
+                    <div class="ftiq_plan_wizard_footer_group ftiq_plan_wizard_footer_group_start">
+                        <button string="Cancel" class="btn btn-secondary ftiq_btn_secondary" special="cancel"/>
+                        <button name="action_back" type="object" string="Back"
+                                class="btn btn-secondary ftiq_btn_secondary" invisible="step == 'type'"/>
+                    </div>
+                    <div class="ftiq_plan_wizard_footer_group ftiq_plan_wizard_footer_group_end">
+                        <button name="action_next" type="object"
+                                string="Next" class="btn btn-primary ftiq_btn_primary"
+                                invisible="step == 'setup'"/>
+                        <button name="action_next" type="object"
+                                string="Create Plan" class="btn btn-primary ftiq_btn_primary"
+                                invisible="step != 'setup'"/>
+                    </div>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_ftiq_plan_wizard" model="ir.actions.act_window">
+        <field name="name">New Plan Wizard</field>
+        <field name="res_model">ftiq.plan.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="context">{'dialog_size': 'extra-large'}</field>
+        <field name="target">new</field>
+    </record>
+
+</odoo>

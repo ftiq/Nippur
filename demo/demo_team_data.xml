@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+
+        <!-- Sales teams must exist before operational demo data creates plans/tasks. -->
+        <record id="demo_team_sanaa" model="crm.team">
+            <field name="name">Sanaa Medical Team</field>
+            <field name="user_id" ref="demo_user_supervisor1"/>
+            <field name="company_id" ref="base.main_company"/>
+        </record>
+        <record id="demo_team_aden" model="crm.team">
+            <field name="name">Aden Medical Team</field>
+            <field name="user_id" ref="demo_user_supervisor2"/>
+            <field name="company_id" ref="base.main_company"/>
+        </record>
+
+        <record id="demo_team_member_rep1" model="crm.team.member">
+            <field name="crm_team_id" ref="demo_team_sanaa"/>
+            <field name="user_id" ref="demo_user_rep1"/>
+        </record>
+        <record id="demo_team_member_rep2" model="crm.team.member">
+            <field name="crm_team_id" ref="demo_team_sanaa"/>
+            <field name="user_id" ref="demo_user_rep2"/>
+        </record>
+        <record id="demo_team_member_rep3" model="crm.team.member">
+            <field name="crm_team_id" ref="demo_team_aden"/>
+            <field name="user_id" ref="demo_user_rep3"/>
+        </record>
+
+    </data>
+</odoo>

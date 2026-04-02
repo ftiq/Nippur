@@ -1,0 +1,271 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="ftiq_daily_task_form" model="ir.ui.view">
+        <field name="name">ftiq.daily.task.form</field>
+        <field name="model">ftiq.daily.task</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <field name="confirmation_required" invisible="1"/>
+                    <button name="action_start" type="object" string="Start"
+                            class="btn-primary" invisible="state not in ('draft', 'pending', 'returned')"/>
+                    <button name="action_complete" type="object" string="Complete"
+                            class="btn-success" invisible="state != 'in_progress'"/>
+                    <button name="action_submit" type="object" string="Submit"
+                            class="btn-primary" invisible="state not in ('in_progress', 'completed', 'returned') or not confirmation_required"/>
+                    <button name="action_confirm" type="object" string="Confirm"
+                            class="btn-success" invisible="state != 'submitted' or not confirmation_required"
+                            groups="ftiq_pharma_sfa.group_ftiq_supervisor"/>
+                    <button name="action_return" type="object" string="Return"
+                            class="btn-warning" invisible="state != 'submitted' or not confirmation_required"
+                            groups="ftiq_pharma_sfa.group_ftiq_supervisor"/>
+                    <button name="action_cancel" type="object" string="Cancel"
+                            class="btn-danger" invisible="state in ('completed', 'confirmed', 'cancelled')"/>
+                    <button name="action_reset" type="object" string="Reset"
+                            invisible="state not in ('completed', 'submitted', 'confirmed', 'returned', 'cancelled')"
+                            groups="ftiq_pharma_sfa.group_ftiq_supervisor"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,pending,in_progress,submitted,confirmed,completed,returned,cancelled"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="task_profile_id"/>
+                            <field name="task_type"/>
+                            <field name="partner_id"/>
+                            <field name="associated_partner_id"/>
+                            <field name="team_id" readonly="1"/>
+                            <field name="user_id"/>
+                            <field name="supervisor_id"/>
+                        </group>
+                        <group>
+                            <field name="scheduled_date"/>
+                            <field name="completed_date"/>
+                            <field name="priority" widget="priority"/>
+                            <field name="tag_ids" widget="many2many_tags"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Details">
+                            <group>
+                                <field name="description" placeholder="Task description..."/>
+                            </group>
+                            <group>
+                                <field name="outcome" placeholder="Task outcome / result..."/>
+                            </group>
+                        </page>
+                        <page string="Related Records">
+                            <group>
+                                <group>
+                                    <field name="visit_id"/>
+                                    <field name="sale_order_id"/>
+                                    <field name="plan_id"/>
+                                    <field name="project_id"/>
+                                </group>
+                                <group>
+                                    <field name="payment_id"/>
+                                    <field name="stock_check_id"/>
+                                    <field name="plan_line_id"/>
+                                    <field name="project_task_id"/>
+                                </group>
+                            </group>
+                            <div class="text-center mt-3" invisible="state != 'in_progress'">
+                                <button name="action_create_visit" type="object" string="Create Visit"
+                                        class="btn-outline-primary me-2" icon="fa-clipboard"
+                                        invisible="task_type != 'visit' or visit_id"/>
+                                <button name="action_create_order" type="object" string="Create Order"
+                                        class="btn-outline-primary me-2" icon="fa-shopping-cart"
+                                        invisible="task_type != 'order' or sale_order_id"/>
+                                <button name="action_create_collection" type="object" string="Create Collection"
+                                        class="btn-outline-primary me-2" icon="fa-money"
+                                        invisible="task_type != 'collection' or payment_id"/>
+                                <button name="action_create_stock_check" type="object" string="Create Stock Check"
+                                        class="btn-outline-primary" icon="fa-cubes"
+                                        invisible="task_type != 'stock' or stock_check_id"/>
+                                <button name="action_create_project_task" type="object" string="Create Project Task"
+                                        class="btn-outline-secondary ms-2" icon="fa-tasks"
+                                        invisible="not project_id or project_task_id"/>
+                                <button name="action_open_project_task" type="object" string="Open Project Task"
+                                        class="btn-outline-secondary ms-2" icon="fa-external-link"
+                                        invisible="not project_task_id"/>
+                            </div>
+                        </page>
+                        <page string="Photos">
+                            <group>
+                                <group>
+                                    <field name="photo_1" widget="image" options="{'size': [200, 200]}"/>
+                                </group>
+                                <group>
+                                    <field name="photo_2" widget="image" options="{'size': [200, 200]}"/>
+                                </group>
+                                <group>
+                                    <field name="photo_3" widget="image" options="{'size': [200, 200]}"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="GPS">
+                            <group>
+                                <field name="latitude"/>
+                                <field name="longitude"/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="ftiq_daily_task_list" model="ir.ui.view">
+        <field name="name">ftiq.daily.task.list</field>
+        <field name="model">ftiq.daily.task</field>
+        <field name="arch" type="xml">
+            <list decoration-success="state in ('completed', 'confirmed')"
+                  decoration-info="state == 'in_progress'"
+                  decoration-warning="state == 'returned'"
+                  decoration-muted="state in ('draft', 'pending', 'cancelled')">
+                <field name="name"/>
+                <field name="task_profile_id"/>
+                <field name="task_type"/>
+                <field name="partner_id"/>
+                <field name="team_id" optional="show"/>
+                <field name="user_id"/>
+                <field name="project_id" optional="show"/>
+                <field name="scheduled_date"/>
+                <field name="priority" widget="priority"/>
+                <field name="state" widget="badge"
+                       decoration-success="state in ('completed', 'confirmed')"
+                       decoration-info="state == 'in_progress'"
+                       decoration-primary="state == 'submitted'"
+                       decoration-warning="state == 'returned'"
+                       decoration-muted="state in ('draft', 'pending')"
+                       decoration-danger="state == 'cancelled'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="ftiq_daily_task_kanban" model="ir.ui.view">
+        <field name="name">ftiq.daily.task.kanban</field>
+        <field name="model">ftiq.daily.task</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="state" class="o_kanban_small_column">
+                <field name="name"/>
+                <field name="task_profile_id"/>
+                <field name="task_type"/>
+                <field name="partner_id"/>
+                <field name="team_id"/>
+                <field name="user_id"/>
+                <field name="scheduled_date"/>
+                <field name="priority"/>
+                <field name="state"/>
+                <field name="visit_id"/>
+                <field name="sale_order_id"/>
+                <field name="payment_id"/>
+                <field name="stock_check_id"/>
+                <templates>
+                    <t t-name="card">
+                        <div class="oe_kanban_content">
+                            <div class="o_kanban_record_top mb-0">
+                                <strong><field name="name"/></strong>
+                                <field name="priority" widget="priority"/>
+                            </div>
+                            <div class="o_kanban_record_body">
+                                <div>
+                                    <span class="badge text-bg-secondary"><field name="task_profile_id"/></span>
+                                </div>
+                                <div><strong><field name="partner_id"/></strong></div>
+                                <div><i class="fa fa-users me-1"/><field name="team_id"/></div>
+                                <div><i class="fa fa-user me-1"/><field name="user_id"/></div>
+                                <div><i class="fa fa-calendar me-1"/><field name="scheduled_date"/></div>
+                                <div class="mt-1">
+                                    <span t-if="record.visit_id.raw_value" class="badge text-bg-info me-1">Visit</span>
+                                    <span t-if="record.sale_order_id.raw_value" class="badge text-bg-primary me-1">Order</span>
+                                    <span t-if="record.payment_id.raw_value" class="badge text-bg-success me-1">Collection</span>
+                                    <span t-if="record.stock_check_id.raw_value" class="badge text-bg-warning me-1">Stock</span>
+                                </div>
+                            </div>
+                            <div class="o_kanban_record_bottom">
+                                <div class="oe_kanban_bottom_left">
+                                    <field name="activity_ids" widget="kanban_activity"/>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <record id="ftiq_daily_task_calendar" model="ir.ui.view">
+        <field name="name">ftiq.daily.task.calendar</field>
+        <field name="model">ftiq.daily.task</field>
+        <field name="arch" type="xml">
+            <calendar date_start="scheduled_date" color="user_id" quick_create="0">
+                <field name="partner_id"/>
+                <field name="task_type"/>
+                <field name="user_id"/>
+                <field name="state"/>
+            </calendar>
+        </field>
+    </record>
+
+    <record id="ftiq_daily_task_search" model="ir.ui.view">
+        <field name="name">ftiq.daily.task.search</field>
+        <field name="model">ftiq.daily.task</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="task_profile_id"/>
+                <field name="partner_id"/>
+                <field name="team_id"/>
+                <field name="user_id"/>
+                <field name="project_id"/>
+                <filter name="today" string="Today" domain="[('scheduled_date', '&gt;=', context_today().strftime('%Y-%m-%d')), ('scheduled_date', '&lt;', (context_today() + datetime.timedelta(days=1)).strftime('%Y-%m-%d'))]"/>
+                <filter name="this_week" string="This Week" domain="[('scheduled_date', '&gt;=', (context_today() - datetime.timedelta(days=context_today().weekday())).strftime('%Y-%m-%d'))]"/>
+                <separator/>
+                <filter name="draft" string="Draft" domain="[('state', '=', 'draft')]"/>
+                <filter name="pending" string="Pending" domain="[('state', '=', 'pending')]"/>
+                <filter name="in_progress" string="In Progress" domain="[('state', '=', 'in_progress')]"/>
+                <filter name="submitted" string="Submitted" domain="[('state', '=', 'submitted')]"/>
+                <filter name="confirmed" string="Confirmed" domain="[('state', '=', 'confirmed')]"/>
+                <filter name="returned" string="Returned" domain="[('state', '=', 'returned')]"/>
+                <filter name="completed" string="Completed" domain="[('state', '=', 'completed')]"/>
+                <separator/>
+                <filter name="type_visit" string="Visit Tasks" domain="[('task_type', '=', 'visit')]"/>
+                <filter name="type_order" string="Order Tasks" domain="[('task_type', '=', 'order')]"/>
+                <filter name="type_collection" string="Collection Tasks" domain="[('task_type', '=', 'collection')]"/>
+                <filter name="type_stock" string="Stock Tasks" domain="[('task_type', '=', 'stock')]"/>
+                <separator/>
+                <group expand="0" string="Group By">
+                    <filter name="group_user" string="Representative" context="{'group_by': 'user_id'}"/>
+                    <filter name="group_team" string="Sales Team" context="{'group_by': 'team_id'}"/>
+                    <filter name="group_profile" string="Task Profile" context="{'group_by': 'task_profile_id'}"/>
+                    <filter name="group_type" string="Task Type" context="{'group_by': 'task_type'}"/>
+                    <filter name="group_partner" string="Client" context="{'group_by': 'partner_id'}"/>
+                    <filter name="group_project" string="Project" context="{'group_by': 'project_id'}"/>
+                    <filter name="group_state" string="Status" context="{'group_by': 'state'}"/>
+                    <filter name="group_date" string="Scheduled Date" context="{'group_by': 'scheduled_date:day'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_ftiq_daily_task" model="ir.actions.act_window">
+        <field name="name">Daily Tasks</field>
+        <field name="res_model">ftiq.daily.task</field>
+        <field name="view_mode">kanban,list,form,calendar</field>
+        <field name="search_view_id" ref="ftiq_daily_task_search"/>
+    </record>
+
+    <record id="action_ftiq_my_tasks" model="ir.actions.act_window">
+        <field name="name">My Tasks</field>
+        <field name="res_model">ftiq.daily.task</field>
+        <field name="view_mode">kanban,list,form,calendar</field>
+        <field name="domain">[('user_id', '=', uid)]</field>
+        <field name="context">{'default_user_id': uid, 'search_default_today': 1}</field>
+    </record>
+
+</odoo>
