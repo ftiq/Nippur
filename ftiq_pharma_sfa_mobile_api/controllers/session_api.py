@@ -28,7 +28,22 @@ class FtiqMobileSessionApi(FtiqMobileApiBase):
                 status=403,
                 code="mobile_access_denied",
             )
-        return None
+        payload = self._serialize_mobile_access(user)
+        if payload.get("enabled"):
+            return None
+        reason = payload.get("reason") or "mobile_access_denied"
+        code_map = {
+            "mobile_access_disabled": "mobile_access_disabled",
+            "missing_mobile_profile": "mobile_profile_missing",
+            "profile_role_mismatch": "mobile_profile_mismatch",
+            "missing_ftiq_role": "mobile_access_denied",
+        }
+        return self._error(
+            self._mobile_access_message(),
+            status=403,
+            code=code_map.get(reason, "mobile_access_denied"),
+            details={"mobile_access": payload},
+        )
 
     @http.route("/ftiq_mobile_api/v1/session/login", type="http", auth="none", methods=["POST"], csrf=False)
     def login(self, **kwargs):
@@ -112,6 +127,7 @@ class FtiqMobileSessionApi(FtiqMobileApiBase):
                     "server_time": fields.Datetime.to_string(fields.Datetime.now()),
                 },
                 "user": self._serialize_user(user),
+                "mobile_access": self._serialize_mobile_access(user),
             }
             return self._ok(data)
 
@@ -172,6 +188,7 @@ class FtiqMobileSessionApi(FtiqMobileApiBase):
                 "server_time": fields.Datetime.to_string(fields.Datetime.now()),
             },
             "user": self._serialize_user(device.user_id),
+            "mobile_access": self._serialize_mobile_access(device.user_id),
             "device": self._serialize_mobile_device(device),
         })
 
@@ -181,6 +198,7 @@ class FtiqMobileSessionApi(FtiqMobileApiBase):
             return denied
         return self._ok({
             "user": self._serialize_user(self._current_user()),
+            "mobile_access": self._serialize_mobile_access(self._current_user()),
         })
 
     def _bootstrap(self):
@@ -204,6 +222,7 @@ class FtiqMobileSessionApi(FtiqMobileApiBase):
         )
         return self._ok({
             "user": self._serialize_user(user),
+            "mobile_access": self._serialize_mobile_access(user),
             "company": self._serialize_company(user.company_id),
             "active_attendance": self._serialize_attendance(attendance),
             "today_tasks": [self._serialize_task(task) for task in today_tasks],
@@ -232,6 +251,7 @@ class FtiqMobileSessionApi(FtiqMobileApiBase):
             session_token = device.issue_session_token()
         return self._ok({
             "user": self._serialize_user(self._current_user()),
+            "mobile_access": self._serialize_mobile_access(self._current_user()),
             "device": self._serialize_mobile_device(device),
             "session_token": session_token.get("token") or "",
             "session_token_expires_at": session_token.get("expires_at"),

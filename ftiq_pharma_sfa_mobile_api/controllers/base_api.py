@@ -9,6 +9,8 @@ from odoo.http import request
 from odoo.osv import expression
 from odoo.tools.mail import html2plaintext
 
+from odoo.addons.ftiq_pharma_sfa.models.mobile_access import MOBILE_CATALOG_BY_FULL_KEY
+
 
 _logger = logging.getLogger(__name__)
 
@@ -141,6 +143,13 @@ class FtiqMobileApiBase(http.Controller):
     def _current_role(self):
         return self._role_of(self._current_user())
 
+    def _role_label(self, role):
+        return {
+            "manager": _("Manager"),
+            "supervisor": _("Supervisor"),
+            "representative": _("Representative"),
+        }.get(role or "", _("Representative"))
+
     def _scope_users(self):
         user = self._current_user()
         teams_model = request.env["crm.team"]
@@ -271,6 +280,75 @@ class FtiqMobileApiBase(http.Controller):
             "ftiq_accuracy": payload.get("accuracy", 0),
             "ftiq_is_mock": self._payload_bool(payload, "is_mock", False),
         }
+
+    def _serialize_mobile_access(self, user=None):
+        target_user = user or self._current_user()
+        if not target_user:
+            return {}
+        try:
+            user_record = request.env["res.users"].browse(target_user.id).exists()
+        except (AccessError, AttributeError, ValueError):
+            return {}
+        if not user_record:
+            return {}
+        return user_record.get_ftiq_mobile_access_payload()
+
+    def _current_mobile_access(self):
+        cached = getattr(request, "_ftiq_mobile_access_payload", None)
+        if cached is None:
+            cached = self._serialize_mobile_access()
+            request._ftiq_mobile_access_payload = cached
+        return cached or {}
+
+    def _mobile_permission(self, scope, key, default=False):
+        payload = self._current_mobile_access()
+        if not payload.get("enabled"):
+            return False
+        scope_map = {
+            "navigation": "navigation",
+            "workspace": "workspaces",
+            "section": "sections",
+            "action": "actions",
+            "global_feature": "global_features",
+        }
+        bucket = payload.get(scope_map.get(scope, ""), {})
+        if not isinstance(bucket, dict):
+            return default
+        if key not in bucket:
+            return default
+        return bool(bucket.get(key))
+
+    def _ensure_mobile_permission(self, scope, key, operation):
+        if self._mobile_permission(scope, key):
+            return
+        raise AccessError(_("You do not have permission to %s.") % operation)
+
+    def _enabled_sections(self, *keys):
+        return [
+            key for key in keys
+            if self._mobile_permission("section", key)
+        ]
+
+    def _ui_action_definition(self, action_key, variant):
+        entry = MOBILE_CATALOG_BY_FULL_KEY.get("action.%s" % action_key)
+        if not entry:
+            return {}
+        return {
+            "key": action_key.split(".")[-1],
+            "full_key": action_key,
+            "variant": variant,
+            "ui_order": entry["ui_order"],
+        }
+
+    def _build_ui_actions(self, *definitions):
+        actions = []
+        for action_key, enabled, variant in definitions:
+            if not enabled:
+                continue
+            action = self._ui_action_definition(action_key, variant)
+            if action:
+                actions.append(action)
+        return actions
 
     def _scope_domain(self, model_name):
         user = self._current_user()
@@ -534,7 +612,8 @@ class FtiqMobileApiBase(http.Controller):
     def _search_scoped(self, model_name, domain=None, order=None, limit=None):
         model = request.env[model_name]
         try:
-            model.check_access("read")
+            if not model.check_access_rights("read", raise_exception=False):
+                return model.browse()
         except (AccessError, ValueError):
             return model.browse()
         final_domain = expression.AND([self._scope_domain(model_name), domain or []])
@@ -566,7 +645,8 @@ class FtiqMobileApiBase(http.Controller):
         if not scoped_record:
             return request.env[model_name]
         try:
-            scoped_record.check_access("read")
+            if not scoped_record.check_access_rights("read", raise_exception=False):
+                return request.env[model_name]
         except (AccessError, ValueError):
             return request.env[model_name]
         return scoped_record
@@ -602,7 +682,8 @@ class FtiqMobileApiBase(http.Controller):
         if not record:
             return False
         try:
-            record.check_access(mode)
+            if not record.check_access_rights(mode, raise_exception=False):
+                return False
         except (AccessError, ValueError):
             return False
         return True
@@ -805,6 +886,12 @@ class FtiqMobileApiBase(http.Controller):
                 date_value = str(value)
                 break
         can_write = self._record_has_access(record, "write")
+        can_post_message = bool(
+            can_write and self._mobile_permission("action", "thread.post_message")
+        )
+        can_upload_attachment = bool(
+            can_write and self._mobile_permission("action", "thread.upload_attachment")
+        )
         return {
             "model": record._name,
             "id": record.id,
@@ -814,9 +901,13 @@ class FtiqMobileApiBase(http.Controller):
             "partner": self._serialize_partner_card(partner) if partner else {},
             "user": self._serialize_user(user) if user else {},
             "available_actions": {
-                "post_message": can_write,
-                "upload_attachment": can_write,
+                "post_message": can_post_message,
+                "upload_attachment": can_upload_attachment,
             },
+            "ui_actions": self._build_ui_actions(
+                ("thread.post_message", can_post_message, "primary"),
+                ("thread.upload_attachment", can_upload_attachment, "secondary"),
+            ),
         }
 
     def _serialize_thread_feed(self, record, limit=40):
@@ -844,6 +935,23 @@ class FtiqMobileApiBase(http.Controller):
         return {
             "record": self._serialize_thread_record(record),
             "current_user_id": self._current_user().id,
+            "visible_sections": self._enabled_sections(
+                "thread.messages",
+                "thread.attachments",
+                "thread.followers",
+            ),
+            "ui_actions": self._build_ui_actions(
+                (
+                    "thread.post_message",
+                    self._mobile_permission("action", "thread.post_message"),
+                    "primary",
+                ),
+                (
+                    "thread.upload_attachment",
+                    self._mobile_permission("action", "thread.upload_attachment"),
+                    "secondary",
+                ),
+            ),
             "messages": [
                 self._serialize_thread_message(message, notification_map=notification_map)
                 for message in ordered_messages
@@ -1042,6 +1150,7 @@ class FtiqMobileApiBase(http.Controller):
             "name": user.display_name,
             "login": user.login,
             "role": self._role_of(user),
+            "role_label": self._role_label(self._role_of(user)),
             "email": user.email or (partner.email if partner else "") or "",
             "phone": partner.phone if partner else "",
             "mobile": partner.mobile if partner else "",
@@ -1060,6 +1169,10 @@ class FtiqMobileApiBase(http.Controller):
     def _serialize_attendance(self, attendance):
         if not attendance:
             return {}
+        can_check_out = bool(
+            attendance.state == "checked_in"
+            and self._mobile_permission("workspace", "attendance")
+        )
         return {
             "id": attendance.id,
             "name": attendance.display_name,
@@ -1082,8 +1195,9 @@ class FtiqMobileApiBase(http.Controller):
                 "is_mock": attendance.check_out_is_mock,
             },
             "available_actions": {
-                "check_out": attendance.state == "checked_in",
+                "check_out": can_check_out,
             },
+            "ui_actions": [],
         }
 
     def _serialize_partner_card(self, partner):
@@ -1117,6 +1231,51 @@ class FtiqMobileApiBase(http.Controller):
     def _serialize_visit(self, visit, detailed=False):
         is_owner = self._is_current_user_owner(visit)
         can_review = self._current_role() in {"supervisor", "manager"}
+        can_edit = bool(
+            is_owner
+            and visit.state in ("draft", "in_progress", "returned")
+            and self._mobile_permission("action", "visit.edit")
+        )
+        can_start = bool(
+            is_owner
+            and visit.state == "draft"
+            and self._mobile_permission("action", "visit.start")
+        )
+        can_end = bool(
+            is_owner
+            and visit.state == "in_progress"
+            and self._mobile_permission("action", "visit.end")
+        )
+        can_submit = bool(
+            is_owner
+            and visit.state in ("in_progress", "returned")
+            and self._mobile_permission("action", "visit.submit")
+        )
+        can_approve = bool(
+            visit.state == "submitted"
+            and can_review
+            and self._mobile_permission("action", "visit.approve")
+        )
+        can_return = bool(
+            visit.state == "submitted"
+            and can_review
+            and self._mobile_permission("action", "visit.return")
+        )
+        can_create_order = bool(
+            is_owner
+            and visit.state == "in_progress"
+            and self._mobile_permission("action", "visit.create_order")
+        )
+        can_create_collection = bool(
+            is_owner
+            and visit.state == "in_progress"
+            and self._mobile_permission("action", "visit.create_collection")
+        )
+        can_create_stock_check = bool(
+            is_owner
+            and visit.state == "in_progress"
+            and self._mobile_permission("action", "visit.create_stock_check")
+        )
         data = {
             "id": visit.id,
             "name": visit.display_name,
@@ -1157,17 +1316,34 @@ class FtiqMobileApiBase(http.Controller):
                 "attendance_id": visit.attendance_id.id if visit.attendance_id else False,
                 "plan_line_id": visit.plan_line_id.id if visit.plan_line_id else False,
             },
+            "visible_sections": self._enabled_sections(
+                "visit.evidence",
+                "visit.related_records",
+                "visit.thread",
+                "visit.activities",
+            ),
             "available_actions": {
-                "edit": is_owner and visit.state in ("draft", "in_progress", "returned"),
-                "start": is_owner and visit.state == "draft",
-                "end": is_owner and visit.state == "in_progress",
-                "submit": is_owner and visit.state in ("in_progress", "returned"),
-                "approve": visit.state == "submitted" and can_review,
-                "return": visit.state == "submitted" and can_review,
-                "create_order": is_owner and visit.state == "in_progress",
-                "create_collection": is_owner and visit.state == "in_progress",
-                "create_stock_check": is_owner and visit.state == "in_progress",
+                "edit": can_edit,
+                "start": can_start,
+                "end": can_end,
+                "submit": can_submit,
+                "approve": can_approve,
+                "return": can_return,
+                "create_order": can_create_order,
+                "create_collection": can_create_collection,
+                "create_stock_check": can_create_stock_check,
             },
+            "ui_actions": self._build_ui_actions(
+                ("visit.start", can_start, "primary"),
+                ("visit.end", can_end, "primary"),
+                ("visit.submit", can_submit, "primary"),
+                ("visit.approve", can_approve, "primary"),
+                ("visit.edit", can_edit, "secondary"),
+                ("visit.return", can_return, "destructive"),
+                ("visit.create_order", can_create_order, "secondary"),
+                ("visit.create_collection", can_create_collection, "secondary"),
+                ("visit.create_stock_check", can_create_stock_check, "secondary"),
+            ),
         }
         if detailed:
             data["product_lines"] = [{
@@ -1257,6 +1433,37 @@ class FtiqMobileApiBase(http.Controller):
     def _serialize_task(self, task, detailed=False):
         is_owner = self._is_current_user_owner(task)
         role = self._current_role()
+        can_edit = bool(
+            is_owner
+            and task.state in ("draft", "pending", "in_progress", "returned")
+            and self._mobile_permission("action", "task.edit")
+        )
+        can_start = bool(
+            is_owner
+            and task.state in ("draft", "pending", "returned")
+            and self._mobile_permission("action", "task.start")
+        )
+        can_complete = bool(
+            is_owner
+            and task.state == "in_progress"
+            and self._mobile_permission("action", "task.complete")
+        )
+        can_submit = bool(
+            is_owner
+            and task.state in ("in_progress", "completed", "returned")
+            and task.confirmation_required
+            and self._mobile_permission("action", "task.submit")
+        )
+        can_confirm = bool(
+            task.state == "submitted"
+            and role in {"supervisor", "manager"}
+            and self._mobile_permission("action", "task.confirm")
+        )
+        can_return = bool(
+            task.state == "submitted"
+            and role in {"supervisor", "manager"}
+            and self._mobile_permission("action", "task.return")
+        )
         data = {
             "id": task.id,
             "name": task.display_name,
@@ -1300,14 +1507,27 @@ class FtiqMobileApiBase(http.Controller):
                     "project.task",
                 ),
             },
+            "visible_sections": self._enabled_sections(
+                "task.evidence",
+                "task.thread",
+                "task.activities",
+            ),
             "available_actions": {
-                "edit": is_owner and task.state in ("draft", "pending", "in_progress", "returned"),
-                "start": is_owner and task.state in ("draft", "pending", "returned"),
-                "complete": is_owner and task.state == "in_progress",
-                "submit": is_owner and task.state in ("in_progress", "completed", "returned") and task.confirmation_required,
-                "confirm": task.state == "submitted" and role in {"supervisor", "manager"},
-                "return": task.state == "submitted" and role in {"supervisor", "manager"},
+                "edit": can_edit,
+                "start": can_start,
+                "complete": can_complete,
+                "submit": can_submit,
+                "confirm": can_confirm,
+                "return": can_return,
             },
+            "ui_actions": self._build_ui_actions(
+                ("task.start", can_start, "primary"),
+                ("task.complete", can_complete, "primary"),
+                ("task.submit", can_submit, "primary"),
+                ("task.confirm", can_confirm, "primary"),
+                ("task.edit", can_edit, "secondary"),
+                ("task.return", can_return, "destructive"),
+            ),
         }
         if detailed:
             data["activities"] = self._serialize_activities_for_record(task)
@@ -1594,7 +1814,10 @@ class FtiqMobileApiBase(http.Controller):
             },
             "deep_link": deep_link,
             "available_actions": {
-                "mark_done": bool(activity.can_write),
+                "mark_done": bool(
+                    activity.can_write
+                    and self._mobile_permission("action", "activity.mark_done")
+                ),
             },
         }
 
@@ -1614,6 +1837,16 @@ class FtiqMobileApiBase(http.Controller):
 
     def _serialize_order(self, order, detailed=False):
         is_owner = self._is_current_user_owner(order)
+        can_edit = bool(
+            is_owner
+            and order.state in {"draft", "sent"}
+            and self._mobile_permission("action", "order.edit")
+        )
+        can_confirm = bool(
+            is_owner
+            and order.state in {"draft", "sent"}
+            and self._mobile_permission("action", "order.confirm")
+        )
         data = {
             "id": order.id,
             "name": order.name,
@@ -1643,9 +1876,13 @@ class FtiqMobileApiBase(http.Controller):
                 ),
             },
             "available_actions": {
-                "edit": is_owner and order.state in {"draft", "sent"},
-                "confirm": is_owner and order.state in {"draft", "sent"},
+                "edit": can_edit,
+                "confirm": can_confirm,
             },
+            "ui_actions": self._build_ui_actions(
+                ("order.confirm", can_confirm, "primary"),
+                ("order.edit", can_edit, "secondary"),
+            ),
         }
         if detailed:
             data["lines"] = [{
@@ -1664,9 +1901,21 @@ class FtiqMobileApiBase(http.Controller):
 
     def _serialize_purchase_order(self, order, detailed=False):
         can_manage = self._current_role() == "manager"
-        can_approve = can_manage and order.state == "to approve"
-        can_confirm = can_manage and order.state in {"draft", "sent"}
-        can_reject = can_manage and order.state in {"draft", "sent", "to approve", "purchase"}
+        can_approve = bool(
+            can_manage
+            and order.state == "to approve"
+            and self._mobile_permission("action", "purchase.approve")
+        )
+        can_confirm = bool(
+            can_manage
+            and order.state in {"draft", "sent"}
+            and self._mobile_permission("action", "purchase.confirm")
+        )
+        can_reject = bool(
+            can_manage
+            and order.state in {"draft", "sent", "to approve", "purchase"}
+            and self._mobile_permission("action", "purchase.reject")
+        )
         data = {
             "id": order.id,
             "name": order.name or order.display_name,
@@ -1701,6 +1950,11 @@ class FtiqMobileApiBase(http.Controller):
                 "approve": can_approve,
                 "reject": can_reject,
             },
+            "ui_actions": self._build_ui_actions(
+                ("purchase.confirm", can_confirm, "primary"),
+                ("purchase.approve", can_approve, "primary"),
+                ("purchase.reject", can_reject, "destructive"),
+            ),
         }
         if detailed:
             lines = order.order_line.filtered(lambda line: not line.display_type)
@@ -1844,6 +2098,18 @@ class FtiqMobileApiBase(http.Controller):
 
     def _serialize_expense(self, expense, detailed=False):
         is_owner = self._is_current_user_owner(expense)
+        can_edit = bool(
+            is_owner
+            and expense.is_editable
+            and expense.state in {"draft", "reported"}
+            and self._mobile_permission("action", "expense.edit")
+        )
+        can_submit = bool(
+            is_owner
+            and expense.is_editable
+            and expense.state in {"draft", "reported"}
+            and self._mobile_permission("action", "expense.submit")
+        )
         data = {
             "id": expense.id,
             "name": expense.name or expense.product_id.display_name or "",
@@ -1891,9 +2157,13 @@ class FtiqMobileApiBase(http.Controller):
                 "longitude": expense.ftiq_longitude,
             },
             "available_actions": {
-                "edit": bool(is_owner and expense.is_editable and expense.state in {"draft", "reported"}),
-                "submit": bool(is_owner and expense.is_editable and expense.state in {"draft", "reported"}),
+                "edit": can_edit,
+                "submit": can_submit,
             },
+            "ui_actions": self._build_ui_actions(
+                ("expense.submit", can_submit, "primary"),
+                ("expense.edit", can_edit, "secondary"),
+            ),
         }
         if detailed:
             data["attachment_count"] = max(expense.nb_attachment, 1 if expense.ftiq_receipt_image else 0)
@@ -1903,6 +2173,27 @@ class FtiqMobileApiBase(http.Controller):
     def _serialize_collection(self, payment, detailed=False):
         is_owner = self._is_current_user_owner(payment)
         can_verify = self._current_role() in {"supervisor", "manager"}
+        can_edit = bool(
+            is_owner
+            and payment.ftiq_collection_state == "draft"
+            and payment.state == "draft"
+            and self._mobile_permission("action", "collection.edit")
+        )
+        can_collect = bool(
+            is_owner
+            and payment.ftiq_collection_state == "draft"
+            and self._mobile_permission("action", "collection.collect")
+        )
+        can_deposit = bool(
+            is_owner
+            and payment.ftiq_collection_state == "collected"
+            and self._mobile_permission("action", "collection.deposit")
+        )
+        can_verify_action = bool(
+            payment.ftiq_collection_state == "deposited"
+            and can_verify
+            and self._mobile_permission("action", "collection.verify")
+        )
         data = {
             "id": payment.id,
             "name": payment.display_name,
@@ -1942,11 +2233,17 @@ class FtiqMobileApiBase(http.Controller):
             },
             "receipt_image_url": self._image_url("account.payment", payment.id, "ftiq_receipt_image") if payment.ftiq_receipt_image else "",
             "available_actions": {
-                "edit": is_owner and payment.ftiq_collection_state == "draft" and payment.state == "draft",
-                "collect": is_owner and payment.ftiq_collection_state == "draft",
-                "deposit": is_owner and payment.ftiq_collection_state == "collected",
-                "verify": payment.ftiq_collection_state == "deposited" and can_verify,
+                "edit": can_edit,
+                "collect": can_collect,
+                "deposit": can_deposit,
+                "verify": can_verify_action,
             },
+            "ui_actions": self._build_ui_actions(
+                ("collection.collect", can_collect, "primary"),
+                ("collection.deposit", can_deposit, "primary"),
+                ("collection.verify", can_verify_action, "primary"),
+                ("collection.edit", can_edit, "secondary"),
+            ),
         }
         if detailed:
             data["allocations"] = [{
@@ -1968,6 +2265,26 @@ class FtiqMobileApiBase(http.Controller):
     def _serialize_stock_check(self, stock_check, detailed=False):
         is_owner = self._is_current_user_owner(stock_check)
         can_review = self._current_role() in {"supervisor", "manager"}
+        can_edit = bool(
+            is_owner
+            and stock_check.state == "draft"
+            and self._mobile_permission("action", "stock_check.edit")
+        )
+        can_submit = bool(
+            is_owner
+            and stock_check.state == "draft"
+            and self._mobile_permission("action", "stock_check.submit")
+        )
+        can_review_action = bool(
+            stock_check.state == "submitted"
+            and can_review
+            and self._mobile_permission("action", "stock_check.review")
+        )
+        can_reset = bool(
+            stock_check.state == "submitted"
+            and can_review
+            and self._mobile_permission("action", "stock_check.reset")
+        )
         data = {
             "id": stock_check.id,
             "name": stock_check.display_name,
@@ -1994,11 +2311,17 @@ class FtiqMobileApiBase(http.Controller):
                 ),
             },
             "available_actions": {
-                "edit": is_owner and stock_check.state == "draft",
-                "submit": is_owner and stock_check.state == "draft",
-                "review": stock_check.state == "submitted" and can_review,
-                "reset": stock_check.state == "submitted" and can_review,
+                "edit": can_edit,
+                "submit": can_submit,
+                "review": can_review_action,
+                "reset": can_reset,
             },
+            "ui_actions": self._build_ui_actions(
+                ("stock_check.submit", can_submit, "primary"),
+                ("stock_check.review", can_review_action, "primary"),
+                ("stock_check.edit", can_edit, "secondary"),
+                ("stock_check.reset", can_reset, "destructive"),
+            ),
         }
         if detailed:
             data["lines"] = [{

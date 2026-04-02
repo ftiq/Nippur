@@ -556,6 +556,16 @@ class FtiqMobileOperationsApi(FtiqMobileApiBase):
         if not purchase:
             return self._error(_("Purchase order not found."), status=404, code="not_found")
         self._ensure_role({"manager"}, "review this purchase order")
+        permission_by_action = {
+            "confirm": "purchase.confirm",
+            "approve": "purchase.approve",
+            "reject": "purchase.reject",
+        }
+        self._ensure_mobile_permission(
+            "action",
+            permission_by_action.get(action_name, ""),
+            "review this purchase order",
+        )
         note = (payload.get("note") or "").strip()
         if action_name == "confirm":
             purchase.button_confirm()
@@ -574,6 +584,7 @@ class FtiqMobileOperationsApi(FtiqMobileApiBase):
         return self._ok(self._serialize_purchase_order(purchase, detailed=True))
 
     def _finance_workspace(self):
+        self._ensure_mobile_permission("workspace", "finance", "open the finance workspace")
         self._sync_live_activity_notifications()
         user = self._current_user()
         role = self._current_role()
@@ -649,7 +660,11 @@ class FtiqMobileOperationsApi(FtiqMobileApiBase):
 
         data = {
             "role": role,
-            "can_publish_notifications": role in {"supervisor", "manager"},
+            "visible_sections": self._enabled_sections(
+                "finance.notifications",
+                "finance.schedules",
+            ),
+            "ui_actions": [],
             "currency_symbol": user.company_id.currency_id.symbol or "",
             "generated_at": fields.Datetime.to_string(fields.Datetime.now()),
             "summary": {
@@ -756,6 +771,7 @@ class FtiqMobileOperationsApi(FtiqMobileApiBase):
         activity = self._browse_scoped("mail.activity", activity_id).exists()
         if not activity:
             return self._error(_("Activity not found."), status=404, code="not_found")
+        self._ensure_mobile_permission("action", "activity.mark_done", "complete this activity")
         feedback = (payload.get("feedback") or "").strip()
         if feedback:
             activity.action_feedback(feedback=feedback)
@@ -829,6 +845,7 @@ class FtiqMobileOperationsApi(FtiqMobileApiBase):
         record = self._browse_thread_record(model_name, record_id)
         if not record:
             return self._error(_("Record not found."), status=404, code="not_found")
+        self._ensure_mobile_permission("action", "thread.post_message", "post messages on this record")
         message = record.message_post(
             body=html_escape(body).replace("\n", "<br/>"),
             subtype_xmlid="mail.mt_comment",
@@ -878,6 +895,11 @@ class FtiqMobileOperationsApi(FtiqMobileApiBase):
         record = self._browse_thread_record(model_name, record_id)
         if not record:
             return self._error(_("Record not found."), status=404, code="not_found")
+        self._ensure_mobile_permission(
+            "action",
+            "thread.upload_attachment",
+            "upload attachments on this record",
+        )
         if not self._record_has_access(record, "write"):
             raise AccessError(_("You do not have permission to update this record."))
         datas = (payload.get("data") or payload.get("datas") or "").strip()
@@ -926,6 +948,7 @@ class FtiqMobileOperationsApi(FtiqMobileApiBase):
         )
 
     def _active_attendance(self):
+        self._ensure_mobile_permission("workspace", "attendance", "open attendance")
         user = self._current_user()
         attendance = request.env["ftiq.field.attendance"].get_active_attendance(
             user.id,
@@ -934,6 +957,7 @@ class FtiqMobileOperationsApi(FtiqMobileApiBase):
         return self._ok(self._serialize_attendance(attendance))
 
     def _attendance_history(self):
+        self._ensure_mobile_permission("workspace", "attendance", "open attendance")
         limit = self._args_int("limit", 20)
         attendances = self._search_scoped(
             "ftiq.field.attendance",
@@ -944,6 +968,7 @@ class FtiqMobileOperationsApi(FtiqMobileApiBase):
         return self._ok({"items": items}, meta={"count": len(items)})
 
     def _attendance_check_out(self):
+        self._ensure_mobile_permission("workspace", "attendance", "check out attendance")
         payload = self._json_body()
         replay = self._replay_mobile_request(
             payload,
@@ -989,6 +1014,7 @@ class FtiqMobileOperationsApi(FtiqMobileApiBase):
 
     def _visit_create(self):
         payload = self._json_body()
+        self._ensure_mobile_permission("action", "visit.edit", "create this visit")
         replay = self._replay_mobile_request(
             payload,
             lambda record, detailed=True: self._serialize_visit(record, detailed=detailed),
@@ -1024,6 +1050,7 @@ class FtiqMobileOperationsApi(FtiqMobileApiBase):
 
     def _visit_save(self, visit_id):
         payload = self._json_body()
+        self._ensure_mobile_permission("action", "visit.edit", "update this visit")
         replay = self._replay_mobile_request(
             payload,
             lambda record, detailed=True: self._serialize_visit(record, detailed=detailed),
@@ -1049,6 +1076,16 @@ class FtiqMobileOperationsApi(FtiqMobileApiBase):
         visit = self._browse_scoped("ftiq.visit", visit_id).exists()
         if not visit:
             return self._error(_("Visit not found."), status=404, code="not_found")
+        action_key_by_method = {
+            "action_start": "visit.start",
+            "action_end": "visit.end",
+            "action_submit": "visit.submit",
+            "action_approve": "visit.approve",
+            "action_return": "visit.return",
+        }
+        action_key = action_key_by_method.get(method_name)
+        if action_key:
+            self._ensure_mobile_permission("action", action_key, "change this visit")
         if method_name in {"action_approve", "action_return"}:
             self._ensure_role({"supervisor", "manager"}, "review this visit")
         else:
@@ -1128,6 +1165,7 @@ class FtiqMobileOperationsApi(FtiqMobileApiBase):
 
     def _task_save(self, task_id):
         payload = self._json_body()
+        self._ensure_mobile_permission("action", "task.edit", "update this task")
         replay = self._replay_mobile_request(
             payload,
             lambda record, detailed=True: self._serialize_task(record),
@@ -1169,6 +1207,16 @@ class FtiqMobileOperationsApi(FtiqMobileApiBase):
         task = self._browse_scoped("ftiq.daily.task", task_id).exists()
         if not task:
             return self._error(_("Task not found."), status=404, code="not_found")
+        action_key_by_method = {
+            "action_start": "task.start",
+            "action_complete": "task.complete",
+            "action_submit": "task.submit",
+            "action_confirm": "task.confirm",
+            "action_return": "task.return",
+        }
+        action_key = action_key_by_method.get(method_name)
+        if action_key:
+            self._ensure_mobile_permission("action", action_key, "change this task")
         if method_name in {"action_confirm", "action_return"}:
             self._ensure_role({"supervisor", "manager"}, "review this task")
         else:
@@ -1209,6 +1257,7 @@ class FtiqMobileOperationsApi(FtiqMobileApiBase):
 
     def _expense_create(self):
         payload = self._json_body()
+        self._ensure_mobile_permission("action", "expense.edit", "create this expense")
         replay = self._replay_mobile_request(
             payload,
             lambda record, detailed=True: self._serialize_expense(record, detailed=detailed),
@@ -1277,6 +1326,7 @@ class FtiqMobileOperationsApi(FtiqMobileApiBase):
 
     def _expense_save(self, expense_id):
         payload = self._json_body()
+        self._ensure_mobile_permission("action", "expense.edit", "update this expense")
         replay = self._replay_mobile_request(
             payload,
             lambda record, detailed=True: self._serialize_expense(record, detailed=detailed),
@@ -1328,6 +1378,8 @@ class FtiqMobileOperationsApi(FtiqMobileApiBase):
         expense = self._browse_scoped("hr.expense", expense_id).exists()
         if not expense:
             return self._error(_("Expense not found."), status=404, code="not_found")
+        if method_name == "action_submit":
+            self._ensure_mobile_permission("action", "expense.submit", "submit this expense")
         self._ensure_current_user_owns(expense, "submit this expense")
         getattr(expense, method_name)()
         self._remember_mobile_request(payload, expense)
@@ -1362,6 +1414,7 @@ class FtiqMobileOperationsApi(FtiqMobileApiBase):
 
     def _order_create(self):
         payload = self._json_body()
+        self._ensure_mobile_permission("action", "order.edit", "create this order")
         replay = self._replay_mobile_request(
             payload,
             lambda record, detailed=True: self._serialize_order(record, detailed=detailed),
@@ -1372,6 +1425,7 @@ class FtiqMobileOperationsApi(FtiqMobileApiBase):
         if payload.get("visit_id") and not visit:
             return self._error(_("Visit not found."), status=404, code="not_found")
         if visit:
+            self._ensure_mobile_permission("action", "visit.create_order", "create this order")
             self._ensure_current_user_owns(visit, "create this order")
         partner_id = payload.get("partner_id") or (visit.partner_id.id if visit else False)
         if not partner_id:
@@ -1395,6 +1449,7 @@ class FtiqMobileOperationsApi(FtiqMobileApiBase):
 
     def _order_save(self, order_id):
         payload = self._json_body()
+        self._ensure_mobile_permission("action", "order.edit", "update this order")
         replay = self._replay_mobile_request(
             payload,
             lambda record, detailed=True: self._serialize_order(record, detailed=detailed),
@@ -1430,6 +1485,7 @@ class FtiqMobileOperationsApi(FtiqMobileApiBase):
         order = self._browse_scoped("sale.order", order_id).exists()
         if not order:
             return self._error(_("Order not found."), status=404, code="not_found")
+        self._ensure_mobile_permission("action", "order.confirm", "confirm this order")
         self._ensure_current_user_owns(order, "confirm this order")
         order.with_context(**self._geo_context_from_payload(payload)).action_confirm()
         self._remember_mobile_request(payload, order)
@@ -1488,6 +1544,7 @@ class FtiqMobileOperationsApi(FtiqMobileApiBase):
 
     def _collection_create(self):
         payload = self._json_body()
+        self._ensure_mobile_permission("action", "collection.edit", "create this collection")
         replay = self._replay_mobile_request(
             payload,
             lambda record, detailed=True: self._serialize_collection(record, detailed=detailed),
@@ -1501,6 +1558,7 @@ class FtiqMobileOperationsApi(FtiqMobileApiBase):
         if payload.get("task_id") and not task:
             return self._error(_("Task not found."), status=404, code="not_found")
         if visit:
+            self._ensure_mobile_permission("action", "visit.create_collection", "create this collection")
             self._ensure_current_user_owns(visit, "create this collection")
         if task:
             self._ensure_current_user_owns(task, "create this collection")
@@ -1552,6 +1610,7 @@ class FtiqMobileOperationsApi(FtiqMobileApiBase):
 
     def _collection_save(self, payment_id):
         payload = self._json_body()
+        self._ensure_mobile_permission("action", "collection.edit", "update this collection")
         replay = self._replay_mobile_request(
             payload,
             lambda record, detailed=True: self._serialize_collection(record, detailed=detailed),
@@ -1577,6 +1636,14 @@ class FtiqMobileOperationsApi(FtiqMobileApiBase):
         payment = self._browse_scoped("account.payment", payment_id).exists()
         if not payment:
             return self._error(_("Collection not found."), status=404, code="not_found")
+        action_key_by_method = {
+            "action_ftiq_collect": "collection.collect",
+            "action_ftiq_deposit": "collection.deposit",
+            "action_ftiq_verify": "collection.verify",
+        }
+        action_key = action_key_by_method.get(method_name)
+        if action_key:
+            self._ensure_mobile_permission("action", action_key, "change this collection")
         if method_name == "action_ftiq_verify":
             self._ensure_role({"supervisor", "manager"}, "verify this collection")
         else:
@@ -1614,6 +1681,7 @@ class FtiqMobileOperationsApi(FtiqMobileApiBase):
 
     def _stock_check_create(self):
         payload = self._json_body()
+        self._ensure_mobile_permission("action", "stock_check.edit", "create this stock check")
         replay = self._replay_mobile_request(
             payload,
             lambda record, detailed=True: self._serialize_stock_check(record, detailed=detailed),
@@ -1624,6 +1692,7 @@ class FtiqMobileOperationsApi(FtiqMobileApiBase):
         if payload.get("visit_id") and not visit:
             return self._error(_("Visit not found."), status=404, code="not_found")
         if visit:
+            self._ensure_mobile_permission("action", "visit.create_stock_check", "create this stock check")
             self._ensure_current_user_owns(visit, "create this stock check")
         partner_id = payload.get("partner_id") or (visit.partner_id.id if visit else False)
         if not partner_id:
@@ -1648,6 +1717,7 @@ class FtiqMobileOperationsApi(FtiqMobileApiBase):
 
     def _stock_check_save(self, check_id):
         payload = self._json_body()
+        self._ensure_mobile_permission("action", "stock_check.edit", "update this stock check")
         replay = self._replay_mobile_request(
             payload,
             lambda record, detailed=True: self._serialize_stock_check(record, detailed=detailed),
@@ -1689,6 +1759,14 @@ class FtiqMobileOperationsApi(FtiqMobileApiBase):
         check = self._browse_scoped("ftiq.stock.check", check_id).exists()
         if not check:
             return self._error(_("Stock check not found."), status=404, code="not_found")
+        action_key_by_method = {
+            "action_submit": "stock_check.submit",
+            "action_review": "stock_check.review",
+            "action_reset_draft": "stock_check.reset",
+        }
+        action_key = action_key_by_method.get(method_name)
+        if action_key:
+            self._ensure_mobile_permission("action", action_key, "change this stock check")
         if method_name in {"action_review", "action_reset_draft"}:
             self._ensure_role({"supervisor", "manager"}, "review this stock check")
         else:

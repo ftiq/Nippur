@@ -21,6 +21,7 @@ class FtiqMobileTeamApi(FtiqMobileApiBase):
         return self._dispatch(self._team_hub_message_create)
 
     def _team_hub(self):
+        self._ensure_mobile_permission("workspace", "team_hub", "open the team hub")
         role, teams, scope_users = self._scope_users()
         if role not in {"supervisor", "manager"}:
             raise AccessError(_("You do not have permission to open the team hub."))
@@ -68,6 +69,23 @@ class FtiqMobileTeamApi(FtiqMobileApiBase):
             {
                 "role": role,
                 "current_user": self._serialize_user(current_user),
+                "visible_sections": self._enabled_sections(
+                    "team.members",
+                    "team.messages",
+                    "team.tasks",
+                ),
+                "ui_actions": self._build_ui_actions(
+                    (
+                        "team.publish_note",
+                        self._mobile_permission("action", "team.publish_note"),
+                        "secondary",
+                    ),
+                    (
+                        "team.publish_alert",
+                        self._mobile_permission("action", "team.publish_alert"),
+                        "primary",
+                    ),
+                ),
                 "teams": [
                     {
                         "id": team.id,
@@ -88,13 +106,16 @@ class FtiqMobileTeamApi(FtiqMobileApiBase):
         return self._ok(self._serialize_team_message(message, detailed=True))
 
     def _team_hub_message_create(self):
-        self._ensure_role({"supervisor", "manager"}, "publish team messages")
         payload = self._json_body()
+        self._ensure_role({"supervisor", "manager"}, "publish team messages")
+        message_type = (payload.get("message_type") or "note").strip() or "note"
+        permission_key = "team.publish_alert" if message_type == "alert" else "team.publish_note"
+        self._ensure_mobile_permission("action", permission_key, "publish team messages")
         message = request.env["ftiq.team.message"].create(
             {
                 "subject": (payload.get("subject") or "").strip(),
                 "body": (payload.get("body") or "").strip(),
-                "message_type": (payload.get("message_type") or "note").strip() or "note",
+                "message_type": message_type,
                 "priority": (payload.get("priority") or "normal").strip() or "normal",
                 "team_id": payload.get("team_id"),
                 "target_user_id": payload.get("target_user_id") or False,
