@@ -1,4 +1,5 @@
 from . import config_models
+from . import mobile_access
 from . import mobile_runtime
 from . import task_profile
 from . import plan_candidate_service

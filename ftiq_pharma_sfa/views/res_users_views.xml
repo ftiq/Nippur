@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_users_form_ftiq_mobile_access" model="ir.ui.view">
+        <field name="name">res.users.form.ftiq.mobile.access</field>
+        <field name="model">res.users</field>
+        <field name="inherit_id" ref="base.view_users_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook/page[@name='access_rights']" position="after">
+                <page name="ftiq_mobile_access" string="Mobile Access">
+                    <group col="4">
+                        <field name="ftiq_mobile_role" readonly="1"/>
+                        <field name="ftiq_mobile_access_enabled"/>
+                        <field name="ftiq_mobile_access_profile_id"
+                               domain="[('role', '=', ftiq_mobile_role), ('active', '=', True)]"
+                               context="{'default_role': ftiq_mobile_role}"/>
+                        <field name="ftiq_mobile_access_issue" readonly="1"/>
+                    </group>
+                    <group>
+                        <field name="ftiq_mobile_access_summary" readonly="1" widget="html"/>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

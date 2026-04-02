@@ -237,6 +237,11 @@
               parent="menu_ftiq_config"
               action="action_ftiq_task_profile"
               sequence="35"/>
+    <menuitem id="menu_ftiq_config_mobile_access_profiles"
+              name="Mobile Access Profiles"
+              parent="menu_ftiq_config"
+              action="action_ftiq_mobile_access_profile"
+              sequence="38"/>
     <menuitem id="menu_ftiq_config_task_types"
               name="Task Tags"
               parent="menu_ftiq_config"

@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_ftiq_mobile_access_profile_list" model="ir.ui.view">
+        <field name="name">ftiq.mobile.access.profile.list</field>
+        <field name="model">ftiq.mobile.access.profile</field>
+        <field name="arch" type="xml">
+            <list string="Mobile Access Profiles">
+                <field name="name"/>
+                <field name="code"/>
+                <field name="role"/>
+                <field name="active"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_ftiq_mobile_access_profile_form" model="ir.ui.view">
+        <field name="name">ftiq.mobile.access.profile.form</field>
+        <field name="model">ftiq.mobile.access.profile</field>
+        <field name="arch" type="xml">
+            <form string="Mobile Access Profile">
+                <header>
+                    <button name="action_sync_permission_catalog"
+                            type="object"
+                            string="Sync Catalog"
+                            class="btn-secondary"/>
+                </header>
+                <sheet>
+                    <group col="4">
+                        <field name="name"/>
+                        <field name="code"/>
+                        <field name="role"/>
+                        <field name="active"/>
+                    </group>
+                    <group>
+                        <field name="description" placeholder="Describe when this profile should be assigned."/>
+                    </group>
+                    <group>
+                        <field name="summary_html" readonly="1" widget="html"/>
+                    </group>
+                    <group>
+                        <field name="permission_line_ids" nolabel="1">
+                            <list string="Permissions" editable="bottom" create="false" delete="false">
+                                <field name="scope" readonly="1"/>
+                                <field name="label" readonly="1"/>
+                                <field name="full_key" readonly="1"/>
+                                <field name="enabled"/>
+                                <field name="default_visibility" readonly="1"/>
+                                <field name="supported_roles" readonly="1"/>
+                            </list>
+                        </field>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_ftiq_mobile_access_profile_search" model="ir.ui.view">
+        <field name="name">ftiq.mobile.access.profile.search</field>
+        <field name="model">ftiq.mobile.access.profile</field>
+        <field name="arch" type="xml">
+            <search string="Mobile Access Profiles">
+                <field name="name"/>
+                <field name="code"/>
+                <field name="role"/>
+                <filter name="filter_role_representative" string="Representative" domain="[('role', '=', 'representative')]"/>
+                <filter name="filter_role_supervisor" string="Supervisor" domain="[('role', '=', 'supervisor')]"/>
+                <filter name="filter_role_manager" string="Manager" domain="[('role', '=', 'manager')]"/>
+                <filter name="filter_active" string="Active" domain="[('active', '=', True)]"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_ftiq_mobile_access_profile" model="ir.actions.act_window">
+        <field name="name">Mobile Access Profiles</field>
+        <field name="res_model">ftiq.mobile.access.profile</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_ftiq_mobile_access_profile_search"/>
+    </record>
+
+</odoo>

@@ -114,19 +114,50 @@ class ResPartner(models.Model):
 
     @api.model_create_multi
     def create(self, vals_list):
-        records = super().create(vals_list)
+        prepared_vals_list = [self._prepare_ftiq_partner_vals(vals) for vals in vals_list]
+        records = super().create(prepared_vals_list)
         records._ensure_ftiq_partner_accounts()
         records._ensure_ftiq_client_code()
         return records
 
     def write(self, vals):
-        result = super().write(vals)
+        prepared_vals = dict(vals)
+        if 'name' in prepared_vals:
+            prepared_vals = self._prepare_ftiq_partner_vals(prepared_vals, existing_partner=self[:1])
+        result = super().write(prepared_vals)
         if any(
             key in vals
             for key in ('is_ftiq_doctor', 'is_ftiq_center', 'is_ftiq_pharmacy', 'ftiq_client_category_id')
         ):
             self._ensure_ftiq_client_code()
         return result
+
+    def _prepare_ftiq_partner_vals(self, vals, existing_partner=None):
+        prepared = dict(vals)
+        candidate_values = [
+            prepared.get('name'),
+            prepared.get('commercial_company_name'),
+            prepared.get('ftiq_client_code'),
+            prepared.get('email'),
+            prepared.get('mobile'),
+            prepared.get('phone'),
+        ]
+        if existing_partner:
+            candidate_values.extend([
+                existing_partner.name,
+                existing_partner.ftiq_client_code,
+                existing_partner.email,
+                existing_partner.mobile,
+                existing_partner.phone,
+            ])
+        for candidate in candidate_values:
+            normalized = (candidate or '').strip()
+            if normalized:
+                prepared['name'] = normalized
+                break
+        else:
+            prepared['name'] = _('New Contact')
+        return prepared
 
     def _get_ftiq_client_type_key(self):
         self.ensure_one()

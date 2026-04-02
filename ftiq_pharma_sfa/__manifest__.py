@@ -48,15 +48,18 @@ Features:
         'data/client_category_data.xml',
         'data/task_profile_data.xml',
         'data/firebase_config_data.xml',
-       #'demo/demo_data.xml',
-       #'demo/demo_team_data.xml',
-      # 'demo/demo_operational_data.xml',
-       #'demo/demo_arabic_showcase.xml',
+        'data/mobile_access_profile_data.xml',
+        #'demo/demo_data.xml',
+        #'demo/demo_team_data.xml',
+        #'demo/demo_operational_data.xml',
+        #'demo/demo_arabic_showcase.xml',
 
 
 
         'views/dashboard_views.xml',
         'views/config_views.xml',
+        'views/res_users_views.xml',
+        'views/mobile_access_views.xml',
         'views/mobile_runtime_views.xml',
         'views/client_question_views.xml',
         'views/res_partner_views.xml',

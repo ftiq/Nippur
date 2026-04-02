@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+
+        <record id="mobile_access_profile_representative" model="ftiq.mobile.access.profile">
+            <field name="name">Representative mobile profile</field>
+            <field name="code">representative_default</field>
+            <field name="role">representative</field>
+            <field name="description">Default mobile visibility and actions for field representatives.</field>
+        </record>
+
+        <record id="mobile_access_profile_supervisor" model="ftiq.mobile.access.profile">
+            <field name="name">Supervisor mobile profile</field>
+            <field name="code">supervisor_default</field>
+            <field name="role">supervisor</field>
+            <field name="description">Default mobile visibility and actions for supervisors.</field>
+        </record>
+
+        <record id="mobile_access_profile_manager" model="ftiq.mobile.access.profile">
+            <field name="name">Manager mobile profile</field>
+            <field name="code">manager_default</field>
+            <field name="role">manager</field>
+            <field name="description">Default mobile visibility and actions for managers.</field>
+        </record>
+
+    </data>
+</odoo>
