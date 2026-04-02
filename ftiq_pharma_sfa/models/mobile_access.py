@@ -317,6 +317,7 @@ class ResUsersMobileAccess(models.Model):
                 ("navigation", "Navigation"),
                 ("workspaces", "Workspaces"),
                 ("sections", "Sections"),
+                ("actions", "Actions"),
                 ("global_features", "Global features"),
             ):
                 scope_values = payload.get(scope_name, {})
@@ -329,6 +330,8 @@ class ResUsersMobileAccess(models.Model):
                         full_key = "navigation.%s" % key
                     elif scope_name == "workspaces":
                         full_key = "workspace.%s" % key
+                    elif scope_name == "actions":
+                        full_key = "action.%s" % key
                     elif scope_name == "global_features":
                         full_key = "global_feature.%s" % key
                     else:
