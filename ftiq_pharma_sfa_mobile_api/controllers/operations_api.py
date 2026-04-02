@@ -999,11 +999,17 @@ class FtiqMobileOperationsApi(FtiqMobileApiBase):
         limit = self._args_int("limit", 20)
         state = request.httprequest.args.get("state")
         partner_id = self._args_int("partner_id", 0)
+        from_date = request.httprequest.args.get("from_date")
+        to_date = request.httprequest.args.get("to_date")
         domain = []
         if state:
             domain.append(("state", "=", state))
         if partner_id:
             domain.append(("partner_id", "=", partner_id))
+        if from_date:
+            domain.append(("visit_date", ">=", from_date))
+        if to_date:
+            domain.append(("visit_date", "<=", to_date))
         visits = self._search_scoped(
             "ftiq.visit",
             domain,
