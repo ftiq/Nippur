@@ -117,6 +117,53 @@ class FtiqMobileNotification(models.Model):
         }.get((model_name or "").strip(), default)
 
     @api.model
+    def _task_notification_payload(self, task):
+        if not task:
+            return {}
+        return {
+            "task_id": task.id,
+            "task_type": task.task_type or "",
+            "visit_id": task.visit_id.id if task.visit_id else False,
+            "order_id": task.sale_order_id.id if task.sale_order_id else False,
+            "sale_order_id": task.sale_order_id.id if task.sale_order_id else False,
+            "collection_id": task.payment_id.id if task.payment_id else False,
+            "payment_id": task.payment_id.id if task.payment_id else False,
+            "stock_check_id": task.stock_check_id.id if task.stock_check_id else False,
+            "project_task_id": task.project_task_id.id if task.project_task_id else False,
+        }
+
+    @api.model
+    def _task_execution_deep_link(self, task, notification_id=False):
+        if not task:
+            return ""
+        preferred_target = {
+            "visit": ("ftiq.visit", task.visit_id.id if task.visit_id else 0),
+            "order": ("sale.order", task.sale_order_id.id if task.sale_order_id else 0),
+            "collection": ("account.payment", task.payment_id.id if task.payment_id else 0),
+            "stock": ("ftiq.stock.check", task.stock_check_id.id if task.stock_check_id else 0),
+        }.get(task.task_type or "", ("", 0))
+        if preferred_target[1]:
+            return self.build_target_deep_link(
+                target_model=preferred_target[0],
+                target_res_id=preferred_target[1],
+                notification_id=notification_id,
+            )
+        for target_model, target_res_id in (
+            ("ftiq.visit", task.visit_id.id if task.visit_id else 0),
+            ("sale.order", task.sale_order_id.id if task.sale_order_id else 0),
+            ("account.payment", task.payment_id.id if task.payment_id else 0),
+            ("ftiq.stock.check", task.stock_check_id.id if task.stock_check_id else 0),
+            ("project.task", task.project_task_id.id if task.project_task_id else 0),
+        ):
+            if target_res_id:
+                return self.build_target_deep_link(
+                    target_model=target_model,
+                    target_res_id=target_res_id,
+                    notification_id=notification_id,
+                )
+        return ""
+
+    @api.model
     def build_target_deep_link(self, target_model="", target_res_id=0, notification_id=False):
         query = f"notification_id={notification_id}" if notification_id else ""
 
@@ -127,6 +174,10 @@ class FtiqMobileNotification(models.Model):
             return f"{base_link}{joiner}{query}"
 
         if target_model == "ftiq.daily.task" and target_res_id:
+            task = self.env["ftiq.daily.task"].sudo().browse(target_res_id).exists()
+            task_link = self._task_execution_deep_link(task, notification_id=notification_id)
+            if task_link:
+                return task_link
             return with_query(f"ftiq://task?id={target_res_id}")
         if target_model == "ftiq.visit" and target_res_id:
             return with_query(f"ftiq://visit?id={target_res_id}")
@@ -163,9 +214,19 @@ class FtiqMobileNotification(models.Model):
     def _push_payload(self):
         self.ensure_one()
         payload = self._payload_map()
+        if self.target_model == "ftiq.daily.task" and self.target_res_id:
+            task = self.env["ftiq.daily.task"].sudo().browse(self.target_res_id).exists()
+            if task:
+                payload.update(
+                    {
+                        key: value
+                        for key, value in self._task_notification_payload(task).items()
+                        if value not in (False, None, "")
+                    }
+                )
         payload.update(
             {
-                "deep_link": self.deep_link or self._build_deep_link(),
+                "deep_link": self._build_deep_link(),
                 "notification_id": self.id,
                 "category": self.category or "",
                 "priority": self.priority or "",

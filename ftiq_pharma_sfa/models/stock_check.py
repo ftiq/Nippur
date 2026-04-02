@@ -80,6 +80,7 @@ class FtiqStockCheck(models.Model):
                 'expiry_date': line.expiry_date,
                 'batch_number': line.batch_number,
                 'shelf_position': line.shelf_position,
+                'competitor_product_id': line.competitor_product_id.id,
                 'competitor_product': line.competitor_product,
                 'competitor_qty': line.competitor_qty,
                 'note': line.note,
@@ -187,6 +188,7 @@ class FtiqStockCheckLine(models.Model):
     expiry_date = fields.Date(string='Expiry Date')
     batch_number = fields.Char(string='Batch Number')
     shelf_position = fields.Char(string='Shelf Position')
+    competitor_product_id = fields.Many2one('product.product', string='Competitor Product Reference')
     competitor_product = fields.Char(string='Competitor Product')
     competitor_qty = fields.Float(string='Competitor Qty')
     note = fields.Char(string='Note')
