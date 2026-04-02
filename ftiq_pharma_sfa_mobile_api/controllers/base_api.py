@@ -2353,6 +2353,8 @@ class FtiqMobileApiBase(http.Controller):
                 "expiry_date": str(line.expiry_date or ""),
                 "batch_number": line.batch_number or "",
                 "shelf_position": line.shelf_position or "",
+                "shelf_photo_url": self._image_url("ftiq.stock.check.line", line.id, "shelf_photo") if line.shelf_photo else "",
+                "shelf_photo_name": line.shelf_photo_name or "",
                 "competitor_product_id": line.competitor_product_id.id if getattr(line, "competitor_product_id", False) else False,
                 "competitor_product": (
                     line.competitor_product_id.display_name
@@ -2370,7 +2372,7 @@ class FtiqMobileApiBase(http.Controller):
                         else ""
                     )
                 ),
-                "competitor_qty": line.competitor_qty,
+                "competitor_qty": line.competitor_qty if line.competitor_qty else False,
                 "note": line.note or "",
                 "sequence": line.sequence,
             } for line in stock_check.line_ids.sorted(key=lambda line: (line.sequence, line.id))]

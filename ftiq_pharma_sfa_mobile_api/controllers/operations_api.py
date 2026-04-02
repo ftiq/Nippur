@@ -25,6 +25,10 @@ class FtiqMobileOperationsApi(FtiqMobileApiBase):
     def catalog_products(self, **kwargs):
         return self._dispatch(self._catalog_products)
 
+    @http.route("/ftiq_mobile_api/v1/catalog/products/resolve-barcode", type="http", auth="user", methods=["POST"], csrf=False)
+    def catalog_products_resolve_barcode(self, **kwargs):
+        return self._dispatch(self._catalog_product_resolve_barcode)
+
     @http.route("/ftiq_mobile_api/v1/catalog/materials", type="http", auth="user", methods=["GET"], csrf=False)
     def catalog_materials(self, **kwargs):
         return self._dispatch(self._catalog_materials)
@@ -370,6 +374,45 @@ class FtiqMobileOperationsApi(FtiqMobileApiBase):
         products = request.env["product.product"].search(domain, order="name", limit=limit)
         items = [self._serialize_product(product) for product in products]
         return self._ok({"items": items}, meta={"count": len(items)})
+
+    def _catalog_product_resolve_barcode(self):
+        payload = self._json_body()
+        barcode = (payload.get("barcode") or "").strip()
+        if not barcode:
+            return self._error(_("Barcode is required."))
+        if not (
+            self._mobile_permission("action", "stock_check.edit")
+            or self._mobile_permission("action", "order.edit")
+        ):
+            return self._error(_("You are not allowed to resolve products by barcode."), status=403, code="forbidden")
+        product = request.env["product.product"].search([
+            "|",
+            ("barcode", "=", barcode),
+            ("default_code", "=", barcode),
+            ("active", "=", True),
+        ], order="id desc", limit=1)
+        created = False
+        if not product:
+            name = (payload.get("name") or "").strip() or barcode
+            unit_uom = request.env.ref("uom.product_uom_unit", raise_if_not_found=False)
+            default_category = request.env.ref("product.product_category_all", raise_if_not_found=False)
+            template = request.env["product.template"].sudo().create({
+                "name": name,
+                "default_code": barcode,
+                "barcode": barcode,
+                "sale_ok": True,
+                "purchase_ok": False,
+                "detailed_type": "consu",
+                "uom_id": unit_uom.id if unit_uom else False,
+                "uom_po_id": unit_uom.id if unit_uom else False,
+                "categ_id": default_category.id if default_category else False,
+            })
+            product = template.product_variant_id
+            created = True
+        return self._ok({
+            "item": self._serialize_product(product),
+            "created": created,
+        }, status=201 if created else 200)
 
     def _catalog_materials(self):
         product_id = self._args_int("product_id", 0)
@@ -1838,7 +1881,10 @@ class FtiqMobileOperationsApi(FtiqMobileApiBase):
         if "photo_name" in payload:
             values["photo_name"] = payload.get("photo_name") or ""
         if "lines" in payload:
-            values["line_ids"] = self._prepare_stock_line_commands(payload.get("lines") or [])
+            values["line_ids"] = self._prepare_stock_line_commands(
+                payload.get("lines") or [],
+                existing_check=check,
+            )
         if values:
             check.write(values)
         self._remember_mobile_request(payload, check)
@@ -2065,12 +2111,24 @@ class FtiqMobileOperationsApi(FtiqMobileApiBase):
             }))
         return commands
 
-    def _prepare_stock_line_commands(self, items):
+    def _prepare_stock_line_commands(self, items, existing_check=False):
         commands = [Command.clear()]
+        existing_lines_by_id = {}
+        if existing_check:
+            existing_lines_by_id = {
+                line.id: line for line in existing_check.line_ids
+            }
         for index, item in enumerate(items, start=1):
             product_id = item.get("product_id")
             if not product_id:
                 continue
+            stock_qty = item.get("stock_qty")
+            if stock_qty in (None, ""):
+                raise ValidationError(_("Stock quantity is required."))
+            try:
+                stock_qty = float(stock_qty)
+            except Exception as error:
+                raise ValidationError(_("Enter a valid stock quantity.")) from error
             competitor_product_id = item.get("competitor_product_id") or False
             try:
                 competitor_product_id = int(competitor_product_id) if competitor_product_id else False
@@ -2080,15 +2138,40 @@ class FtiqMobileOperationsApi(FtiqMobileApiBase):
             if competitor_product_id and not competitor_product:
                 competitor_product_record = request.env["product.product"].browse(competitor_product_id).exists()
                 competitor_product = competitor_product_record.display_name if competitor_product_record else ""
+            competitor_qty = item.get("competitor_qty")
+            if competitor_qty in (None, ""):
+                competitor_qty = 0.0
+            else:
+                try:
+                    competitor_qty = float(competitor_qty)
+                except Exception as error:
+                    raise ValidationError(_("Enter a valid competitor quantity.")) from error
+            existing_line_id = item.get("id") or 0
+            try:
+                existing_line_id = int(existing_line_id)
+            except Exception:
+                existing_line_id = 0
+            existing_line = existing_lines_by_id.get(existing_line_id)
+            if "shelf_photo" in item:
+                shelf_photo = item.get("shelf_photo") or False
+                shelf_photo_name = item.get("shelf_photo_name") or ""
+            elif existing_line:
+                shelf_photo = existing_line.shelf_photo
+                shelf_photo_name = existing_line.shelf_photo_name or ""
+            else:
+                shelf_photo = False
+                shelf_photo_name = ""
             commands.append(Command.create({
                 "product_id": product_id,
-                "stock_qty": item.get("stock_qty") or 0.0,
+                "stock_qty": stock_qty,
                 "expiry_date": item.get("expiry_date") or False,
                 "batch_number": item.get("batch_number") or "",
                 "shelf_position": item.get("shelf_position") or "",
+                "shelf_photo": shelf_photo,
+                "shelf_photo_name": shelf_photo_name,
                 "competitor_product_id": competitor_product_id,
                 "competitor_product": competitor_product,
-                "competitor_qty": item.get("competitor_qty") or 0.0,
+                "competitor_qty": competitor_qty,
                 "note": item.get("note") or "",
                 "sequence": item.get("sequence") or (index * 10),
             }))
