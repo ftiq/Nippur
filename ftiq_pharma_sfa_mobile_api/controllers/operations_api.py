@@ -384,6 +384,7 @@ class FtiqMobileOperationsApi(FtiqMobileApiBase):
     def _clients(self):
         service = request.env["ftiq.client.search.service"]
         limit = self._args_int("limit", 25)
+        offset = self._args_int("offset", 0)
         query = request.httprequest.args.get("query", "")
         client_code = request.httprequest.args.get("client_code", "")
         city_id = self._args_int("city_id", 0)
@@ -405,9 +406,13 @@ class FtiqMobileOperationsApi(FtiqMobileApiBase):
             latitude=latitude or False,
             longitude=longitude or False,
             radius_km=radius_km,
+            offset=offset,
             limit=limit,
         )
-        return self._ok({"items": items}, meta={"count": len(items)})
+        return self._ok(
+            {"items": items},
+            meta={"count": len(items), "limit": limit, "offset": offset},
+        )
 
     def _client_create(self):
         payload = self._json_body()
