@@ -17,7 +17,7 @@
 
 .ftiq_geo_map_widget {
     width: 100%;
-    min-height: calc(100vh - 400px);
+    min-height: calc(100vh - 340px);
     display: flex;
     flex-direction: column;
     gap: 12px;
@@ -63,12 +63,13 @@
 .ftiq_geo_map_canvas_wrap {
     position: relative;
     flex: 1 1 auto;
-    min-height: 60vh;
+    width: 100%;
+    min-height: calc(100vh - 420px);
 }
 
 .ftiq_geo_map_canvas {
     width: 100%;
-    min-height: 60vh;
+    min-height: calc(100vh - 420px);
     border-radius: 20px;
     overflow: hidden;
     border: 1px solid rgba(14, 45, 73, 0.08);

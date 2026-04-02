@@ -237,7 +237,9 @@
                             Draw a closed area on the map, then continue to review the clients inside it.
                         </div>
                         <div class="ftiq_plan_wizard_card ftiq_plan_wizard_geo_card">
-                            <field name="geo_map_field" widget="ftiq_geo_plan_map" nolabel="1"/>
+                            <div class="ftiq_plan_wizard_geo_field">
+                                <field name="geo_map_field" widget="ftiq_geo_plan_map" nolabel="1" class="w-100"/>
+                            </div>
                         </div>
                     </div>
 

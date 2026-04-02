@@ -258,6 +258,15 @@
     padding: 18px;
 }
 
+.ftiq_plan_wizard_geo_field,
+.ftiq_plan_wizard_geo_field > .o_field_widget,
+.ftiq_plan_wizard_geo_field > .o_field_widget > * {
+    display: block;
+    width: 100%;
+    max-width: none;
+    min-width: 0;
+}
+
 .ftiq_plan_wizard_footer {
     position: sticky;
     bottom: 0;

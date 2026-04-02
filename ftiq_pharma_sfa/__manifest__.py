@@ -49,13 +49,6 @@ Features:
         'data/task_profile_data.xml',
         'data/firebase_config_data.xml',
         'data/mobile_access_profile_data.xml',
-        #'demo/demo_data.xml',
-        #'demo/demo_team_data.xml',
-        #'demo/demo_operational_data.xml',
-        #'demo/demo_arabic_showcase.xml',
-
-
-
         'views/dashboard_views.xml',
         'views/config_views.xml',
         'views/res_users_views.xml',
@@ -80,6 +73,10 @@ Features:
         'views/menu_views.xml',
         'report/visit_report.xml',
         'report/visit_report_templates.xml',
+    ],
+    'demo': [
+        'demo/demo_data.xml',
+        'demo/demo_team_data.xml',
     ],
     'assets': {
         'web.assets_backend': [
