@@ -200,6 +200,15 @@ class FtiqMobileNotification(models.Model):
         if target_model == "ftiq.stock.check" and target_res_id:
             return with_query(f"ftiq://stock-check?id={target_res_id}")
         if target_model == "ftiq.team.message" and target_res_id:
+            team_message = self.env["ftiq.team.message"].sudo().browse(target_res_id).exists()
+            if team_message and team_message.task_id:
+                task_link = self.build_target_deep_link(
+                    target_model="ftiq.daily.task",
+                    target_res_id=team_message.task_id.id,
+                    notification_id=notification_id,
+                )
+                if task_link:
+                    return task_link
             return with_query(f"ftiq://team-message?id={target_res_id}")
         return with_query("ftiq://notifications")
 

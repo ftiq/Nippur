@@ -145,13 +145,17 @@ class FtiqTeamMessage(models.Model):
         notification_model = self.env["ftiq.mobile.notification"]
         for record in self:
             try:
+                target_record = record.task_id if record.task_id else record
                 notification_model.create_for_users(
                     record._push_recipient_users(),
                     title=record.subject,
                     body=record.body,
-                    category="team",
+                    category=notification_model.category_for_model(
+                        target_record._name if target_record else "ftiq.team.message",
+                        default="team",
+                    ),
                     priority=record.priority or "normal",
-                    target=record,
+                    target=target_record,
                     source=record,
                     author=record.author_id,
                     payload={
@@ -159,7 +163,7 @@ class FtiqTeamMessage(models.Model):
                         "team_id": record.team_id.id if record.team_id else False,
                         "team_message_id": record.id,
                     },
-                    event_key=f"team_message:{record.id}",
+                    event_key=f"team_message:{record.id}:task:{record.task_id.id}" if record.task_id else f"team_message:{record.id}",
                 )
             except Exception:
                 _logger.exception(

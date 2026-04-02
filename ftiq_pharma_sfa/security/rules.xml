@@ -355,7 +355,7 @@
     <record id="ftiq_core_payment_journal_rule" model="ir.rule">
         <field name="name">FTIQ Payment Journal: Current company cash and bank</field>
         <field name="model_id" ref="account.model_account_journal"/>
-        <field name="domain_force">[('company_id', '=', user.company_id.id), ('type', 'in', ('bank', 'cash')), ('active', '=', True)]</field>
+        <field name="domain_force">[('company_id', 'in', company_ids), ('type', 'in', ('bank', 'cash')), ('active', '=', True)]</field>
         <field name="groups" eval="[(4, ref('group_ftiq_rep')), (4, ref('group_ftiq_supervisor')), (4, ref('group_ftiq_manager'))]"/>
         <field name="perm_write" eval="False"/>
         <field name="perm_create" eval="False"/>
