@@ -133,9 +133,26 @@ class FtiqMobileNotification(models.Model):
         }
 
     @api.model
-    def _task_execution_deep_link(self, task, notification_id=False):
+    def _route_key_for_target_model(self, target_model, default="notifications"):
+        return {
+            "ftiq.daily.task": "task",
+            "ftiq.visit": "visit",
+            "ftiq.weekly.plan": "plan",
+            "project.project": "project",
+            "project.task": "project_task",
+            "sale.order": "order",
+            "purchase.order": "purchase",
+            "account.payment": "collection",
+            "account.move": "invoice",
+            "hr.expense": "expense",
+            "ftiq.stock.check": "stock_check",
+            "ftiq.team.message": "team_message",
+        }.get((target_model or "").strip(), default)
+
+    @api.model
+    def _task_execution_target(self, task):
         if not task:
-            return ""
+            return "", 0
         preferred_target = {
             "visit": ("ftiq.visit", task.visit_id.id if task.visit_id else 0),
             "order": ("sale.order", task.sale_order_id.id if task.sale_order_id else 0),
@@ -143,11 +160,7 @@ class FtiqMobileNotification(models.Model):
             "stock": ("ftiq.stock.check", task.stock_check_id.id if task.stock_check_id else 0),
         }.get(task.task_type or "", ("", 0))
         if preferred_target[1]:
-            return self.build_target_deep_link(
-                target_model=preferred_target[0],
-                target_res_id=preferred_target[1],
-                notification_id=notification_id,
-            )
+            return preferred_target
         for target_model, target_res_id in (
             ("ftiq.visit", task.visit_id.id if task.visit_id else 0),
             ("sale.order", task.sale_order_id.id if task.sale_order_id else 0),
@@ -156,11 +169,41 @@ class FtiqMobileNotification(models.Model):
             ("project.task", task.project_task_id.id if task.project_task_id else 0),
         ):
             if target_res_id:
-                return self.build_target_deep_link(
-                    target_model=target_model,
-                    target_res_id=target_res_id,
-                    notification_id=notification_id,
-                )
+                return target_model, target_res_id
+        return "ftiq.daily.task", task.id
+
+    @api.model
+    def build_target_intent(self, target_model="", target_res_id=0, notification_id=False):
+        resolved_model = (target_model or "").strip()
+        resolved_res_id = int(target_res_id or 0)
+        if resolved_model == "ftiq.daily.task" and resolved_res_id:
+            task = self.env["ftiq.daily.task"].sudo().browse(resolved_res_id).exists()
+            execution_model, execution_res_id = self._task_execution_target(task)
+            if execution_res_id:
+                resolved_model = execution_model
+                resolved_res_id = execution_res_id
+        route_key = self._route_key_for_target_model(resolved_model)
+        if not resolved_model or not resolved_res_id:
+            route_key = "notifications"
+        return {
+            "type": "open_%s" % route_key,
+            "route_key": route_key,
+            "target_model": resolved_model or "",
+            "target_id": resolved_res_id or False,
+            "notification_id": notification_id or False,
+        }
+
+    @api.model
+    def _task_execution_deep_link(self, task, notification_id=False):
+        if not task:
+            return ""
+        target_model, target_res_id = self._task_execution_target(task)
+        if target_res_id and target_model != "ftiq.daily.task":
+            return self.build_target_deep_link(
+                target_model=target_model,
+                target_res_id=target_res_id,
+                notification_id=notification_id,
+            )
         return ""
 
     @api.model
@@ -220,6 +263,14 @@ class FtiqMobileNotification(models.Model):
             notification_id=self.id,
         )
 
+    def _intent_payload(self, notification_id=False):
+        self.ensure_one()
+        return self.build_target_intent(
+            target_model=self.target_model,
+            target_res_id=self.target_res_id,
+            notification_id=notification_id,
+        )
+
     def _push_payload(self):
         self.ensure_one()
         payload = self._payload_map()
@@ -233,9 +284,12 @@ class FtiqMobileNotification(models.Model):
                         if value not in (False, None, "")
                     }
                 )
+        intent = self._intent_payload(notification_id=self.id)
         payload.update(
             {
                 "deep_link": self._build_deep_link(),
+                "intent_json": self._payload_json(intent),
+                "route_key": intent.get("route_key") or "",
                 "notification_id": self.id,
                 "category": self.category or "",
                 "priority": self.priority or "",

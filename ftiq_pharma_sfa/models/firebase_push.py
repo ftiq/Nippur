@@ -4,8 +4,13 @@ import logging
 import os
 
 import requests
-from google.auth.transport.requests import Request
-from google.oauth2 import service_account
+
+try:
+    from google.auth.transport.requests import Request
+    from google.oauth2 import service_account
+except ModuleNotFoundError:
+    Request = None
+    service_account = None
 
 from odoo import models
 
@@ -58,6 +63,11 @@ class FtiqFirebasePushService(models.AbstractModel):
         return ""
 
     def _firebase_credentials(self):
+        if Request is None or service_account is None:
+            _logger.warning(
+                "FTIQ Firebase push skipped: google-auth is not installed",
+            )
+            return None, ""
         sources = self._service_account_sources()
         json_payload = self._service_account_payload()
         if json_payload:
@@ -218,6 +228,13 @@ class FtiqFirebasePushService(models.AbstractModel):
             body=message.body,
             priority=message.priority or "normal",
             data={
+                "intent_json": json.dumps(
+                    self.env["ftiq.mobile.notification"].build_target_intent(
+                        target_model="ftiq.team.message",
+                        target_res_id=message.id,
+                    ),
+                    ensure_ascii=False,
+                ),
                 "deep_link": self._message_deep_link(message),
                 "message_id": message.id,
                 "team_message_id": message.id,
