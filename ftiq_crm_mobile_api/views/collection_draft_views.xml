@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="ftiq_collection_draft_view_list" model="ir.ui.view">
+        <field name="name">ftiq.collection.draft.list</field>
+        <field name="model">ftiq.collection.draft</field>
+        <field name="arch" type="xml">
+            <list string="Mobile Collection Drafts">
+                <field name="name"/>
+                <field name="partner_id"/>
+                <field name="collector_id"/>
+                <field name="amount"/>
+                <field name="currency_id"/>
+                <field name="state" widget="badge"/>
+                <field name="submitted_at"/>
+                <field name="attachment_count"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="ftiq_collection_draft_view_form" model="ir.ui.view">
+        <field name="name">ftiq.collection.draft.form</field>
+        <field name="model">ftiq.collection.draft</field>
+        <field name="arch" type="xml">
+            <form string="Mobile Collection Draft">
+                <header>
+                    <button name="action_submit" type="object" string="Submit" class="oe_highlight" invisible="state != 'draft'"/>
+                    <button name="action_reject" type="object" string="Reject" groups="account.group_account_invoice" invisible="state != 'submitted'"/>
+                    <button name="action_cancel" type="object" string="Cancel" invisible="state not in ('draft', 'submitted')"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,submitted,rejected,cancelled"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" readonly="1"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group string="Collection">
+                            <field name="partner_id" readonly="state != 'draft'"/>
+                            <field name="commercial_partner_id" readonly="1"/>
+                            <field name="collector_id" readonly="state != 'draft'"/>
+                            <field name="amount" readonly="state != 'draft'"/>
+                            <field name="currency_id" readonly="state != 'draft'"/>
+                            <field name="open_invoice_residual" readonly="1"/>
+                        </group>
+                        <group string="Mobile Request">
+                            <field name="mobile_request_uid" readonly="1"/>
+                            <field name="submitted_at" readonly="1"/>
+                            <field name="rejected_by_id" readonly="1" invisible="state != 'rejected'"/>
+                            <field name="rejected_at" readonly="1" invisible="state != 'rejected'"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Open Invoices">
+                            <field name="invoice_ids" readonly="state != 'draft'">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="invoice_date"/>
+                                    <field name="invoice_date_due"/>
+                                    <field name="amount_total"/>
+                                    <field name="amount_residual"/>
+                                    <field name="currency_id"/>
+                                    <field name="payment_state"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Notes and Attachments">
+                            <group>
+                                <field name="payment_note" readonly="state not in ('draft', 'submitted')"/>
+                                <field name="rejection_reason" invisible="state != 'rejected'"/>
+                                <field name="attachment_ids" widget="many2many_binary" readonly="state not in ('draft', 'submitted')"/>
+                            </group>
+                        </page>
+                        <page string="Mobile Location">
+                            <group>
+                                <group>
+                                    <field name="ftiq_mobile_location_at" readonly="1"/>
+                                    <field name="ftiq_mobile_accuracy" readonly="1"/>
+                                    <field name="ftiq_mobile_is_mock" readonly="1"/>
+                                </group>
+                                <group>
+                                    <field name="ftiq_mobile_latitude" readonly="1"/>
+                                    <field name="ftiq_mobile_longitude" readonly="1"/>
+                                </group>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="ftiq_collection_draft_view_search" model="ir.ui.view">
+        <field name="name">ftiq.collection.draft.search</field>
+        <field name="model">ftiq.collection.draft</field>
+        <field name="arch" type="xml">
+            <search string="Mobile Collection Drafts">
+                <field name="name"/>
+                <field name="partner_id"/>
+                <field name="collector_id"/>
+                <filter name="submitted" string="Submitted" domain="[('state', '=', 'submitted')]"/>
+                <filter name="my_drafts" string="My Drafts" domain="[('collector_id', '=', uid)]"/>
+                <group expand="0" string="Group By">
+                    <filter name="group_state" string="Status" context="{'group_by': 'state'}"/>
+                    <filter name="group_collector" string="Collector" context="{'group_by': 'collector_id'}"/>
+                    <filter name="group_customer" string="Customer" context="{'group_by': 'partner_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="ftiq_collection_draft_action" model="ir.actions.act_window">
+        <field name="name">Mobile Collections</field>
+        <field name="res_model">ftiq.collection.draft</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="ftiq_collection_draft_view_search"/>
+    </record>
+
+    <menuitem id="ftiq_collection_draft_menu"
+              name="Mobile Collections"
+              parent="crm.crm_menu_root"
+              action="ftiq_collection_draft_action"
+              sequence="80"/>
+</odoo>

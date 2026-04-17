@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="rule_ftiq_collection_draft_own" model="ir.rule">
+        <field name="name">Mobile collection drafts: own drafts</field>
+        <field name="model_id" ref="model_ftiq_collection_draft"/>
+        <field name="domain_force">[('collector_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="rule_ftiq_collection_draft_accounting" model="ir.rule">
+        <field name="name">Mobile collection drafts: accounting review</field>
+        <field name="model_id" ref="model_ftiq_collection_draft"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('account.group_account_invoice'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+</odoo>

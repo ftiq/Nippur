@@ -27,8 +27,11 @@ screens or adding parallel CRM tables.
     ],
     "data": [
         "security/ir.model.access.csv",
+        "security/collection_draft_security.xml",
+        "data/collection_draft_sequence.xml",
         "data/firebase_config_data.xml",
         "views/crm_mobile_location_views.xml",
+        "views/collection_draft_views.xml",
     ],
     "installable": True,
     "application": False,
