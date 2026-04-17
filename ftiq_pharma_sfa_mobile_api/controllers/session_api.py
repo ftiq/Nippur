@@ -8,6 +8,41 @@ from .base_api import FtiqMobileApiBase
 
 
 class FtiqMobileSessionApi(FtiqMobileApiBase):
+    def _request_context(self):
+        context = dict(request.session.context or {})
+        requested_lang = getattr(request, "_ftiq_requested_lang", "")
+        if requested_lang:
+            context["lang"] = requested_lang
+        return context
+
+    def _bind_session_user(self, user, db):
+        context = dict(user.context_get())
+        requested_lang = getattr(request, "_ftiq_requested_lang", "")
+        if requested_lang:
+            context["lang"] = requested_lang
+        request.session.update({
+            "db": db,
+            "login": user.login,
+            "uid": user.id,
+            "context": context,
+            "session_token": user._compute_session_token(request.session.sid),
+        })
+        request.session.should_rotate = True
+        if getattr(request, "env", None) and request.db == db:
+            request.update_env(user=user.id, context=context)
+        return context
+
+    def _rotate_nodb_session(self, env):
+        odoo_http.root.session_store.rotate(request.session, env)
+        request.future_response.set_cookie(
+            "session_id",
+            request.session.sid,
+            max_age=odoo_http.get_session_max_inactivity(env),
+            httponly=True,
+            secure=request.httprequest.scheme == "https",
+            samesite="Lax",
+        )
+
     def _mobile_access_message(self):
         return _("You do not have permission to use the FTIQ mobile application. Contact your administrator.")
 
@@ -45,7 +80,7 @@ class FtiqMobileSessionApi(FtiqMobileApiBase):
             details={"mobile_access": payload},
         )
 
-    @http.route("/ftiq_mobile_api/v1/session/login", type="http", auth="none", methods=["POST"], csrf=False)
+    @http.route("/ftiq_mobile_api/v1/session/login", type="http", auth="none", methods=["POST"], csrf=False, readonly=False)
     def login(self, **kwargs):
         return self._dispatch(self._login)
 
@@ -53,7 +88,7 @@ class FtiqMobileSessionApi(FtiqMobileApiBase):
     def logout(self, **kwargs):
         return self._dispatch(self._logout)
 
-    @http.route("/ftiq_mobile_api/v1/session/token-login", type="http", auth="none", methods=["POST"], csrf=False)
+    @http.route("/ftiq_mobile_api/v1/session/token-login", type="http", auth="none", methods=["POST"], csrf=False, readonly=False)
     def token_login(self, **kwargs):
         return self._dispatch(self._token_login)
 
@@ -85,11 +120,6 @@ class FtiqMobileSessionApi(FtiqMobileApiBase):
         if not db or not login or not password:
             return self._error(_("Database, login, and password are required."))
 
-        if request.db and request.db != db:
-            request.env.cr.close()
-        elif request.db:
-            request.env.cr.rollback()
-
         if not odoo_http.db_filter([db]):
             return self._error(_("Database not found."), status=404, code="database_not_found")
 
@@ -102,32 +132,45 @@ class FtiqMobileSessionApi(FtiqMobileApiBase):
                 code="mfa_required",
             )
 
-        request.session.db = db
+        requested_context = self._request_context()
+        if request.db == db and getattr(request, "env", None):
+            if requested_context.get("lang"):
+                request.update_context(lang=requested_context["lang"])
+            user = request.env.user
+            denied = self._ensure_mobile_access(user)
+            if denied:
+                request.session.logout(keep_db=True)
+                return denied
+            self._bind_session_user(user, db)
+            return self._ok({
+                "session": {
+                    "uid": user.id,
+                    "db": db,
+                    "server_time": fields.Datetime.to_string(fields.Datetime.now()),
+                },
+                "user": self._serialize_user(request.env.user),
+                "mobile_access": self._serialize_mobile_access(request.env.user),
+            })
+
         registry = odoo.modules.registry.Registry(db)
         with registry.cursor() as cr:
-            env = api.Environment(cr, request.session.uid, request.session.context)
-            odoo_http.root.session_store.rotate(request.session, env)
-            request.future_response.set_cookie(
-                "session_id",
-                request.session.sid,
-                max_age=odoo_http.get_session_max_inactivity(env),
-                httponly=True,
-                secure=request.httprequest.scheme == "https",
-                samesite="Lax",
-            )
+            env = api.Environment(cr, request.session.uid, requested_context)
             user = env.user
             denied = self._ensure_mobile_access(user)
             if denied:
                 request.session.logout(keep_db=True)
                 return denied
+            self._bind_session_user(user, db)
+            session_env = env(user=user.id, context=request.session.context)
+            self._rotate_nodb_session(session_env)
             data = {
                 "session": {
                     "uid": user.id,
                     "db": db,
                     "server_time": fields.Datetime.to_string(fields.Datetime.now()),
                 },
-                "user": self._serialize_user(user),
-                "mobile_access": self._serialize_mobile_access(user),
+                "user": self._serialize_user(session_env.user),
+                "mobile_access": self._serialize_mobile_access(session_env.user),
             }
             return self._ok(data)
 
@@ -156,41 +199,71 @@ class FtiqMobileSessionApi(FtiqMobileApiBase):
                 code="session_token_missing",
             )
 
-        if request.db and request.db != db:
-            request.env.cr.close()
-        elif request.db:
-            request.env.cr.rollback()
-
         if not odoo_http.db_filter([db]):
             return self._error(_("Database not found."), status=404, code="database_not_found")
 
-        request.session.db = db
         metadata = self._client_request_metadata()
-        device = request.env["ftiq.mobile.device"].authenticate_session_token(
-            token,
-            remote_ip=metadata["ip"],
-            user_agent=metadata["user_agent"],
-        )
-        if not device:
-            return self._error(
-                _("The mobile session token is invalid or expired."),
-                status=401,
-                code="session_token_invalid",
+        requested_context = self._request_context()
+        if request.db == db and getattr(request, "env", None):
+            if requested_context.get("lang"):
+                request.update_context(lang=requested_context["lang"])
+            device = request.env["ftiq.mobile.device"].authenticate_session_token(
+                token,
+                remote_ip=metadata["ip"],
+                user_agent=metadata["user_agent"],
             )
-        denied = self._ensure_mobile_access(device.user_id)
-        if denied:
-            return denied
-        self._issue_session_cookie(db, device.user_id.id)
-        return self._ok({
-            "session": {
-                "uid": device.user_id.id,
-                "db": db,
-                "server_time": fields.Datetime.to_string(fields.Datetime.now()),
-            },
-            "user": self._serialize_user(device.user_id),
-            "mobile_access": self._serialize_mobile_access(device.user_id),
-            "device": self._serialize_mobile_device(device),
-        })
+            if not device:
+                return self._error(
+                    _("The mobile session token is invalid or expired."),
+                    status=401,
+                    code="session_token_invalid",
+                )
+            denied = self._ensure_mobile_access(device.user_id)
+            if denied:
+                return denied
+            self._bind_session_user(device.user_id, db)
+            return self._ok({
+                "session": {
+                    "uid": device.user_id.id,
+                    "db": db,
+                    "server_time": fields.Datetime.to_string(fields.Datetime.now()),
+                },
+                "user": self._serialize_user(request.env.user),
+                "mobile_access": self._serialize_mobile_access(request.env.user),
+                "device": self._serialize_mobile_device(device),
+            })
+
+        registry = odoo.modules.registry.Registry(db)
+        with registry.cursor() as cr:
+            env = api.Environment(cr, odoo.SUPERUSER_ID, requested_context)
+            device = env["ftiq.mobile.device"].authenticate_session_token(
+                token,
+                remote_ip=metadata["ip"],
+                user_agent=metadata["user_agent"],
+            )
+            if not device:
+                return self._error(
+                    _("The mobile session token is invalid or expired."),
+                    status=401,
+                    code="session_token_invalid",
+                )
+            denied = self._ensure_mobile_access(device.user_id)
+            if denied:
+                return denied
+            user = env(user=device.user_id.id, context=requested_context).user
+            self._bind_session_user(user, db)
+            session_env = env(user=user.id, context=request.session.context)
+            self._rotate_nodb_session(session_env)
+            return self._ok({
+                "session": {
+                    "uid": user.id,
+                    "db": db,
+                    "server_time": fields.Datetime.to_string(fields.Datetime.now()),
+                },
+                "user": self._serialize_user(session_env.user),
+                "mobile_access": self._serialize_mobile_access(session_env.user),
+                "device": self._serialize_mobile_device(device),
+            })
 
     def _me(self):
         denied = self._ensure_mobile_access(self._current_user())

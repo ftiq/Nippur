@@ -1,9 +1,7 @@
 import json
 import logging
 
-import odoo.http as odoo_http
-import odoo.modules.registry
-from odoo import _, api, fields, http
+from odoo import _, fields, http
 from odoo.exceptions import AccessDenied, AccessError, UserError, ValidationError
 from odoo.http import request
 from odoo.osv import expression
@@ -85,10 +83,16 @@ class FtiqMobileApiBase(http.Controller):
             or ""
         )
         normalized = header_value.split(",")[0].split(";")[0].strip().lower().replace("_", "-")
+        lang = ""
         if normalized.startswith("ar"):
-            request.update_context(lang="ar_001")
+            lang = "ar_001"
         elif normalized.startswith("en"):
-            request.update_context(lang="en_US")
+            lang = "en_US"
+        if not lang:
+            return
+        request._ftiq_requested_lang = lang
+        if getattr(request, "env", None):
+            request.update_context(lang=lang)
 
     def _json_body(self):
         if not request.httprequest.data:
@@ -144,6 +148,22 @@ class FtiqMobileApiBase(http.Controller):
         return self._role_of(self._current_user())
 
     def _role_label(self, role):
+        if not getattr(request, "env", None):
+            requested_lang = getattr(request, "_ftiq_requested_lang", "")
+            labels_by_lang = {
+                "ar_001": {
+                    "manager": "المدير",
+                    "supervisor": "المشرف",
+                    "representative": "مندوب",
+                },
+                "en_US": {
+                    "manager": "Manager",
+                    "supervisor": "Supervisor",
+                    "representative": "Representative",
+                },
+            }
+            labels = labels_by_lang.get(requested_lang, labels_by_lang["en_US"])
+            return labels.get(role or "", labels["representative"])
         return {
             "manager": _("Manager"),
             "supervisor": _("Supervisor"),
@@ -195,23 +215,6 @@ class FtiqMobileApiBase(http.Controller):
         if not header_value.lower().startswith("bearer "):
             return ""
         return header_value[7:].strip()
-
-    def _issue_session_cookie(self, db, uid):
-        request.session.db = db
-        request.session.uid = uid
-        registry = odoo.modules.registry.Registry(db)
-        with registry.cursor() as cr:
-            env = api.Environment(cr, uid, request.session.context)
-            odoo_http.root.session_store.rotate(request.session, env)
-            request.future_response.set_cookie(
-                "session_id",
-                request.session.sid,
-                max_age=odoo_http.get_session_max_inactivity(env),
-                httponly=True,
-                secure=request.httprequest.scheme == "https",
-                samesite="Lax",
-            )
-        request.update_env(user=uid)
 
     def _mobile_request_uid(self, payload):
         value = ""
@@ -613,8 +616,7 @@ class FtiqMobileApiBase(http.Controller):
     def _search_scoped(self, model_name, domain=None, order=None, limit=None):
         model = request.env[model_name]
         try:
-            if not model.check_access_rights("read", raise_exception=False):
-                return model.browse()
+            model.browse().check_access("read")
         except (AccessError, ValueError):
             return model.browse()
         final_domain = expression.AND([self._scope_domain(model_name), domain or []])
@@ -646,8 +648,7 @@ class FtiqMobileApiBase(http.Controller):
         if not scoped_record:
             return request.env[model_name]
         try:
-            if not scoped_record.check_access_rights("read", raise_exception=False):
-                return request.env[model_name]
+            scoped_record.check_access("read")
         except (AccessError, ValueError):
             return request.env[model_name]
         return scoped_record
@@ -1142,6 +1143,39 @@ class FtiqMobileApiBase(http.Controller):
         return data
 
     def _serialize_user(self, user):
+        if not getattr(request, "env", None):
+            try:
+                if len(user) > 1:
+                    user = user[:1]
+            except Exception:
+                return {}
+            try:
+                user = user.exists()
+            except (AccessError, AttributeError, ValueError):
+                return {}
+            if not user or getattr(user, "_name", "") != "res.users":
+                return {}
+            partner = getattr(user, "partner_id", user.env["res.partner"])
+            return {
+                "id": user.id,
+                "name": user.display_name,
+                "login": user.login,
+                "role": self._role_of(user),
+                "role_label": self._role_label(self._role_of(user)),
+                "email": user.email or (partner.email if partner else "") or "",
+                "phone": partner.phone if partner else "",
+                "mobile": partner.mobile if partner else "",
+                "image_url": self._image_url("res.users", user.id, "avatar_128"),
+                "team": {
+                    "id": user.sale_team_id.id if user.sale_team_id else False,
+                    "name": user.sale_team_id.display_name if user.sale_team_id else "",
+                },
+                "area": {
+                    "id": user.ftiq_area_id.id if getattr(user, "ftiq_area_id", False) else False,
+                    "name": user.ftiq_area_id.name if getattr(user, "ftiq_area_id", False) else "",
+                },
+                "company": self._serialize_company(user.company_id),
+            }
         user = self._safe_scoped_record("res.users", user)
         if not user:
             return {}
@@ -1739,6 +1773,11 @@ class FtiqMobileApiBase(http.Controller):
                 "name": task.display_name if task else "",
                 "state": task.state if task else "",
             },
+            "intent": request.env["ftiq.mobile.notification"].build_target_intent(
+                target_model="ftiq.team.message",
+                target_res_id=message.id,
+                notification_id=notification.id if notification else False,
+            ),
             "deep_link": self._message_deep_link(message, task_record=task),
             "is_team_wide": bool(message.is_team_wide),
             "notification_id": notification.id if notification else False,
@@ -1772,6 +1811,7 @@ class FtiqMobileApiBase(http.Controller):
                 )
         message_type = payload.get("message_type") or ("alert" if notification.priority == "urgent" else "note")
         deep_link = notification._build_deep_link()
+        intent = notification._intent_payload(notification_id=notification.id)
         return {
             "id": notification.id,
             "subject": notification.name or "",
@@ -1796,6 +1836,7 @@ class FtiqMobileApiBase(http.Controller):
             },
             "source_model": notification.source_model or "",
             "source_res_id": notification.source_res_id or False,
+            "intent": intent,
             "deep_link": deep_link,
             "payload": payload,
         }
@@ -1806,6 +1847,10 @@ class FtiqMobileApiBase(http.Controller):
         target_id = scoped_target.id if scoped_target else False
         target_name = scoped_target.display_name if scoped_target else activity.res_name or ""
         deep_link = request.env["ftiq.mobile.notification"].build_target_deep_link(
+            target_model=activity.res_model,
+            target_res_id=target_id,
+        )
+        intent = request.env["ftiq.mobile.notification"].build_target_intent(
             target_model=activity.res_model,
             target_res_id=target_id,
         )
@@ -1831,6 +1876,7 @@ class FtiqMobileApiBase(http.Controller):
                 "id": target_id,
                 "name": target_name,
             },
+            "intent": intent,
             "deep_link": deep_link,
             "available_actions": {
                 "mark_done": can_mark_done,
