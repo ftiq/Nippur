@@ -1,17 +1,31 @@
 {
-    "name": "FTIQ Pharma SFA Mobile API",
+    "name": "FTIQ CRM Mobile API",
     "version": "18.0.1.0.0",
-    "category": "Sales",
-    "summary": "Mobile API for FTIQ Pharma SFA",
+    "category": "Sales/CRM",
+    "summary": "Django CRM compatible mobile API backed by standard Odoo models",
+    "description": """
+FTIQ CRM Mobile API
+===================
+
+Compatibility API for the BottleCRM Flutter screens.
+
+The module intentionally maps the mobile application's existing Django-style
+JSON contracts to standard Odoo models instead of recreating the Flutter
+screens or adding parallel CRM tables.
+    """,
+    "author": "Salah Alhjany",
+    "website": "https://wa.me/967711778764",
     "depends": [
         "web",
-        "ftiq_pharma_sfa",
+        "contacts",
+        "crm",
+        "sales_team",
+        "project",
+        "account",
+        "mail",
     ],
     "data": [],
     "installable": True,
     "application": False,
     "license": "LGPL-3",
-    'author': "Salah Alhjany",
-    'website': "https://wa.me/967711778764",
-
 }
