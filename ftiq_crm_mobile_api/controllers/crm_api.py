@@ -9,59 +9,59 @@ from .base_api import FtiqCrmApiBase
 
 
 class FtiqCrmMobileApi(FtiqCrmApiBase):
-    @http.route("/api/dashboard/", type="http", auth="none", methods=["GET"], csrf=False)
+    @http.route("/api/dashboard/", type="http", auth="none", methods=["GET"], cors="*", csrf=False)
     def dashboard(self, **kwargs):
         return self._dispatch(lambda: self._with_auth(self._dashboard))
 
-    @http.route("/api/leads/", type="http", auth="none", methods=["GET", "POST"], csrf=False)
+    @http.route("/api/leads/", type="http", auth="none", methods=["GET", "POST"], cors="*", csrf=False)
     def leads(self, **kwargs):
         return self._dispatch(lambda: self._with_auth(self._leads))
 
-    @http.route("/api/leads/<int:lead_id>/", type="http", auth="none", methods=["GET", "POST", "PUT", "PATCH", "DELETE"], csrf=False)
+    @http.route("/api/leads/<int:lead_id>/", type="http", auth="none", methods=["GET", "POST", "PUT", "PATCH", "DELETE"], cors="*", csrf=False)
     def lead_detail(self, lead_id, **kwargs):
         return self._dispatch(lambda: self._with_auth(lambda: self._lead_detail(lead_id)))
 
-    @http.route("/api/leads/comment/<int:comment_id>/", type="http", auth="none", methods=["DELETE"], csrf=False)
+    @http.route("/api/leads/comment/<int:comment_id>/", type="http", auth="none", methods=["DELETE"], cors="*", csrf=False)
     def lead_comment(self, comment_id, **kwargs):
         return self._dispatch(lambda: self._with_auth(lambda: self._delete_message(comment_id)))
 
-    @http.route("/api/opportunities/", type="http", auth="none", methods=["GET", "POST"], csrf=False)
+    @http.route("/api/opportunities/", type="http", auth="none", methods=["GET", "POST"], cors="*", csrf=False)
     def opportunities(self, **kwargs):
         return self._dispatch(lambda: self._with_auth(self._opportunities))
 
-    @http.route("/api/opportunities/<int:opportunity_id>/", type="http", auth="none", methods=["GET", "POST", "PUT", "PATCH", "DELETE"], csrf=False)
+    @http.route("/api/opportunities/<int:opportunity_id>/", type="http", auth="none", methods=["GET", "POST", "PUT", "PATCH", "DELETE"], cors="*", csrf=False)
     def opportunity_detail(self, opportunity_id, **kwargs):
         return self._dispatch(lambda: self._with_auth(lambda: self._opportunity_detail(opportunity_id)))
 
-    @http.route("/api/tasks/", type="http", auth="none", methods=["GET", "POST"], csrf=False)
+    @http.route("/api/tasks/", type="http", auth="none", methods=["GET", "POST"], cors="*", csrf=False)
     def tasks(self, **kwargs):
         return self._dispatch(lambda: self._with_auth(self._tasks))
 
-    @http.route("/api/tasks/<int:task_id>/", type="http", auth="none", methods=["GET", "POST", "PUT", "PATCH", "DELETE"], csrf=False)
+    @http.route("/api/tasks/<int:task_id>/", type="http", auth="none", methods=["GET", "POST", "PUT", "PATCH", "DELETE"], cors="*", csrf=False)
     def task_detail(self, task_id, **kwargs):
         return self._dispatch(lambda: self._with_auth(lambda: self._task_detail(task_id)))
 
-    @http.route("/api/accounts/", type="http", auth="none", methods=["GET", "POST"], csrf=False)
+    @http.route("/api/accounts/", type="http", auth="none", methods=["GET", "POST"], cors="*", csrf=False)
     def accounts(self, **kwargs):
         return self._dispatch(lambda: self._with_auth(self._accounts))
 
-    @http.route("/api/contacts/", type="http", auth="none", methods=["GET", "POST"], csrf=False)
+    @http.route("/api/contacts/", type="http", auth="none", methods=["GET", "POST"], cors="*", csrf=False)
     def contacts(self, **kwargs):
         return self._dispatch(lambda: self._with_auth(self._contacts))
 
-    @http.route("/api/users/get-teams-and-users/", type="http", auth="none", methods=["GET"], csrf=False)
+    @http.route("/api/users/get-teams-and-users/", type="http", auth="none", methods=["GET"], cors="*", csrf=False)
     def teams_and_users(self, **kwargs):
         return self._dispatch(lambda: self._with_auth(self._teams_and_users))
 
-    @http.route("/api/tags/", type="http", auth="none", methods=["GET"], csrf=False)
+    @http.route("/api/tags/", type="http", auth="none", methods=["GET"], cors="*", csrf=False)
     def tags(self, **kwargs):
         return self._dispatch(lambda: self._with_auth(self._tags))
 
-    @http.route("/api/cases/", type="http", auth="none", methods=["GET"], csrf=False)
+    @http.route("/api/cases/", type="http", auth="none", methods=["GET"], cors="*", csrf=False)
     def cases(self, **kwargs):
         return self._dispatch(lambda: self._with_auth(self._cases))
 
-    @http.route("/api/invoices/", type="http", auth="none", methods=["GET"], csrf=False)
+    @http.route("/api/invoices/", type="http", auth="none", methods=["GET"], cors="*", csrf=False)
     def invoices(self, **kwargs):
         return self._dispatch(lambda: self._with_auth(self._invoices))
 

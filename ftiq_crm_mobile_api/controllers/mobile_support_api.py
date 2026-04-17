@@ -9,39 +9,39 @@ from .base_api import FtiqCrmApiBase
 
 
 class FtiqCrmMobileSupportApi(FtiqCrmApiBase):
-    @http.route("/api/clients/", type="http", auth="none", methods=["GET", "POST"], csrf=False)
+    @http.route("/api/clients/", type="http", auth="none", methods=["GET", "POST"], cors="*", csrf=False)
     def clients(self, **kwargs):
         if request.httprequest.method == "POST":
             return self._dispatch(lambda: self._with_auth(self._client_create))
         return self._dispatch(lambda: self._with_auth(self._clients))
 
-    @http.route("/api/clients/<int:partner_id>/", type="http", auth="none", methods=["GET", "PUT", "PATCH"], csrf=False)
+    @http.route("/api/clients/<int:partner_id>/", type="http", auth="none", methods=["GET", "PUT", "PATCH"], cors="*", csrf=False)
     def client_detail(self, partner_id, **kwargs):
         if request.httprequest.method in {"PUT", "PATCH"}:
             return self._dispatch(lambda: self._with_auth(lambda: self._client_update(partner_id)))
         return self._dispatch(lambda: self._with_auth(lambda: self._client_detail(partner_id)))
 
-    @http.route("/api/clients/<int:partner_id>/open-invoices/", type="http", auth="none", methods=["GET"], csrf=False)
+    @http.route("/api/clients/<int:partner_id>/open-invoices/", type="http", auth="none", methods=["GET"], cors="*", csrf=False)
     def client_open_invoices(self, partner_id, **kwargs):
         return self._dispatch(lambda: self._with_auth(lambda: self._client_open_invoices(partner_id)))
 
-    @http.route("/api/clients/<int:partner_id>/collections/", type="http", auth="none", methods=["POST"], csrf=False)
+    @http.route("/api/clients/<int:partner_id>/collections/", type="http", auth="none", methods=["POST"], cors="*", csrf=False)
     def client_collections(self, partner_id, **kwargs):
         return self._dispatch(lambda: self._with_auth(lambda: self._client_collection_create(partner_id)))
 
-    @http.route("/api/clients/<int:partner_id>/location/", type="http", auth="none", methods=["POST"], csrf=False)
+    @http.route("/api/clients/<int:partner_id>/location/", type="http", auth="none", methods=["POST"], cors="*", csrf=False)
     def client_update_location(self, partner_id, **kwargs):
         return self._dispatch(lambda: self._with_auth(lambda: self._client_update_location(partner_id)))
 
-    @http.route("/api/mobile/device/register/", type="http", auth="none", methods=["POST"], csrf=False)
+    @http.route("/api/mobile/device/register/", type="http", auth="none", methods=["POST"], cors="*", csrf=False)
     def register_device(self, **kwargs):
         return self._dispatch(lambda: self._with_auth(self._register_device))
 
-    @http.route("/api/notifications/", type="http", auth="none", methods=["GET"], csrf=False)
+    @http.route("/api/notifications/", type="http", auth="none", methods=["GET"], cors="*", csrf=False)
     def notifications(self, **kwargs):
         return self._dispatch(lambda: self._with_auth(self._notifications))
 
-    @http.route("/api/notifications/read/", type="http", auth="none", methods=["POST"], csrf=False)
+    @http.route("/api/notifications/read/", type="http", auth="none", methods=["POST"], cors="*", csrf=False)
     def notifications_read(self, **kwargs):
         return self._dispatch(lambda: self._with_auth(self._notifications_read))
 

@@ -8,27 +8,27 @@ from .base_api import FtiqCrmApiBase
 
 
 class FtiqCrmAuthApi(FtiqCrmApiBase):
-    @http.route("/api/auth/login/", type="http", auth="none", methods=["POST"], csrf=False)
+    @http.route("/api/auth/login/", type="http", auth="none", methods=["POST"], cors="*", csrf=False)
     def login(self, **kwargs):
         return self._dispatch(self._login)
 
-    @http.route("/api/auth/google/", type="http", auth="none", methods=["POST"], csrf=False)
+    @http.route("/api/auth/google/", type="http", auth="none", methods=["POST"], cors="*", csrf=False)
     def google_login(self, **kwargs):
         return self._dispatch(self._google_login)
 
-    @http.route("/api/auth/refresh-token/", type="http", auth="none", methods=["POST"], csrf=False)
+    @http.route("/api/auth/refresh-token/", type="http", auth="none", methods=["POST"], cors="*", csrf=False)
     def refresh_token(self, **kwargs):
         return self._dispatch(self._refresh_token)
 
-    @http.route("/api/auth/me/", type="http", auth="none", methods=["GET"], csrf=False)
+    @http.route("/api/auth/me/", type="http", auth="none", methods=["GET"], cors="*", csrf=False)
     def me(self, **kwargs):
         return self._dispatch(self._me)
 
-    @http.route("/api/auth/profile/", type="http", auth="none", methods=["GET"], csrf=False)
+    @http.route("/api/auth/profile/", type="http", auth="none", methods=["GET"], cors="*", csrf=False)
     def profile(self, **kwargs):
         return self._dispatch(self._profile)
 
-    @http.route("/api/auth/switch-org/", type="http", auth="none", methods=["POST"], csrf=False)
+    @http.route("/api/auth/switch-org/", type="http", auth="none", methods=["POST"], cors="*", csrf=False)
     def switch_org(self, **kwargs):
         return self._dispatch(self._switch_org)
 
