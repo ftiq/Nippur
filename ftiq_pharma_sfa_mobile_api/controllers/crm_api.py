@@ -385,7 +385,9 @@ class FtiqCrmMobileApi(FtiqCrmApiBase):
         tasks = Task.search(task_domain, limit=10, order="date_deadline asc, id desc")
         overdue_tasks = Task.search_count([("date_deadline", "<", today)])
         due_today = Task.search_count([("date_deadline", "=", today)])
-        followups_today = Lead.search_count([("type", "=", "lead"), ("date_action_next", "=", today)])
+        followups_today = 0
+        if "activity_date_deadline" in Lead._fields:
+            followups_today = Lead.search_count([("type", "=", "lead"), ("activity_date_deadline", "=", today)])
         hot_leads_count = Lead.search_count([("type", "=", "lead"), ("priority", "in", ("2", "3"))])
         pipeline = self._pipeline_by_stage(all_opportunities)
         pipeline_value = sum(item["value"] for item in pipeline.values() if item)
@@ -409,8 +411,8 @@ class FtiqCrmMobileApi(FtiqCrmApiBase):
         )
         return self._json(
             {
-                "accounts_count": request.env["res.partner"].search_count([("is_company", "=", True)]),
-                "contacts_count": request.env["res.partner"].search_count([("is_company", "=", False)]),
+                "accounts_count": request.env["res.partner"].search_count([("parent_id", "=", False)]),
+                "contacts_count": request.env["res.partner"].search_count([]),
                 "leads_count": total_leads,
                 "opportunities_count": Lead.search_count([("type", "=", "opportunity")]),
                 "accounts": [self._serialize_partner_account(partner) for partner in accounts],
@@ -743,14 +745,14 @@ class FtiqCrmMobileApi(FtiqCrmApiBase):
         )
 
     def _account_records(self, limit=100):
-        domain = [("is_company", "=", True)]
+        domain = [("parent_id", "=", False)]
         search = self._arg("search")
         if search:
             domain = expression.AND([domain, self._domain_for_search(["name", "email", "phone"], search)])
         return request.env["res.partner"].search(domain, order="name", limit=limit)
 
     def _contact_records(self, limit=100):
-        domain = [("is_company", "=", False)]
+        domain = []
         search = self._arg("search")
         if search:
             domain = expression.AND([domain, self._domain_for_search(["name", "email", "phone"], search)])

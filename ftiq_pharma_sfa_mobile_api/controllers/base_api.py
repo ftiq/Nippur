@@ -459,7 +459,7 @@ class FtiqCrmApiBase(http.Controller):
             "postcode": self._field_value(lead, "zip", "") or "",
             "country": country.name if country else "",
             "last_contacted": self._display_date(lead, "date_last_stage_update"),
-            "next_follow_up": self._display_date(lead, "date_action_next"),
+            "next_follow_up": self._display_date(lead, "activity_date_deadline"),
             "description": self._field_value(lead, "description", "") or "",
             "tags": [self._serialize_tag(tag) for tag in lead.tag_ids],
             "assigned_to": self._assigned_users(user) if user else [],
