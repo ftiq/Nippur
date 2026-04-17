@@ -11,6 +11,7 @@ from odoo import _, fields, http
 from odoo.exceptions import AccessDenied, AccessError, UserError, ValidationError
 from odoo.http import request
 from odoo.osv import expression
+from odoo.tools import html2plaintext
 
 
 _logger = logging.getLogger(__name__)
@@ -215,6 +216,171 @@ class FtiqCrmApiBase(http.Controller):
         value = record[field_name]
         return default if value is False else value
 
+    def _payload_float(self, payload, key, default=None):
+        if key not in payload or payload.get(key) in (None, ""):
+            return default
+        try:
+            return float(payload.get(key))
+        except Exception:
+            return default
+
+    def _payload_bool(self, payload, key, default=False):
+        if key not in payload:
+            return default
+        value = payload.get(key)
+        if isinstance(value, bool):
+            return value
+        if isinstance(value, str):
+            return value.strip().lower() in {"1", "true", "yes", "on"}
+        return bool(value)
+
+    def _location_payload(self, payload):
+        if not isinstance(payload, dict):
+            return {}
+        if "latitude" not in payload or "longitude" not in payload:
+            return {}
+        latitude = self._payload_float(payload, "latitude")
+        longitude = self._payload_float(payload, "longitude")
+        if latitude is None or longitude is None:
+            return {}
+        return {
+            "ftiq_mobile_latitude": latitude,
+            "ftiq_mobile_longitude": longitude,
+            "ftiq_mobile_accuracy": self._payload_float(payload, "accuracy", 0.0) or 0.0,
+            "ftiq_mobile_is_mock": self._payload_bool(payload, "is_mock", False),
+            "ftiq_mobile_location_at": fields.Datetime.now(),
+        }
+
+    def _apply_mobile_location(self, record, payload, partner=None):
+        location_values = self._location_payload(payload)
+        if not location_values:
+            return
+        record_values = {
+            key: value
+            for key, value in location_values.items()
+            if key in getattr(record, "_fields", {})
+        }
+        if record_values:
+            record.write(record_values)
+        partner = partner or (
+            record.partner_id.commercial_partner_id
+            if getattr(record, "_fields", {}).get("partner_id") and record.partner_id
+            else request.env["res.partner"]
+        )
+        if not partner:
+            return
+        partner_values = {}
+        if "partner_latitude" in partner._fields:
+            partner_values["partner_latitude"] = location_values["ftiq_mobile_latitude"]
+        if "partner_longitude" in partner._fields:
+            partner_values["partner_longitude"] = location_values["ftiq_mobile_longitude"]
+        if "ftiq_mobile_last_location_accuracy" in partner._fields:
+            partner_values["ftiq_mobile_last_location_accuracy"] = location_values["ftiq_mobile_accuracy"]
+        if "ftiq_mobile_last_location_is_mock" in partner._fields:
+            partner_values["ftiq_mobile_last_location_is_mock"] = location_values["ftiq_mobile_is_mock"]
+        if "ftiq_mobile_last_location_at" in partner._fields:
+            partner_values["ftiq_mobile_last_location_at"] = location_values["ftiq_mobile_location_at"]
+        if partner_values:
+            partner.write(partner_values)
+
+    def _record_mobile_location(self, record):
+        return {
+            "latitude": self._field_value(record, "ftiq_mobile_latitude"),
+            "longitude": self._field_value(record, "ftiq_mobile_longitude"),
+            "accuracy": self._field_value(record, "ftiq_mobile_accuracy"),
+            "is_mock": bool(self._field_value(record, "ftiq_mobile_is_mock", False)),
+            "location_at": self._display_date(record, "ftiq_mobile_location_at"),
+        }
+
+    def _partner_mobile_location(self, partner):
+        latitude = self._field_value(partner, "partner_latitude")
+        longitude = self._field_value(partner, "partner_longitude")
+        return {
+            "latitude": latitude,
+            "longitude": longitude,
+            "accuracy": self._field_value(partner, "ftiq_mobile_last_location_accuracy"),
+            "is_mock": bool(self._field_value(partner, "ftiq_mobile_last_location_is_mock", False)),
+            "location_at": self._display_date(partner, "ftiq_mobile_last_location_at"),
+        }
+
+    def _open_invoice_domain(self, commercial_partner_ids):
+        return [
+            ("move_type", "in", ("out_invoice", "out_refund")),
+            ("state", "=", "posted"),
+            ("amount_residual", ">", 0),
+            ("partner_id", "child_of", commercial_partner_ids),
+        ]
+
+    def _invoice_metrics_by_partner(self, partners):
+        commercial_partner_ids = list(
+            {
+                partner.commercial_partner_id.id
+                for partner in partners
+                if partner and partner.commercial_partner_id
+            }
+        )
+        if not commercial_partner_ids or not self._has_model("account.move"):
+            return {}
+        moves = request.env["account.move"].search(
+            self._open_invoice_domain(commercial_partner_ids)
+        )
+        metrics = {
+            partner_id: {"due_amount": 0.0, "open_invoice_count": 0}
+            for partner_id in commercial_partner_ids
+        }
+        for move in moves:
+            partner = move.partner_id.commercial_partner_id
+            if not partner:
+                continue
+            values = metrics.setdefault(
+                partner.id,
+                {"due_amount": 0.0, "open_invoice_count": 0},
+            )
+            values["due_amount"] += move.amount_residual
+            values["open_invoice_count"] += 1
+        return metrics
+
+    def _serialize_invoice_summary(self, move):
+        return {
+            "id": move.id,
+            "name": move.name or move.display_name,
+            "number": move.name or "",
+            "amount_total": move.amount_total,
+            "amount_residual": move.amount_residual,
+            "currency": move.currency_id.name if move.currency_id else request.env.company.currency_id.name,
+            "invoice_date": self._date_string(move.invoice_date),
+            "due_date": self._date_string(move.invoice_date_due),
+            "payment_state": move.payment_state,
+        }
+
+    def _serialize_mail_notification(self, notification):
+        message = notification.mail_message_id
+        body = html2plaintext(message.body or "").strip() if message else ""
+        title = (
+            (message.subject or "").strip()
+            or (message.record_name or "").strip()
+            or _("Notification")
+        )
+        related_model = message.model or "" if message else ""
+        related_id = message.res_id or 0 if message else 0
+        notification_type = "system"
+        if related_model == "project.task":
+            notification_type = "taskAssigned"
+        elif related_model == "crm.lead":
+            notification_type = "dealStageChanged"
+        return {
+            "id": str(notification.id),
+            "type": notification_type,
+            "title": title,
+            "message": body or title,
+            "is_read": bool(notification.is_read),
+            "created_at": self._date_string(message.date if message else notification.create_date),
+            "category": related_model or "system",
+            "target_model": related_model,
+            "target_id": related_id,
+            "record_name": message.record_name if message else "",
+        }
+
     def _selection_label(self, record, field_name, value=None):
         if not record or field_name not in record._fields:
             return ""
@@ -362,6 +528,7 @@ class FtiqCrmApiBase(http.Controller):
         commercial = partner.commercial_partner_id or partner
         country = partner.country_id
         state = partner.state_id
+        location = self._partner_mobile_location(commercial)
         return {
             "id": str(commercial.id),
             "name": commercial.display_name,
@@ -386,6 +553,11 @@ class FtiqCrmApiBase(http.Controller):
             "description": commercial.comment or "",
             "created_at": self._date_string(commercial.create_date),
             "is_active": bool(commercial.active),
+            "latitude": location["latitude"],
+            "longitude": location["longitude"],
+            "location_accuracy": location["accuracy"],
+            "location_is_mock": location["is_mock"],
+            "location_at": location["location_at"],
         }
 
     def _serialize_partner_contact(self, partner):
@@ -393,8 +565,10 @@ class FtiqCrmApiBase(http.Controller):
         account = partner.parent_id or (partner.commercial_partner_id if partner.is_company is False else False)
         country = partner.country_id
         state = partner.state_id
+        location = self._partner_mobile_location(partner.commercial_partner_id or partner)
         return {
             "id": str(partner.id),
+            "name": partner.display_name,
             "first_name": first_name,
             "last_name": last_name,
             "email": partner.email or "",
@@ -417,6 +591,11 @@ class FtiqCrmApiBase(http.Controller):
             "created_at": self._date_string(partner.create_date),
             "is_active": bool(partner.active),
             "account": str(account.id) if account else None,
+            "latitude": location["latitude"],
+            "longitude": location["longitude"],
+            "location_accuracy": location["accuracy"],
+            "location_is_mock": location["is_mock"],
+            "location_at": location["location_at"],
         }
 
     def _serialize_lead(self, lead):
@@ -468,6 +647,7 @@ class FtiqCrmApiBase(http.Controller):
             "created_at": self._date_string(lead.create_date),
             "updated_at": self._date_string(lead.write_date),
             "is_active": bool(getattr(lead, "active", True)),
+            **self._record_mobile_location(lead),
         }
 
     def _serialize_opportunity(self, lead):
@@ -500,6 +680,7 @@ class FtiqCrmApiBase(http.Controller):
             "updated_at": self._date_string(lead.write_date),
             "is_active": bool(getattr(lead, "active", True)),
             "org": {"id": str(request.env.company.id), "name": request.env.company.name},
+            **self._record_mobile_location(lead),
         }
 
     def _task_status_value(self, task):
@@ -545,6 +726,7 @@ class FtiqCrmApiBase(http.Controller):
             "tags": [self._serialize_tag(tag) for tag in tags],
             "task_attachment": [],
             "task_comments": self._serialize_messages(task),
+            **self._record_mobile_location(task),
         }
 
     def _serialize_messages(self, record):

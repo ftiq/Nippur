@@ -74,6 +74,7 @@ class FtiqCrmMobileApi(FtiqCrmApiBase):
             payload = self._json_body()
             lead = request.env["crm.lead"].create(self._lead_values(payload))
             self._write_crm_relations(lead, payload)
+            self._apply_mobile_location(lead, payload)
             return self._ok_message(_("Lead Created Successfully"))
         limit, offset = self._limit_offset()
         search = self._arg("search")
@@ -152,6 +153,7 @@ class FtiqCrmMobileApi(FtiqCrmApiBase):
         if values:
             lead.write(values)
         self._write_crm_relations(lead, payload)
+        self._apply_mobile_location(lead, payload)
         if payload.get("status") == "converted":
             lead.write({"type": "opportunity"})
             return self._ok_message(
@@ -183,6 +185,7 @@ class FtiqCrmMobileApi(FtiqCrmApiBase):
             payload = self._json_body()
             opportunity = request.env["crm.lead"].create(self._opportunity_values(payload))
             self._write_crm_relations(opportunity, payload)
+            self._apply_mobile_location(opportunity, payload)
             return self._ok_message(_("Opportunity Created Successfully"))
         limit, offset = self._limit_offset()
         domain = [("type", "=", "opportunity")]
@@ -240,6 +243,7 @@ class FtiqCrmMobileApi(FtiqCrmApiBase):
         if values:
             opportunity.write(values)
         self._write_crm_relations(opportunity, payload)
+        self._apply_mobile_location(opportunity, payload)
         return self._ok_message(_("Opportunity Updated Successfully"))
 
     def _opportunity_detail_payload(self, opportunity):
@@ -261,6 +265,7 @@ class FtiqCrmMobileApi(FtiqCrmApiBase):
         if request.httprequest.method == "POST":
             payload = self._json_body()
             task = request.env["project.task"].create(self._task_values(payload))
+            self._apply_mobile_location(task, payload)
             return self._ok_message(_("Task Created Successfully"))
         limit, offset = self._limit_offset()
         domain = []
@@ -310,6 +315,7 @@ class FtiqCrmMobileApi(FtiqCrmApiBase):
         values = self._task_values(payload, existing=task, partial=method == "PATCH")
         if values:
             task.write(values)
+        self._apply_mobile_location(task, payload)
         return self._ok_message(_("Task updated Successfully"))
 
     def _task_detail_payload(self, task):

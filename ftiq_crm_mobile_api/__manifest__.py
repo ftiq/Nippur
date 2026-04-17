@@ -18,6 +18,7 @@ screens or adding parallel CRM tables.
     "depends": [
         "web",
         "contacts",
+        "base_geolocalize",
         "crm",
         "sales_team",
         "project",
@@ -25,8 +26,9 @@ screens or adding parallel CRM tables.
         "mail",
     ],
     "data": [
-        'data/firebase_config_data.xml',
-
+        "security/ir.model.access.csv",
+        "data/firebase_config_data.xml",
+        "views/crm_mobile_location_views.xml",
     ],
     "installable": True,
     "application": False,
