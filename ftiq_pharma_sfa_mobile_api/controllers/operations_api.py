@@ -429,36 +429,31 @@ class FtiqMobileOperationsApi(FtiqMobileApiBase):
         return self._ok({"items": items}, meta={"count": len(items)})
 
     def _clients(self):
-        service = request.env["ftiq.client.search.service"]
-        limit = self._args_int("limit", 25)
+        limit = self._args_int("limit", 50)
         offset = self._args_int("offset", 0)
-        query = request.httprequest.args.get("query", "")
-        client_code = request.httprequest.args.get("client_code", "")
-        city_id = self._args_int("city_id", 0)
-        area_id = self._args_int("area_id", 0)
-        client_category_id = self._args_int("client_category_id", 0)
-        specialty_id = self._args_int("specialty_id", 0)
-        classification_id = self._args_int("classification_id", 0)
-        latitude = self._args_float("latitude", 0.0)
-        longitude = self._args_float("longitude", 0.0)
-        radius_km = self._args_float("radius_km", 0.0)
-        items = service.search_clients(
-            search_term=query,
-            client_code=client_code,
-            city_id=city_id or False,
-            area_id=area_id or False,
-            client_category_id=client_category_id or False,
-            specialty_id=specialty_id or False,
-            classification_id=classification_id or False,
-            latitude=latitude or False,
-            longitude=longitude or False,
-            radius_km=radius_km,
+        query = (request.httprequest.args.get("query") or "").strip()
+        domain = []
+        if query:
+            domain = expression.OR([
+                [("display_name", "ilike", query)],
+                [("ref", "ilike", query)],
+                [("phone", "ilike", query)],
+                [("mobile", "ilike", query)],
+                [("email", "ilike", query)],
+                [("city", "ilike", query)],
+                [("street", "ilike", query)],
+            ])
+        partners = request.env["res.partner"].search(
+            domain,
+            order="display_name asc, id asc",
             offset=offset,
             limit=limit,
         )
+        items = [self._serialize_partner_card(partner) for partner in partners]
+        count = request.env["res.partner"].search_count(domain)
         return self._ok(
             {"items": items},
-            meta={"count": len(items), "limit": limit, "offset": offset},
+            meta={"count": count, "limit": limit, "offset": offset},
         )
 
     def _client_create(self):
@@ -513,17 +508,10 @@ class FtiqMobileOperationsApi(FtiqMobileApiBase):
         return self._ok(self._serialize_partner_card(partner), status=201)
 
     def _client_detail(self, partner_id):
-        service = request.env["ftiq.client.search.service"]
-        latitude = self._args_float("latitude", 0.0)
-        longitude = self._args_float("longitude", 0.0)
-        card = service.get_client_card(
-            partner_id,
-            latitude=latitude or False,
-            longitude=longitude or False,
-        )
-        if not card:
+        partner = self._browse_mobile_client(partner_id)
+        if not partner:
             return self._error(_("Client not found."), status=404, code="not_found")
-        return self._ok(card)
+        return self._ok(self._serialize_partner_card(partner))
 
     def _client_open_invoices(self, partner_id):
         partner = self._browse_mobile_client(partner_id)

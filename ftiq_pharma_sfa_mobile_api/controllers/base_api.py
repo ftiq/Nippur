@@ -1034,11 +1034,7 @@ class FtiqMobileApiBase(http.Controller):
         raise AccessError(_("You do not have permission to %s.") % operation)
 
     def _browse_mobile_client(self, partner_id):
-        domain = expression.AND([
-            request.env["ftiq.plan.candidate.service"].get_client_base_domain(),
-            [("id", "=", partner_id)],
-        ])
-        return request.env["res.partner"].search(domain, limit=1)
+        return request.env["res.partner"].search([("id", "=", partner_id)], limit=1)
 
     def _serialize_company(self, company):
         return {

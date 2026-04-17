@@ -146,6 +146,7 @@ class FtiqMobileSessionApi(FtiqMobileApiBase):
                 "session": {
                     "uid": user.id,
                     "db": db,
+                    "session_id": request.session.sid,
                     "server_time": fields.Datetime.to_string(fields.Datetime.now()),
                 },
                 "user": self._serialize_user(request.env.user),
@@ -167,6 +168,7 @@ class FtiqMobileSessionApi(FtiqMobileApiBase):
                 "session": {
                     "uid": user.id,
                     "db": db,
+                    "session_id": request.session.sid,
                     "server_time": fields.Datetime.to_string(fields.Datetime.now()),
                 },
                 "user": self._serialize_user(session_env.user),
@@ -226,6 +228,7 @@ class FtiqMobileSessionApi(FtiqMobileApiBase):
                 "session": {
                     "uid": device.user_id.id,
                     "db": db,
+                    "session_id": request.session.sid,
                     "server_time": fields.Datetime.to_string(fields.Datetime.now()),
                 },
                 "user": self._serialize_user(request.env.user),
@@ -258,6 +261,7 @@ class FtiqMobileSessionApi(FtiqMobileApiBase):
                 "session": {
                     "uid": user.id,
                     "db": db,
+                    "session_id": request.session.sid,
                     "server_time": fields.Datetime.to_string(fields.Datetime.now()),
                 },
                 "user": self._serialize_user(session_env.user),
