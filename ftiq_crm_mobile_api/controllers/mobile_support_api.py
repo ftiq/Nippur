@@ -1,4 +1,4 @@
-from odoo import _, http
+from odoo import _, fields, http
 from odoo.http import request
 from odoo.osv import expression
 
@@ -88,7 +88,7 @@ class FtiqCrmMobileSupportApi(FtiqCrmApiBase):
             "state": partner.state_id.name if partner.state_id else "",
             "country": partner.country_id.name if partner.country_id else "",
             "postcode": partner.zip or "",
-            "address": partner.contact_address_complete or partner.contact_address or "",
+            "address": self._field_value(partner, "contact_address_complete", "") or partner.contact_address or "",
             "parent_name": partner.parent_id.display_name if partner.parent_id else "",
             "job_title": partner.function or "",
             "notes": partner.comment or "",
@@ -195,8 +195,8 @@ class FtiqCrmMobileSupportApi(FtiqCrmApiBase):
             "notification_enabled": self._payload_bool(payload, "notification_enabled", False),
             "location_enabled": self._payload_bool(payload, "location_enabled", False),
             "fcm_token": (payload.get("fcm_token") or "").strip(),
-            "last_seen_at": request.env.cr.now(),
-            "last_registration_at": request.env.cr.now(),
+            "last_seen_at": fields.Datetime.now(),
+            "last_registration_at": fields.Datetime.now(),
             "active": True,
         }
         if device:
