@@ -254,9 +254,9 @@
     </record>
 
     <record id="ftiq_res_partner_mobile_visibility_rule" model="ir.rule">
-        <field name="name">FTIQ Partner: Mobile roles read field clients and user contacts</field>
+        <field name="name">FTIQ Partner: Mobile roles read standard contacts</field>
         <field name="model_id" ref="base.model_res_partner"/>
-        <field name="domain_force">['&amp;', '|', ('company_id', '=', False), ('company_id', '=', user.company_id.id), '|', ('commercial_partner_id.ftiq_is_field_client', '=', True), ('user_ids', '!=', False)]</field>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', '=', user.company_id.id)]</field>
         <field name="groups" eval="[(4, ref('group_ftiq_rep')), (4, ref('group_ftiq_supervisor'))]"/>
         <field name="perm_write" eval="False"/>
         <field name="perm_create" eval="False"/>
