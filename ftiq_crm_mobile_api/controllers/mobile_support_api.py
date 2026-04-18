@@ -1,7 +1,9 @@
 import base64
+import json
+from pathlib import Path
 
 from odoo import _, fields, http
-from odoo.exceptions import ValidationError
+from odoo.exceptions import UserError, ValidationError
 from odoo.http import request
 from odoo.osv import expression
 
@@ -14,6 +16,17 @@ class FtiqCrmMobileSupportApi(FtiqCrmApiBase):
         if request.httprequest.method == "POST":
             return self._dispatch(lambda: self._with_auth(self._client_create))
         return self._dispatch(lambda: self._with_auth(self._clients))
+
+    @http.route(
+        ["/api/clients/address-options/", "/api/client-address-options/"],
+        type="http",
+        auth="none",
+        methods=["GET"],
+        cors="*",
+        csrf=False,
+    )
+    def client_address_options(self, **kwargs):
+        return self._dispatch(lambda: self._with_auth(self._client_address_options))
 
     @http.route("/api/clients/<int:partner_id>/", type="http", auth="none", methods=["GET", "PUT", "PATCH"], cors="*", csrf=False)
     def client_detail(self, partner_id, **kwargs):
@@ -44,6 +57,19 @@ class FtiqCrmMobileSupportApi(FtiqCrmApiBase):
     @http.route("/api/notifications/read/", type="http", auth="none", methods=["POST"], cors="*", csrf=False)
     def notifications_read(self, **kwargs):
         return self._dispatch(lambda: self._with_auth(self._notifications_read))
+
+    @http.route("/api/mobile/web-errors/", type="http", auth="none", methods=["POST", "OPTIONS"], cors="*", csrf=False)
+    def web_errors(self, **kwargs):
+        if request.httprequest.method == "OPTIONS":
+            return request.make_response(
+                "",
+                headers=[
+                    ("Access-Control-Allow-Origin", "*"),
+                    ("Access-Control-Allow-Methods", "POST, OPTIONS"),
+                    ("Access-Control-Allow-Headers", "Content-Type, Authorization"),
+                ],
+            )
+        return self._dispatch(self._web_errors)
 
     def _with_auth(self, callback):
         self._authenticate()
@@ -89,8 +115,22 @@ class FtiqCrmMobileSupportApi(FtiqCrmApiBase):
     def _serialize_client(self, partner, metrics=None, include_invoices=False):
         commercial = partner.commercial_partner_id or partner
         location = self._partner_mobile_location(commercial)
-        metrics = metrics or {"due_amount": 0.0, "open_invoice_count": 0}
+        metrics = metrics or {"due_amount": 0.0, "open_invoice_count": 0, "currency": ""}
         invoices = self._client_invoices(partner) if include_invoices else request.env["account.move"]
+        collection_options = (
+            self._build_collection_options(partner, invoices)
+            if include_invoices
+            else None
+        )
+        display_currency = (
+            metrics.get("currency")
+            or (collection_options.get("currency") if collection_options else "")
+            or (
+                commercial.company_id.currency_id.name
+                if commercial.company_id and commercial.company_id.currency_id
+                else request.env.company.currency_id.name
+            )
+        )
         return {
             "id": str(partner.id),
             "commercial_partner_id": str(commercial.id),
@@ -100,8 +140,11 @@ class FtiqCrmMobileSupportApi(FtiqCrmApiBase):
             "phone": partner.phone or "",
             "mobile": partner.mobile or "",
             "street": partner.street or "",
+            "street2": partner.street2 or "",
             "city": partner.city or "",
+            "state_id": str(partner.state_id.id) if partner.state_id else "",
             "state": partner.state_id.name if partner.state_id else "",
+            "country_id": str(partner.country_id.id) if partner.country_id else "",
             "country": partner.country_id.name if partner.country_id else "",
             "postcode": partner.zip or "",
             "address": self._field_value(partner, "contact_address_complete", "") or partner.contact_address or "",
@@ -111,18 +154,18 @@ class FtiqCrmMobileSupportApi(FtiqCrmApiBase):
             "is_company": bool(partner.is_company),
             "due_amount": metrics.get("due_amount", 0.0),
             "open_invoice_count": metrics.get("open_invoice_count", 0),
-            "currency": (
-                commercial.company_id.currency_id.name
-                if commercial.company_id and commercial.company_id.currency_id
-                else request.env.company.currency_id.name
-            ),
+            "currency": display_currency,
             "latitude": location["latitude"],
             "longitude": location["longitude"],
             "location_accuracy": location["accuracy"],
             "location_is_mock": location["is_mock"],
             "location_at": location["location_at"],
             "tags": [tag.display_name for tag in partner.category_id],
-            "open_invoices": [self._serialize_invoice_summary(move) for move in invoices[:10]],
+            "open_invoices": [
+                self._serialize_invoice_summary(move)
+                for move in (invoices if include_invoices else request.env["account.move"])
+            ],
+            "collection_options": collection_options,
         }
 
     def _client_values(self, payload, create=False):
@@ -137,6 +180,7 @@ class FtiqCrmMobileSupportApi(FtiqCrmApiBase):
             ("phone", "phone"),
             ("mobile", "mobile"),
             ("street", "street"),
+            ("street2", "street2"),
             ("city", "city"),
             ("postcode", "zip"),
             ("job_title", "function"),
@@ -144,9 +188,64 @@ class FtiqCrmMobileSupportApi(FtiqCrmApiBase):
         ):
             if payload_key in payload:
                 values[field_name] = (payload.get(payload_key) or "").strip()
+        country, error = self._client_many2one_value(payload, "country_id", "res.country", _("Country"))
+        if error:
+            return None, error
+        if country is not None:
+            values["country_id"] = country.id if country else False
+        state, error = self._client_many2one_value(payload, "state_id", "res.country.state", _("State"))
+        if error:
+            return None, error
+        if state is not None:
+            country_id = values.get("country_id")
+            target_country_id = country_id if country_id is not False else False
+            if state and target_country_id and state.country_id and state.country_id.id != target_country_id:
+                return None, self._error(_("State does not belong to the selected country."))
+            values["state_id"] = state.id if state else False
         if "is_company" in payload:
             values["is_company"] = self._payload_bool(payload, "is_company", False)
         return values, None
+
+    def _client_many2one_value(self, payload, payload_key, model_name, label):
+        if payload_key not in payload:
+            return None, None
+        raw_value = payload.get(payload_key)
+        if raw_value in (None, "", False):
+            return False, None
+        try:
+            record_id = int(raw_value)
+        except Exception:
+            return None, self._error(_("%s is invalid.") % label)
+        record = request.env[model_name].browse(record_id).exists()
+        if not record:
+            return None, self._error(_("%s was not found.") % label)
+        return record, None
+
+    def _client_address_options(self):
+        countries = request.env["res.country"].search([], order="name, id")
+        states = request.env["res.country.state"].search([], order="name, id")
+        return self._json(
+            {
+                "countries": [
+                    {
+                        "id": str(country.id),
+                        "name": country.name or "",
+                        "code": country.code or "",
+                    }
+                    for country in countries
+                ],
+                "states": [
+                    {
+                        "id": str(state.id),
+                        "name": state.name or "",
+                        "code": state.code or "",
+                        "country_id": str(state.country_id.id) if state.country_id else "",
+                        "country_name": state.country_id.name if state.country_id else "",
+                    }
+                    for state in states
+                ],
+            }
+        )
 
     def _clients(self):
         limit, offset = self._limit_offset()
@@ -285,16 +384,6 @@ class FtiqCrmMobileSupportApi(FtiqCrmApiBase):
         if not request_uid:
             return self._error(_("mobile_request_uid is required."))
 
-        Draft = request.env["ftiq.collection.draft"]
-        existing = Draft.search([("mobile_request_uid", "=", request_uid)], limit=1)
-        if existing:
-            return self._json(
-                {
-                    "collection": self._serialize_collection_draft(existing),
-                    "duplicate": True,
-                }
-            )
-
         invoices = self._client_invoices(partner)
         if not invoices:
             return self._error(_("This client has no open invoices."))
@@ -313,42 +402,258 @@ class FtiqCrmMobileSupportApi(FtiqCrmApiBase):
 
         currencies = invoices.mapped("currency_id")
         if len(currencies) > 1:
-            return self._error(_("Collection drafts must use invoices with a single currency."))
+            return self._error(_("Selected invoices must use a single currency."))
 
         amount = self._payload_float(payload, "amount")
+        cash_discount = self._payload_float(payload, "cash_discount", 0.0) or 0.0
         residual = sum(invoices.mapped("amount_residual"))
         if amount is None or amount <= 0:
             return self._error(_("Collection amount must be greater than zero."))
         if amount > residual + 0.0001:
             return self._error(_("Collection amount cannot exceed the selected open invoice residual."))
+        if cash_discount < 0:
+            return self._error(_("Cash discount cannot be negative."))
+        if cash_discount > 0 and abs((amount + cash_discount) - residual) > 0.0001:
+            return self._error(
+                _("When a cash discount is used, the collection amount plus cash discount must match the selected open invoice residual.")
+            )
 
         commercial = partner.commercial_partner_id or partner
-        draft = Draft.create(
-            {
-                "partner_id": partner.id,
-                "collector_id": request.env.user.id,
-                "company_id": request.env.company.id,
-                "currency_id": currencies[:1].id if currencies else request.env.company.currency_id.id,
-                "invoice_ids": [(6, 0, invoices.ids)],
-                "amount": amount,
-                "payment_note": (payload.get("payment_note") or "").strip(),
-                "mobile_request_uid": request_uid,
-                "state": "submitted",
-            }
+        payment_date = (payload.get("payment_date") or "").strip() or fields.Date.context_today(request.env.user)
+        note = (payload.get("payment_note") or payload.get("memo") or "").strip()
+        wizard = self._prepare_collection_wizard(
+            invoices,
+            amount=amount,
+            payment_date=payment_date,
+            communication=note,
+            journal_id=payload.get("journal_id"),
+            payment_method_line_id=payload.get("payment_method_line_id"),
         )
-        self._apply_mobile_location(draft, payload, partner=commercial)
-        attachment_ids = self._create_collection_attachments(draft, payload.get("attachments") or [])
-        body = _("Mobile collection draft submitted from the field.")
-        draft.message_post(body=body, attachment_ids=attachment_ids)
+        if cash_discount > 0:
+            discount_account = self._cash_discount_account()
+            if not discount_account:
+                return self._error(_("Cash discount account is not configured."))
+            if "cash_discount" in wizard._fields and "discount_account_id" in wizard._fields:
+                wizard.write(
+                    {
+                        "amount": amount,
+                        "cash_discount": cash_discount,
+                        "discount_account_id": discount_account.id,
+                    }
+                )
+            else:
+                wizard.write(
+                    {
+                        "amount": amount,
+                        "payment_difference_handling": "reconcile",
+                        "writeoff_account_id": discount_account.id,
+                        "writeoff_label": self._payment_cash_discount_label() or _("Cash Discount"),
+                    }
+                )
+        payments = wizard._create_payments()
+        if not payments:
+            return self._error(_("No payment was created."))
+
+        for payment in payments:
+            if cash_discount > 0 and self._payment_supports_cash_discount():
+                payment.write({"cash_discount": cash_discount})
+            self._apply_mobile_location(payment, payload, partner=commercial)
+            target_record = payment.move_id or payment
+            attachment_ids = self._create_record_attachments(target_record, payload.get("attachments") or [])
+            target_record.message_post(
+                body=_("Collection created from the mobile application."),
+                attachment_ids=attachment_ids,
+            )
         return self._json(
             {
-                "collection": self._serialize_collection_draft(draft),
-                "message": _("Collection draft submitted successfully."),
+                "payment": self._serialize_collection_payment(payments[0], invoices, request_uid),
+                "payments": [
+                    self._serialize_collection_payment(payment, invoices, request_uid)
+                    for payment in payments
+                ],
+                "duplicate": False,
+                "message": _("Collection recorded successfully."),
             },
             status=201,
         )
 
-    def _create_collection_attachments(self, draft, attachments):
+    def _build_collection_options(self, partner, invoices):
+        supports_cash_discount = self._payment_supports_cash_discount()
+        cash_discount_label = self._payment_cash_discount_label() if supports_cash_discount else ""
+        if not invoices:
+            return {
+                "currency": request.env.company.currency_id.name,
+                "amount_by_default": 0.0,
+                "full_amount": 0.0,
+                "selected_journal_id": "",
+                "selected_payment_method_line_id": "",
+                "journals": [],
+                "payment_method_lines": [],
+                "allow_attachments": True,
+                "requires_partner_bank_account": False,
+                "can_register_payment": False,
+                "supports_cash_discount": supports_cash_discount,
+                "cash_discount_label": cash_discount_label,
+                "default_cash_discount": 0.0,
+                "blocking_message": _("This client has no open invoices."),
+            }
+        try:
+            wizard = self._prepare_collection_wizard(invoices)
+        except (UserError, ValidationError) as exc:
+            currency = (
+                invoices[:1].currency_id.name
+                if invoices[:1] and invoices[:1].currency_id
+                else request.env.company.currency_id.name
+            )
+            return {
+                "currency": currency,
+                "amount_by_default": sum(invoices.mapped("amount_residual")),
+                "full_amount": sum(invoices.mapped("amount_residual")),
+                "selected_journal_id": "",
+                "selected_payment_method_line_id": "",
+                "journals": [],
+                "payment_method_lines": [],
+                "allow_attachments": True,
+                "requires_partner_bank_account": False,
+                "can_register_payment": False,
+                "supports_cash_discount": supports_cash_discount,
+                "cash_discount_label": cash_discount_label,
+                "default_cash_discount": 0.0,
+                "blocking_message": str(exc),
+            }
+        journals = wizard.available_journal_ids.sorted(lambda journal: (journal.sequence, journal.name or "", journal.id))
+        payment_method_lines = []
+        current_journal = wizard.journal_id
+        current_payment_method_line = wizard.payment_method_line_id
+        for journal in journals:
+            wizard.journal_id = journal._origin
+            for line in wizard.available_payment_method_line_ids.sorted(
+                lambda item: (item.sequence, item.name or "", item.id)
+            ):
+                payment_method_lines.append(
+                    {
+                        "id": str(line.id),
+                        "name": line.name,
+                        "journal_id": str(journal.id),
+                        "code": line.code,
+                    }
+                )
+        wizard.journal_id = current_journal._origin
+        wizard.payment_method_line_id = current_payment_method_line._origin
+        return {
+            "currency": wizard.currency_id.name if wizard.currency_id else request.env.company.currency_id.name,
+            "amount_by_default": wizard.amount,
+            "full_amount": sum(invoices.mapped("amount_residual")),
+            "selected_journal_id": str(wizard.journal_id._origin.id) if wizard.journal_id else "",
+            "selected_payment_method_line_id": str(wizard.payment_method_line_id._origin.id) if wizard.payment_method_line_id else "",
+            "journals": [
+                {
+                    "id": str(journal.id),
+                    "name": journal.display_name,
+                    "type": journal.type,
+                }
+                for journal in journals
+            ],
+            "payment_method_lines": [
+                line for line in payment_method_lines
+            ],
+            "allow_attachments": True,
+            "requires_partner_bank_account": bool(wizard.require_partner_bank_account),
+            "can_register_payment": bool(journals),
+            "supports_cash_discount": supports_cash_discount,
+            "cash_discount_label": cash_discount_label,
+            "default_cash_discount": 0.0,
+            "blocking_message": "" if journals else _("No payment journal is available for this customer."),
+        }
+
+    def _payment_supports_cash_discount(self):
+        return "cash_discount" in request.env["account.payment"]._fields
+
+    def _payment_cash_discount_label(self):
+        field = request.env["ir.model.fields"].sudo().search(
+            [("model", "=", "account.payment"), ("name", "=", "cash_discount")],
+            limit=1,
+        )
+        return field.field_description or _("Cash Discount")
+
+    def _prepare_collection_wizard(
+        self,
+        invoices,
+        amount=None,
+        payment_date=None,
+        communication="",
+        journal_id=None,
+        payment_method_line_id=None,
+    ):
+        Wizard = request.env["account.payment.register"].with_context(
+            active_model="account.move",
+            active_ids=invoices.ids,
+        )
+        wizard = Wizard.create(
+            {
+                "group_payment": len(invoices) > 1,
+            }
+        )
+        if not wizard.available_journal_ids:
+            raise ValidationError(_("No payment journal is available for this customer."))
+
+        if journal_id not in (None, ""):
+            try:
+                journal_id = int(journal_id)
+            except Exception as exc:
+                raise ValidationError(_("Invalid payment journal.")) from exc
+            journal = wizard.available_journal_ids.filtered(lambda item: item.id == journal_id)[:1]
+            if not journal:
+                raise ValidationError(_("The selected payment journal is not available for this customer."))
+            wizard.journal_id = journal._origin
+        elif not wizard.journal_id and wizard.available_journal_ids:
+            wizard.journal_id = wizard.available_journal_ids[:1]._origin
+        elif wizard.journal_id:
+            wizard.journal_id = wizard.journal_id._origin
+
+        if payment_date:
+            wizard.payment_date = payment_date
+        if communication:
+            wizard.communication = communication
+
+        available_lines = wizard.available_payment_method_line_ids
+        if payment_method_line_id not in (None, ""):
+            try:
+                payment_method_line_id = int(payment_method_line_id)
+            except Exception as exc:
+                raise ValidationError(_("Invalid payment method.")) from exc
+            payment_method_line = available_lines.filtered(lambda item: item.id == payment_method_line_id)[:1]
+            if not payment_method_line:
+                raise ValidationError(_("The selected payment method is not available for the chosen journal."))
+            wizard.payment_method_line_id = payment_method_line._origin
+        elif not wizard.payment_method_line_id and available_lines:
+            wizard.payment_method_line_id = available_lines[:1]._origin
+        elif wizard.payment_method_line_id:
+            wizard.payment_method_line_id = wizard.payment_method_line_id._origin
+
+        if not wizard.payment_method_line_id:
+            raise ValidationError(_("No inbound payment method is configured for the selected journal."))
+
+        if amount is not None:
+            wizard.amount = amount
+
+        return wizard
+
+    def _cash_discount_account(self):
+        if not self._payment_supports_cash_discount():
+            return request.env["account.account"]
+        defaults = request.env["account.payment"].default_get(["discount_account_id"])
+        account_id = defaults.get("discount_account_id")
+        if account_id:
+            return request.env["account.account"].browse(account_id).exists()
+        recent_payment = request.env["account.payment"].search(
+            [("discount_account_id", "!=", False)],
+            order="id desc",
+            limit=1,
+        )
+        return recent_payment.discount_account_id if recent_payment else request.env["account.account"]
+
+    def _create_record_attachments(self, record, attachments):
         attachment_ids = []
         Attachment = request.env["ir.attachment"]
         for index, item in enumerate(attachments[:5], start=1):
@@ -373,38 +678,40 @@ class FtiqCrmMobileSupportApi(FtiqCrmApiBase):
                     "name": filename,
                     "datas": data,
                     "mimetype": (item.get("mimetype") or "application/octet-stream").strip(),
-                    "res_model": draft._name,
-                    "res_id": draft.id,
+                    "res_model": record._name,
+                    "res_id": record.id,
                 }
             )
             attachment_ids.append(attachment.id)
-        if attachment_ids:
-            draft.write({"attachment_ids": [(6, 0, attachment_ids)]})
         return attachment_ids
 
-    def _serialize_collection_draft(self, draft):
+    def _serialize_collection_payment(self, payment, invoices, request_uid):
         return {
-            "id": str(draft.id),
-            "name": draft.name or "",
-            "partner_id": str(draft.partner_id.id) if draft.partner_id else "",
-            "partner_name": draft.partner_id.display_name if draft.partner_id else "",
-            "collector_id": str(draft.collector_id.id) if draft.collector_id else "",
-            "collector_name": draft.collector_id.name if draft.collector_id else "",
-            "amount": draft.amount,
-            "currency": draft.currency_id.name if draft.currency_id else request.env.company.currency_id.name,
-            "state": draft.state,
-            "mobile_request_uid": draft.mobile_request_uid or "",
-            "submitted_at": self._date_string(draft.submitted_at),
-            "invoice_ids": [str(move.id) for move in draft.invoice_ids],
-            "attachments": [
-                {
-                    "id": str(attachment.id),
-                    "name": attachment.name or "",
-                    "mimetype": attachment.mimetype or "",
-                }
-                for attachment in draft.attachment_ids
+            "id": str(payment.id),
+            "name": payment.name or "",
+            "partner_id": str(payment.partner_id.id) if payment.partner_id else "",
+            "partner_name": payment.partner_id.display_name if payment.partner_id else "",
+            "amount": payment.amount,
+            "currency": payment.currency_id.name if payment.currency_id else request.env.company.currency_id.name,
+            "state": payment.state,
+            "date": self._date_string(payment.date),
+            "journal": {
+                "id": str(payment.journal_id.id) if payment.journal_id else "",
+                "name": payment.journal_id.display_name if payment.journal_id else "",
+            },
+            "payment_method": {
+                "id": str(payment.payment_method_line_id.id) if payment.payment_method_line_id else "",
+                "name": payment.payment_method_line_id.name if payment.payment_method_line_id else "",
+            },
+            "memo": payment.memo or "",
+            "cash_discount": self._field_value(payment, "cash_discount", 0.0) or 0.0,
+            "mobile_request_uid": request_uid,
+            "invoice_ids": [str(move.id) for move in invoices],
+            "invoice_numbers": [
+                move.name or move.display_name or ""
+                for move in invoices
             ],
-            **self._record_mobile_location(draft),
+            **self._record_mobile_location(payment),
         }
 
     def _register_device(self):
@@ -505,3 +812,28 @@ class FtiqCrmMobileSupportApi(FtiqCrmApiBase):
                 "updated": len(notifications),
             }
         )
+
+    def _web_errors(self):
+        payload = self._json_body()
+        level = (payload.get("level") or "error").strip().lower()
+        if level != "error":
+            return self._json({"error": False, "ignored": True})
+
+        project_root = Path(__file__).resolve().parents[2]
+        log_path = project_root / "mobile_web_errors.log"
+        entry = {
+            "timestamp": fields.Datetime.now().isoformat(),
+            "level": level,
+            "category": (payload.get("category") or "web").strip() or "web",
+            "message": (payload.get("message") or "").strip(),
+            "stack": (payload.get("stack") or "").strip(),
+            "url": (payload.get("url") or "").strip(),
+            "endpoint": (payload.get("endpoint") or "").strip(),
+            "method": (payload.get("method") or "").strip(),
+            "status_code": payload.get("status_code"),
+            "details": (payload.get("details") or "").strip(),
+            "user_agent": (payload.get("user_agent") or "").strip(),
+        }
+        with log_path.open("a", encoding="utf-8") as handle:
+            handle.write(json.dumps(entry, ensure_ascii=False) + "\n")
+        return self._json({"error": False, "logged": True})

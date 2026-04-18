@@ -77,7 +77,7 @@ class FtiqCrmAuthApi(FtiqCrmApiBase):
 
     def _google_login(self):
         return self._error(
-            _("Use your Odoo username and password for this test build."),
+            _("Use your Odoo username and password to sign in."),
             status=400,
         )
 
@@ -111,6 +111,9 @@ class FtiqCrmAuthApi(FtiqCrmApiBase):
                     "id": str(user.company_id.id),
                     "name": user.company_id.name,
                     "api_key": "",
+                    "default_currency": user.company_id.currency_id.name if user.company_id.currency_id else "",
+                    "currency_symbol": user.company_id.currency_id.symbol if user.company_id.currency_id else "",
+                    "default_country": user.company_id.account_fiscal_country_id.name if user.company_id.account_fiscal_country_id else "",
                 },
                 "role": "ADMIN" if user.has_group("base.group_system") else "USER",
                 "is_organization_admin": user.has_group("base.group_system"),
@@ -146,6 +149,9 @@ class FtiqCrmAuthApi(FtiqCrmApiBase):
                     "id": str(user.company_id.id),
                     "name": user.company_id.name,
                     "role": "ADMIN" if user.has_group("base.group_system") else "USER",
+                    "default_currency": user.company_id.currency_id.name if user.company_id.currency_id else "",
+                    "currency_symbol": user.company_id.currency_id.symbol if user.company_id.currency_id else "",
+                    "default_country": user.company_id.account_fiscal_country_id.name if user.company_id.account_fiscal_country_id else "",
                     "is_organization_admin": user.has_group("base.group_system"),
                     "has_sales_access": user.has_group("sales_team.group_sale_salesman"),
                     "has_marketing_access": user.has_group("sales_team.group_sale_salesman"),

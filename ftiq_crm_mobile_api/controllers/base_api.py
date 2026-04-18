@@ -8,7 +8,13 @@ import uuid
 from datetime import date, datetime
 
 from odoo import _, fields, http
-from odoo.exceptions import AccessDenied, AccessError, UserError, ValidationError
+from odoo.exceptions import (
+    AccessDenied,
+    AccessError,
+    RedirectWarning,
+    UserError,
+    ValidationError,
+)
 from odoo.http import request
 from odoo.osv import expression
 from odoo.tools import html2plaintext
@@ -30,6 +36,9 @@ class FtiqCrmApiBase(http.Controller):
             return self._error(str(exc) or _("Authentication required."), status=401)
         except AccessError as exc:
             return self._error(str(exc), status=403)
+        except RedirectWarning as exc:
+            message = exc.args[0] if exc.args else str(exc)
+            return self._error(message, status=400)
         except (UserError, ValidationError) as exc:
             return self._error(str(exc), status=400)
         except Exception:
@@ -208,13 +217,51 @@ class FtiqCrmApiBase(http.Controller):
     def _display_date(self, record, field_name):
         if field_name not in record._fields:
             return None
-        return self._date_string(record[field_name])
+        try:
+            return self._date_string(record[field_name])
+        except AccessError:
+            return None
 
     def _field_value(self, record, field_name, default=None):
         if not record or field_name not in record._fields:
             return default
-        value = record[field_name]
+        try:
+            value = record[field_name]
+        except AccessError:
+            return default
         return default if value is False else value
+
+    def _record_name(self, record, default=""):
+        if not record:
+            return default
+        return (
+            self._field_value(record, "display_name")
+            or self._field_value(record, "name")
+            or default
+        )
+
+    def _record_flag(self, record, field_name, default=False):
+        value = self._field_value(record, field_name, default)
+        if value in (None, False):
+            return default
+        return bool(value)
+
+    def _safe_search(self, model_name, domain=None, *, limit=None, offset=0, order=None):
+        try:
+            return request.env[model_name].search(
+                domain or [],
+                limit=limit,
+                offset=offset,
+                order=order,
+            )
+        except AccessError:
+            return request.env[model_name]
+
+    def _safe_search_count(self, model_name, domain=None):
+        try:
+            return request.env[model_name].search_count(domain or [])
+        except AccessError:
+            return 0
 
     def _payload_float(self, payload, key, default=None):
         if key not in payload or payload.get(key) in (None, ""):
@@ -324,8 +371,16 @@ class FtiqCrmApiBase(http.Controller):
         moves = request.env["account.move"].search(
             self._open_invoice_domain(commercial_partner_ids)
         )
+        company_currency = request.env.company.currency_id.name
         metrics = {
-            partner_id: {"due_amount": 0.0, "open_invoice_count": 0}
+            partner_id: {
+                "due_amount": 0.0,
+                "due_amount_company": 0.0,
+                "open_invoice_count": 0,
+                "_currencies": set(),
+                "currency": company_currency,
+                "currency_count": 0,
+            }
             for partner_id in commercial_partner_ids
         }
         for move in moves:
@@ -334,10 +389,30 @@ class FtiqCrmApiBase(http.Controller):
                 continue
             values = metrics.setdefault(
                 partner.id,
-                {"due_amount": 0.0, "open_invoice_count": 0},
+                {
+                    "due_amount": 0.0,
+                    "due_amount_company": 0.0,
+                    "open_invoice_count": 0,
+                    "_currencies": set(),
+                    "currency": company_currency,
+                    "currency_count": 0,
+                },
             )
             values["due_amount"] += move.amount_residual
+            values["due_amount_company"] += abs(getattr(move, "amount_residual_signed", 0.0) or 0.0)
             values["open_invoice_count"] += 1
+            values["_currencies"].add(
+                move.currency_id.name if move.currency_id else company_currency
+            )
+        for values in metrics.values():
+            currencies = sorted(values.pop("_currencies", set()))
+            values["currency_count"] = len(currencies)
+            if len(currencies) == 1:
+                values["currency"] = currencies[0]
+            else:
+                values["currency"] = company_currency
+                values["due_amount"] = values["due_amount_company"]
+            values.pop("due_amount_company", None)
         return metrics
 
     def _serialize_invoice_summary(self, move):
@@ -385,7 +460,10 @@ class FtiqCrmApiBase(http.Controller):
         if not record or field_name not in record._fields:
             return ""
         field = record._fields[field_name]
-        key = value if value is not None else record[field_name]
+        try:
+            key = value if value is not None else record[field_name]
+        except AccessError:
+            return ""
         return dict(field.selection).get(key, key or "")
 
     def _split_name(self, name):
@@ -400,53 +478,81 @@ class FtiqCrmApiBase(http.Controller):
         return [
             {
                 "id": str(user.id),
-                "user__email": user.login or user.email or "",
+                "user__email": self._field_value(user, "login", "") or self._field_value(user, "email", "") or "",
+                "name": self._record_name(user, "") or self._field_value(user, "login", "") or "",
                 "user": {
                     "id": str(user.id),
-                    "email": user.login or user.email or "",
+                    "email": self._field_value(user, "login", "") or self._field_value(user, "email", "") or "",
+                    "name": self._record_name(user, "") or self._field_value(user, "login", "") or "",
                     "profile_pic": "",
                 },
                 "user_details": {
                     "id": str(user.id),
-                    "email": user.login or user.email or "",
+                    "email": self._field_value(user, "login", "") or self._field_value(user, "email", "") or "",
+                    "name": self._record_name(user, "") or self._field_value(user, "login", "") or "",
                     "profile_pic": "",
                 },
                 "role": "ADMIN" if user.has_group("base.group_system") else "USER",
-                "is_active": bool(user.active),
+                "is_active": self._record_flag(user, "active", False),
             }
             for user in users
         ]
 
     def _serialize_user(self, user):
+        if not user:
+            return {
+                "id": "",
+                "email": "",
+                "name": "",
+                "profileImage": "",
+            }
         return {
             "id": str(user.id),
-            "email": user.login or user.email or "",
-            "name": user.name or user.login or "",
+            "email": self._field_value(user, "login", "") or self._field_value(user, "email", "") or "",
+            "name": self._record_name(user, "") or self._field_value(user, "login", "") or "",
             "profileImage": "",
         }
 
     def _serialize_profile(self, user):
+        if not user:
+            return {
+                "id": "",
+                "user_details": {
+                    "id": "",
+                    "email": "",
+                    "profile_pic": "",
+                },
+                "email": "",
+                "role": "USER",
+                "is_active": False,
+                "created_at": None,
+            }
         return {
             "id": str(user.id),
             "user_details": {
                 "id": str(user.id),
-                "email": user.login or user.email or "",
+                "email": self._field_value(user, "login", "") or self._field_value(user, "email", "") or "",
+                "name": self._record_name(user, "") or self._field_value(user, "login", "") or "",
                 "profile_pic": "",
             },
-            "email": user.login or user.email or "",
+            "email": self._field_value(user, "login", "") or self._field_value(user, "email", "") or "",
+            "name": self._record_name(user, "") or self._field_value(user, "login", "") or "",
             "role": "ADMIN" if user.has_group("base.group_system") else "USER",
-            "is_active": bool(user.active),
-            "created_at": self._date_string(user.create_date),
+            "is_active": self._record_flag(user, "active", False),
+            "created_at": self._date_string(self._field_value(user, "create_date")),
         }
 
     def _serialize_team(self, team):
         return {
             "id": str(team.id),
-            "name": team.display_name,
-            "description": "",
-            "users": self._assigned_users(team.member_ids | team.user_id),
-            "created_at": self._date_string(team.create_date),
-            "created_by": self._serialize_user(team.create_uid),
+            "name": self._record_name(team),
+            "description": self._field_value(team, "description", "") or "",
+            "users": self._assigned_users(
+                (self._field_value(team, "member_ids") or request.env["res.users"])
+                | ((self._field_value(team, "user_id") or request.env["res.users"])[:1])
+            ),
+            "created_at": self._date_string(self._field_value(team, "create_date")),
+            "created_by": self._serialize_user(self._field_value(team, "create_uid")),
         }
 
     def _slug(self, value):
@@ -454,13 +560,14 @@ class FtiqCrmApiBase(http.Controller):
 
     def _serialize_tag(self, tag):
         color = getattr(tag, "color", False)
+        name = self._record_name(tag)
         return {
             "id": str(tag.id),
-            "name": tag.display_name,
-            "slug": self._slug(tag.display_name),
+            "name": name,
+            "slug": self._slug(name),
             "color": str(color if color not in (False, None) else "gray"),
-            "is_active": bool(getattr(tag, "active", True)),
-            "created_at": self._date_string(tag.create_date),
+            "is_active": self._record_flag(tag, "active", True),
+            "created_at": self._date_string(self._field_value(tag, "create_date")),
         }
 
     def _rating_from_priority(self, priority):
@@ -490,7 +597,8 @@ class FtiqCrmApiBase(http.Controller):
             return "closed"
         if getattr(lead, "type", "") == "opportunity":
             return "converted"
-        stage_name = (lead.stage_id.name or "").strip().lower() if lead.stage_id else ""
+        stage = self._field_value(lead, "stage_id")
+        stage_name = (self._field_value(stage, "name", "") or "").strip().lower() if stage else ""
         if any(token in stage_name for token in ("process", "qual", "opportun")):
             return "in process"
         return "assigned"
@@ -498,9 +606,9 @@ class FtiqCrmApiBase(http.Controller):
     def _deal_stage_value(self, lead):
         if not getattr(lead, "active", True):
             return "CLOSED_LOST"
-        stage = lead.stage_id
-        stage_name = (stage.name or "").strip().lower() if stage else ""
-        if getattr(stage, "is_won", False):
+        stage = self._field_value(lead, "stage_id")
+        stage_name = (self._field_value(stage, "name", "") or "").strip().lower() if stage else ""
+        if self._field_value(stage, "is_won", False):
             return "CLOSED_WON"
         if "lost" in stage_name:
             return "CLOSED_LOST"
@@ -525,34 +633,38 @@ class FtiqCrmApiBase(http.Controller):
         }.get(code, code)
 
     def _serialize_partner_account(self, partner):
-        commercial = partner.commercial_partner_id or partner
-        country = partner.country_id
-        state = partner.state_id
+        commercial = self._field_value(partner, "commercial_partner_id", partner) or partner
+        country = self._field_value(commercial, "country_id") or self._field_value(partner, "country_id")
+        state = self._field_value(commercial, "state_id") or self._field_value(partner, "state_id")
+        company = self._field_value(commercial, "company_id")
+        company_currency = self._field_value(company, "currency_id") if company else False
+        user = self._field_value(commercial, "user_id")
+        tags = self._field_value(commercial, "category_id") or request.env["res.partner.category"]
         location = self._partner_mobile_location(commercial)
         return {
             "id": str(commercial.id),
-            "name": commercial.display_name,
-            "email": commercial.email or "",
-            "phone": commercial.phone or commercial.mobile or "",
-            "website": commercial.website or "",
+            "name": self._record_name(commercial),
+            "email": self._field_value(commercial, "email", "") or "",
+            "phone": self._field_value(commercial, "phone", "") or self._field_value(commercial, "mobile", "") or "",
+            "website": self._field_value(commercial, "website", "") or "",
             "industry": "",
             "number_of_employees": 0,
             "annual_revenue": 0,
-            "currency": commercial.company_id.currency_id.name
-            if commercial.company_id and commercial.company_id.currency_id
+            "currency": company_currency.name
+            if company_currency
             else request.env.company.currency_id.name,
-            "address_line": commercial.street or "",
-            "city": commercial.city or "",
-            "state": state.name if state else "",
-            "postcode": commercial.zip or "",
-            "country": country.name if country else "",
-            "country_display": country.name if country else "",
-            "assigned_to": self._assigned_users(commercial.user_id) if commercial.user_id else [],
+            "address_line": self._field_value(commercial, "street", "") or "",
+            "city": self._field_value(commercial, "city", "") or "",
+            "state": self._record_name(state) if state else "",
+            "postcode": self._field_value(commercial, "zip", "") or "",
+            "country": self._record_name(country) if country else "",
+            "country_display": self._record_name(country) if country else "",
+            "assigned_to": self._assigned_users(user) if user else [],
             "contacts": [],
-            "tags": [self._serialize_tag(tag) for tag in commercial.category_id],
-            "description": commercial.comment or "",
-            "created_at": self._date_string(commercial.create_date),
-            "is_active": bool(commercial.active),
+            "tags": [self._serialize_tag(tag) for tag in tags],
+            "description": self._field_value(commercial, "comment", "") or "",
+            "created_at": self._date_string(self._field_value(commercial, "create_date")),
+            "is_active": self._record_flag(commercial, "active", True),
             "latitude": location["latitude"],
             "longitude": location["longitude"],
             "location_accuracy": location["accuracy"],
@@ -561,35 +673,39 @@ class FtiqCrmApiBase(http.Controller):
         }
 
     def _serialize_partner_contact(self, partner):
-        first_name, last_name = self._split_name(partner.name)
-        account = partner.parent_id or (partner.commercial_partner_id if partner.is_company is False else False)
-        country = partner.country_id
-        state = partner.state_id
-        location = self._partner_mobile_location(partner.commercial_partner_id or partner)
+        first_name, last_name = self._split_name(self._field_value(partner, "name", "") or "")
+        parent = self._field_value(partner, "parent_id")
+        commercial = self._field_value(partner, "commercial_partner_id", partner) or partner
+        account = parent or (commercial if self._field_value(partner, "is_company", False) is False else False)
+        country = self._field_value(partner, "country_id")
+        state = self._field_value(partner, "state_id")
+        user = self._field_value(partner, "user_id")
+        tags = self._field_value(partner, "category_id") or request.env["res.partner.category"]
+        location = self._partner_mobile_location(commercial)
         return {
             "id": str(partner.id),
-            "name": partner.display_name,
+            "name": self._record_name(partner),
             "first_name": first_name,
             "last_name": last_name,
-            "email": partner.email or "",
-            "primary_email": partner.email or "",
-            "phone": partner.phone or partner.mobile or "",
-            "mobile_number": partner.mobile or partner.phone or "",
-            "organization": account.display_name if account else "",
-            "title": partner.function or "",
+            "email": self._field_value(partner, "email", "") or "",
+            "primary_email": self._field_value(partner, "email", "") or "",
+            "phone": self._field_value(partner, "phone", "") or self._field_value(partner, "mobile", "") or "",
+            "mobile_number": self._field_value(partner, "mobile", "") or self._field_value(partner, "phone", "") or "",
+            "organization": self._record_name(account) if account else "",
+            "title": self._field_value(partner, "function", "") or "",
             "department": "",
             "do_not_call": False,
             "linkedin_url": "",
-            "address_line": partner.street or "",
-            "city": partner.city or "",
-            "state": state.name if state else "",
-            "postcode": partner.zip or "",
-            "country": country.name if country else "",
-            "assigned_to": self._assigned_users(partner.user_id) if partner.user_id else [],
-            "tags": [self._serialize_tag(tag) for tag in partner.category_id],
-            "description": partner.comment or "",
-            "created_at": self._date_string(partner.create_date),
-            "is_active": bool(partner.active),
+            "address_line": self._field_value(partner, "street", "") or "",
+            "city": self._field_value(partner, "city", "") or "",
+            "state": self._record_name(state) if state else "",
+            "postcode": self._field_value(partner, "zip", "") or "",
+            "country": self._record_name(country) if country else "",
+            "assigned_to": self._assigned_users(user) if user else [],
+            "tags": [self._serialize_tag(tag) for tag in tags],
+            "description": self._field_value(partner, "comment", "") or "",
+            "created_at": self._date_string(self._field_value(partner, "create_date")),
+            "is_active": self._record_flag(partner, "active", True),
             "account": str(account.id) if account else None,
             "latitude": location["latitude"],
             "longitude": location["longitude"],
@@ -600,18 +716,28 @@ class FtiqCrmApiBase(http.Controller):
 
     def _serialize_lead(self, lead):
         contact_name = self._field_value(lead, "contact_name", "") or ""
-        if not contact_name:
-            contact_name = lead.partner_id.name if lead.partner_id else ""
+        partner = self._field_value(lead, "partner_id")
+        if not contact_name and partner:
+            contact_name = self._field_value(partner, "name", "") or ""
         first_name, last_name = self._split_name(contact_name)
         company_name = (
             self._field_value(lead, "partner_name", "")
-            or (lead.partner_id.commercial_partner_id.name if lead.partner_id else "")
+            or (
+                self._field_value(
+                    self._field_value(partner, "commercial_partner_id"),
+                    "name",
+                    "",
+                )
+                if partner
+                else ""
+            )
             or ""
         )
         user = self._field_value(lead, "user_id")
         country = self._field_value(lead, "country_id")
         state = self._field_value(lead, "state_id")
         currency = self._field_value(lead, "company_currency")
+        tags = self._field_value(lead, "tag_ids") or request.env["crm.tag"]
         return {
             "id": str(lead.id),
             "title": lead.name or "",
@@ -629,39 +755,46 @@ class FtiqCrmApiBase(http.Controller):
             "rating": self._rating_from_priority(self._field_value(lead, "priority", "")),
             "industry": "",
             "opportunity_amount": self._field_value(lead, "expected_revenue", 0.0) or 0.0,
-            "currency": currency.name if currency else request.env.company.currency_id.name,
+            "currency": self._record_name(currency, request.env.company.currency_id.name),
             "probability": int(self._field_value(lead, "probability", 0) or 0),
             "close_date": self._display_date(lead, "date_deadline"),
             "address_line": self._field_value(lead, "street", "") or "",
             "city": self._field_value(lead, "city", "") or "",
-            "state": state.name if state else "",
+            "state": self._record_name(state) if state else "",
             "postcode": self._field_value(lead, "zip", "") or "",
-            "country": country.name if country else "",
+            "country": self._record_name(country) if country else "",
             "last_contacted": self._display_date(lead, "date_last_stage_update"),
             "next_follow_up": self._display_date(lead, "activity_date_deadline"),
             "description": self._field_value(lead, "description", "") or "",
-            "tags": [self._serialize_tag(tag) for tag in lead.tag_ids],
+            "tags": [self._serialize_tag(tag) for tag in tags],
             "assigned_to": self._assigned_users(user) if user else [],
             "lead_comments": self._serialize_messages(lead),
-            "created_by": self._serialize_user(lead.create_uid),
-            "created_at": self._date_string(lead.create_date),
-            "updated_at": self._date_string(lead.write_date),
+            "created_by": self._serialize_user(self._field_value(lead, "create_uid")),
+            "created_at": self._date_string(self._field_value(lead, "create_date")),
+            "updated_at": self._date_string(self._field_value(lead, "write_date")),
             "is_active": bool(getattr(lead, "active", True)),
             **self._record_mobile_location(lead),
         }
 
     def _serialize_opportunity(self, lead):
-        partner = lead.partner_id.commercial_partner_id if lead.partner_id else False
+        lead_partner = self._field_value(lead, "partner_id")
+        partner = self._field_value(lead_partner, "commercial_partner_id") if lead_partner else False
         user = self._field_value(lead, "user_id")
         currency = self._field_value(lead, "company_currency")
-        contact_partner = lead.partner_id if lead.partner_id and not lead.partner_id.is_company else False
+        contact_partner = (
+            lead_partner
+            if lead_partner and not self._field_value(lead_partner, "is_company", False)
+            else False
+        )
+        tags = self._field_value(lead, "tag_ids") or request.env["crm.tag"]
+        team = self._field_value(lead, "team_id")
         return {
             "id": str(lead.id),
             "name": lead.name or "",
             "account": self._serialize_partner_account(partner) if partner else None,
             "stage": self._deal_stage_value(lead),
             "opportunity_type": "NEW_BUSINESS",
-            "currency": currency.name if currency else request.env.company.currency_id.name,
+            "currency": self._record_name(currency, request.env.company.currency_id.name),
             "amount": self._field_value(lead, "expected_revenue", 0.0) or 0.0,
             "amount_source": "manual",
             "probability": int(self._field_value(lead, "probability", 0) or 0),
@@ -671,28 +804,63 @@ class FtiqCrmApiBase(http.Controller):
             "line_items": [],
             "line_items_total": 0.0,
             "assigned_to": self._assigned_users(user) if user else [],
-            "teams": [self._serialize_team(lead.team_id)] if lead.team_id else [],
             "closed_by": None,
-            "tags": [self._serialize_tag(tag) for tag in lead.tag_ids],
+            "tags": [self._serialize_tag(tag) for tag in tags],
             "description": self._field_value(lead, "description", "") or "",
-            "created_by": self._serialize_user(lead.create_uid),
-            "created_at": self._date_string(lead.create_date),
-            "updated_at": self._date_string(lead.write_date),
+            "created_by": self._serialize_user(self._field_value(lead, "create_uid")),
+            "created_at": self._date_string(self._field_value(lead, "create_date")),
+            "updated_at": self._date_string(self._field_value(lead, "write_date")),
             "is_active": bool(getattr(lead, "active", True)),
             "org": {"id": str(request.env.company.id), "name": request.env.company.name},
+            "teams": [self._serialize_team(team)] if team else [],
             **self._record_mobile_location(lead),
         }
 
-    def _task_status_value(self, task):
-        stage = self._field_value(task, "stage_id")
-        if stage and getattr(stage, "fold", False):
-            return "Completed"
-        stage_name = (stage.name or "").lower() if stage else ""
-        if "progress" in stage_name or "doing" in stage_name:
-            return "In Progress"
-        if "done" in stage_name or "complete" in stage_name:
-            return "Completed"
+    def _task_state_code(self, task):
+        if not task or "state" not in task._fields:
+            return ""
+        # In some databases, reading task.state triggers stage access on
+        # project.task.type. Read the narrow field under sudo so task
+        # serialization does not fail for otherwise valid users.
+        try:
+            return (task.sudo()["state"] or "").strip()
+        except AccessError:
+            return ""
+        except Exception:
+            return ""
+
+    def _task_status_value(self, task, state_value=None):
+        state_value = state_value if state_value is not None else self._task_state_code(task)
+        if state_value:
+            state_label = self._task_state_label(task, state_value=state_value)
+            if state_label:
+                return state_label
         return "New"
+
+    def _task_state_label(self, task, state_value=None):
+        if "state" not in task._fields:
+            return ""
+        state_value = state_value if state_value is not None else self._task_state_code(task)
+        if not state_value:
+            return ""
+        selection = dict(task._fields["state"]._description_selection(request.env))
+        return selection.get(state_value, state_value)
+
+    def _task_state_options(self, task):
+        if "state" not in task._fields:
+            return []
+        return [
+            {
+                "value": value,
+                "label": label,
+                "is_done": value == "1_done",
+                "is_cancelled": value == "1_canceled",
+                "sequence": index,
+            }
+            for index, (value, label) in enumerate(
+                task._fields["state"]._description_selection(request.env)
+            )
+        ]
 
     def _task_priority_value(self, task):
         priority = str(self._field_value(task, "priority", "") or "")
@@ -706,20 +874,26 @@ class FtiqCrmApiBase(http.Controller):
         partner = self._field_value(task, "partner_id")
         users = self._field_value(task, "user_ids") or request.env["res.users"]
         tags = self._field_value(task, "tag_ids") or request.env["project.tags"]
+        description = html2plaintext(self._field_value(task, "description", "") or "").strip()
+        state_value = self._task_state_code(task)
         return {
             "id": str(task.id),
             "title": task.name or "",
-            "status": self._task_status_value(task),
+            "status": self._task_status_value(task, state_value=state_value),
+            "status_code": state_value,
+            "status_options": self._task_state_options(task),
+            "stage_id": "",
+            "stage": "",
             "priority": self._task_priority_value(task),
             "due_date": self._display_date(task, "date_deadline"),
-            "description": self._field_value(task, "description", "") or "",
+            "description": description,
             "account": self._serialize_partner_account(partner) if partner else None,
             "opportunity": None,
             "case": None,
             "lead": None,
-            "created_by": self._serialize_user(task.create_uid),
-            "created_at": self._date_string(task.create_date),
-            "updated_at": self._date_string(task.write_date),
+            "created_by": self._serialize_user(self._field_value(task, "create_uid")),
+            "created_at": self._date_string(self._field_value(task, "create_date")),
+            "updated_at": self._date_string(self._field_value(task, "write_date")),
             "contacts": [],
             "teams": [],
             "assigned_to": self._assigned_users(users),
@@ -732,18 +906,28 @@ class FtiqCrmApiBase(http.Controller):
     def _serialize_messages(self, record):
         if "message_ids" not in record._fields:
             return []
-        messages = record.message_ids.filtered(lambda msg: msg.message_type == "comment")[:10]
+        messages = self._field_value(record, "message_ids", request.env["mail.message"])
+        if not messages:
+            return []
+        try:
+            messages = messages.filtered(lambda msg: (self._field_value(msg, "message_type", "") or "") == "comment")[:10]
+        except AccessError:
+            return []
         result = []
         for message in messages:
-            author = message.author_id
-            user_email = author.email or author.name or ""
+            author = self._field_value(message, "author_id")
+            user_email = (
+                self._field_value(author, "email", "")
+                or self._field_value(author, "name", "")
+                or ""
+            )
             result.append(
                 {
                     "id": str(message.id),
-                    "comment": message.body or "",
-                    "commented_on": self._date_string(message.date),
+                    "comment": self._field_value(message, "body", "") or "",
+                    "commented_on": self._date_string(self._field_value(message, "date")),
                     "commented_by": {
-                        "id": str(author.id),
+                        "id": str(author.id) if author else "",
                         "user_details": {
                             "email": user_email,
                             "profile_pic": "",

@@ -166,17 +166,19 @@ class FtiqCrmMobileApi(FtiqCrmApiBase):
 
     def _lead_detail_payload(self, lead):
         users = self._assignable_users()
+        lead_user = self._field_value(lead, "user_id")
+        teams = self._safe_search("crm.team", order="sequence, id")
         return {
             "lead_obj": self._serialize_lead(lead),
             "attachments": [],
             "comments": self._serialize_messages(lead),
             "users_mention": [{"user__email": user.login or user.email or ""} for user in users],
-            "assigned_data": self._assigned_users(lead.user_id) if lead.user_id else [],
+            "assigned_data": self._assigned_users(lead_user) if lead_user else [],
             "users": [self._serialize_profile(user) for user in users],
             "users_excluding_team": [self._serialize_profile(user) for user in users],
             "source": self._lead_source_choices(),
             "status": self._lead_status_choices(),
-            "teams": [self._serialize_team(team) for team in request.env["crm.team"].search([])],
+            "teams": [self._serialize_team(team) for team in teams],
             "countries": self._country_choices(),
         }
 
@@ -248,11 +250,12 @@ class FtiqCrmMobileApi(FtiqCrmApiBase):
 
     def _opportunity_detail_payload(self, opportunity):
         users = self._assignable_users()
+        partner = self._field_value(opportunity, "partner_id")
         return {
             "opportunity_obj": self._serialize_opportunity(opportunity),
             "comments": self._serialize_messages(opportunity),
             "attachments": [],
-            "contacts": [self._serialize_partner_contact(opportunity.partner_id)] if opportunity.partner_id else [],
+            "contacts": [self._serialize_partner_contact(partner)] if partner else [],
             "users": [self._serialize_profile(user) for user in users],
             "stage": self._deal_stage_choices(),
             "lead_source": self._opportunity_source_choices(),
@@ -268,7 +271,7 @@ class FtiqCrmMobileApi(FtiqCrmApiBase):
             self._apply_mobile_location(task, payload)
             return self._ok_message(_("Task Created Successfully"))
         limit, offset = self._limit_offset()
-        domain = []
+        domain = self._mobile_task_visibility_domain()
         search = self._arg("search") or self._arg("title")
         if search:
             domain = expression.AND([domain, self._domain_for_search(["name"], search)])
@@ -277,9 +280,11 @@ class FtiqCrmMobileApi(FtiqCrmApiBase):
             domain.append(("priority", "=", self._priority_to_odoo(priority)))
         status_value = self._arg("status")
         if status_value:
-            stage = self._task_stage_from_status(status_value, create=False)
-            if stage:
-                domain.append(("stage_id", "=", stage.id))
+            state = self._task_state_from_status(status_value)
+            if state:
+                domain.append(("state", "=", state))
+        else:
+            domain = expression.AND([domain, self._mobile_open_task_domain()])
         Task = request.env["project.task"]
         count = Task.search_count(domain)
         records = Task.search(domain, order="id desc", limit=limit, offset=offset)
@@ -296,7 +301,13 @@ class FtiqCrmMobileApi(FtiqCrmApiBase):
         )
 
     def _task_detail(self, task_id):
-        task = request.env["project.task"].browse(task_id).exists()
+        task = request.env["project.task"].search(
+            expression.AND([
+                [("id", "=", task_id)],
+                self._mobile_task_visibility_domain(),
+            ]),
+            limit=1,
+        )
         if not task:
             return self._error(_("Task not found."), status=404)
         method = request.httprequest.method
@@ -320,15 +331,18 @@ class FtiqCrmMobileApi(FtiqCrmApiBase):
 
     def _task_detail_payload(self, task):
         users = self._assignable_users()
+        assigned_users = self._field_value(task, "user_ids") or request.env["res.users"]
+        teams = self._safe_search("crm.team", order="sequence, id")
         return {
             "task_obj": self._serialize_task(task),
             "attachments": [],
             "comments": self._serialize_messages(task),
             "users_mention": [{"user__email": user.login or user.email or ""} for user in users],
-            "assigned_data": self._assigned_users(task.user_ids),
+            "assigned_data": self._assigned_users(assigned_users),
             "users": [self._serialize_profile(user) for user in users],
             "users_excluding_team": [self._serialize_profile(user) for user in users],
-            "teams": [self._serialize_team(team) for team in request.env["crm.team"].search([])],
+            "teams": [self._serialize_team(team) for team in teams],
+            "available_tags": [self._serialize_tag(tag) for tag in self._project_task_tags()],
         }
 
     def _accounts(self):
@@ -349,7 +363,7 @@ class FtiqCrmMobileApi(FtiqCrmApiBase):
 
     def _teams_and_users(self):
         users = self._assignable_users()
-        teams = request.env["crm.team"].search([], order="sequence, id")
+        teams = self._safe_search("crm.team", order="sequence, id")
         return self._json(
             {
                 "profiles": [self._serialize_profile(user) for user in users],
@@ -358,6 +372,9 @@ class FtiqCrmMobileApi(FtiqCrmApiBase):
         )
 
     def _tags(self):
+        model_name = (self._arg("model") or self._arg("scope") or "").strip().lower()
+        if model_name in {"project.task", "task", "tasks"}:
+            return self._json({"tags": [self._serialize_tag(tag) for tag in self._project_task_tags()]})
         return self._json({"tags": [self._serialize_tag(tag) for tag in self._crm_tags()]})
 
     def _cases(self):
@@ -387,10 +404,13 @@ class FtiqCrmMobileApi(FtiqCrmApiBase):
         opportunities = Lead.search([("type", "=", "opportunity")], limit=20, order="id desc")
         all_opportunities = Lead.search([("type", "=", "opportunity")])
         Task = request.env["project.task"]
-        task_domain = []
+        task_domain = expression.AND([
+            self._mobile_task_visibility_domain(),
+            self._mobile_open_task_domain(),
+        ])
         tasks = Task.search(task_domain, limit=10, order="date_deadline asc, id desc")
-        overdue_tasks = Task.search_count([("date_deadline", "<", today)])
-        due_today = Task.search_count([("date_deadline", "=", today)])
+        overdue_tasks = Task.search_count(expression.AND([task_domain, [("date_deadline", "<", today)]]))
+        due_today = Task.search_count(expression.AND([task_domain, [("date_deadline", "=", today)]]))
         followups_today = 0
         if "activity_date_deadline" in Lead._fields:
             followups_today = Lead.search_count([("type", "=", "lead"), ("activity_date_deadline", "=", today)])
@@ -417,8 +437,8 @@ class FtiqCrmMobileApi(FtiqCrmApiBase):
         )
         return self._json(
             {
-                "accounts_count": request.env["res.partner"].search_count([("parent_id", "=", False)]),
-                "contacts_count": request.env["res.partner"].search_count([]),
+                "accounts_count": self._safe_search_count("res.partner", [("parent_id", "=", False)]),
+                "contacts_count": self._safe_search_count("res.partner", []),
                 "leads_count": total_leads,
                 "opportunities_count": Lead.search_count([("type", "=", "opportunity")]),
                 "accounts": [self._serialize_partner_account(partner) for partner in accounts],
@@ -445,6 +465,19 @@ class FtiqCrmMobileApi(FtiqCrmApiBase):
                 "activities": [],
             }
         )
+
+    def _mobile_task_visibility_domain(self):
+        user_id = request.env.user.id
+        return expression.OR([
+            [("user_ids", "in", [user_id])],
+            [("user_ids", "=", False), ("create_uid", "=", user_id)],
+        ])
+
+    def _mobile_open_task_domain(self):
+        Task = request.env["project.task"]
+        if "state" not in Task._fields:
+            return []
+        return [("state", "not in", ("1_done", "1_canceled"))]
 
     def _delete_message(self, message_id):
         message = request.env["mail.message"].browse(message_id).exists()
@@ -562,13 +595,18 @@ class FtiqCrmMobileApi(FtiqCrmApiBase):
             values["date_deadline"] = payload.get("due_date") or False
         if not partial or "priority" in payload:
             values["priority"] = self._priority_to_odoo(payload.get("priority"))
-        if not partial or "status" in payload:
-            stage = self._task_stage_from_status(payload.get("status"))
-            if stage:
-                values["stage_id"] = stage.id
+        if not partial or "status" in payload or "status_code" in payload or "state" in payload:
+            state = self._task_state_from_status(
+                payload.get("state") or payload.get("status_code") or payload.get("status")
+            )
+            if state:
+                values["state"] = state
         if not partial or "assigned_to" in payload:
             users = self._users_from_payload(payload.get("assigned_to"))
             values["user_ids"] = [Command.set(users.ids)]
+        if "tag_ids" in request.env["project.task"]._fields and (not partial or "tags" in payload):
+            tags = self._project_task_tags_from_payload(payload.get("tags"))
+            values["tag_ids"] = [Command.set(tags.ids)]
         partner = self._partner_from_id(payload.get("account"))
         if partner:
             values["partner_id"] = partner.id
@@ -652,39 +690,39 @@ class FtiqCrmMobileApi(FtiqCrmApiBase):
             }
         )
 
-    def _task_stage_from_status(self, status_value, create=True):
-        normalized = (status_value or "New").strip().lower()
-        Stage = request.env["project.task.type"].sudo()
-        if normalized == "completed":
-            stage = Stage.search([("fold", "=", True)], order="sequence, id", limit=1)
-            if stage:
-                return stage
-        patterns = {
-            "new": ["new", "todo", "backlog"],
-            "in progress": ["progress", "doing"],
-            "completed": ["done", "complete"],
-        }.get(normalized, ["new"])
-        for pattern in patterns:
-            stage = Stage.search([("name", "ilike", pattern)], order="sequence, id", limit=1)
-            if stage:
-                return stage
-        if not create:
-            return Stage
-        return Stage.create(
-            {
-                "name": {
-                    "new": "New",
-                    "in progress": "In Progress",
-                    "completed": "Completed",
-                }.get(normalized, "New"),
-                "sequence": {"new": 10, "in progress": 20, "completed": 30}.get(normalized, 10),
-                "fold": normalized == "completed",
-            }
-        )
+    def _task_state_from_status(self, status_value):
+        raw_value = (status_value or "").strip()
+        Task = request.env["project.task"]
+        if "state" not in Task._fields:
+            return ""
+        selection = Task._fields["state"]._description_selection(request.env)
+        if not raw_value:
+            return "01_in_progress"
+        normalized = raw_value.lower()
+        for value, label in selection:
+            if normalized in {value.lower(), (label or "").lower()}:
+                return value
+        legacy_map = {
+            "new": "01_in_progress",
+            "in progress": "01_in_progress",
+            "completed": "1_done",
+            "complete": "1_done",
+            "done": "1_done",
+            "cancelled": "1_canceled",
+            "canceled": "1_canceled",
+            "approved": "03_approved",
+            "changes requested": "02_changes_requested",
+            "waiting": "04_waiting_normal",
+        }
+        return legacy_map.get(normalized, "")
 
     def _priority_to_odoo(self, priority):
         normalized = (priority or "").strip().lower()
-        if normalized in {"high", "urgent"}:
+        if normalized == "urgent":
+            return "3"
+        if normalized == "high":
+            return "2"
+        if normalized == "medium":
             return "1"
         return "0"
 
@@ -744,8 +782,32 @@ class FtiqCrmMobileApi(FtiqCrmApiBase):
     def _crm_tags(self):
         return request.env["crm.tag"].search([], order="name")
 
+    def _project_task_tags(self):
+        if not self._has_model("project.tags"):
+            return request.env["project.tags"]
+        return request.env["project.tags"].search([], order="name")
+
+    def _project_task_tags_from_payload(self, value):
+        if not self._has_model("project.tags"):
+            return request.env["project.tags"]
+        ids = self._ids_from_payload(value)
+        Tag = request.env["project.tags"]
+        if ids:
+            return Tag.browse(ids).exists()
+        names = []
+        if isinstance(value, (list, tuple)):
+            names = [item for item in value if isinstance(item, str)]
+        tags = Tag
+        for name in names:
+            tag = Tag.search([("name", "=ilike", name)], limit=1)
+            if not tag:
+                tag = Tag.create({"name": name})
+            tags |= tag
+        return tags
+
     def _assignable_users(self):
-        return request.env["res.users"].search(
+        return self._safe_search(
+            "res.users",
             [("active", "=", True), ("share", "=", False)],
             order="name",
         )
@@ -755,14 +817,14 @@ class FtiqCrmMobileApi(FtiqCrmApiBase):
         search = self._arg("search")
         if search:
             domain = expression.AND([domain, self._domain_for_search(["name", "email", "phone"], search)])
-        return request.env["res.partner"].search(domain, order="name", limit=limit)
+        return self._safe_search("res.partner", domain, order="name", limit=limit)
 
     def _contact_records(self, limit=100):
         domain = []
         search = self._arg("search")
         if search:
             domain = expression.AND([domain, self._domain_for_search(["name", "email", "phone"], search)])
-        return request.env["res.partner"].search(domain, order="name", limit=limit)
+        return self._safe_search("res.partner", domain, order="name", limit=limit)
 
     def _default_project(self):
         Project = request.env["project.project"].sudo()
@@ -855,7 +917,25 @@ class FtiqCrmMobileApi(FtiqCrmApiBase):
         ]
 
     def _task_status_choices(self):
-        return [("New", "New"), ("In Progress", "In Progress"), ("Completed", "Completed")]
+        Task = request.env["project.task"]
+        if "state" not in Task._fields:
+            return [
+                {"value": "New", "label": "New"},
+                {"value": "In Progress", "label": "In Progress"},
+                {"value": "Completed", "label": "Completed"},
+            ]
+        return [
+            {
+                "value": value,
+                "label": label,
+                "is_done": value == "1_done",
+                "is_cancelled": value == "1_canceled",
+                "sequence": index,
+            }
+            for index, (value, label) in enumerate(
+                Task._fields["state"]._description_selection(request.env)
+            )
+        ]
 
     def _task_priority_choices(self):
         return [("Low", "Low"), ("Medium", "Medium"), ("High", "High"), ("Urgent", "Urgent")]
