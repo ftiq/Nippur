@@ -429,15 +429,9 @@ class FtiqCrmApiBase(http.Controller):
         }
 
     def _serialize_mail_notification(self, notification):
-        message = notification.mail_message_id
-        body = html2plaintext(message.body or "").strip() if message else ""
-        title = (
-            (message.subject or "").strip()
-            or (message.record_name or "").strip()
-            or _("Notification")
-        )
-        related_model = message.model or "" if message else ""
-        related_id = message.res_id or 0 if message else 0
+        payload = notification._ftiq_mobile_payload()
+        related_model = payload["data"].get("target_model", "")
+        related_id = payload["data"].get("target_id", "")
         notification_type = "system"
         if related_model == "project.task":
             notification_type = "taskAssigned"
@@ -446,14 +440,20 @@ class FtiqCrmApiBase(http.Controller):
         return {
             "id": str(notification.id),
             "type": notification_type,
-            "title": title,
-            "message": body or title,
+            "title": payload["title"],
+            "message": payload["body"] or payload["title"],
             "is_read": bool(notification.is_read),
-            "created_at": self._date_string(message.date if message else notification.create_date),
+            "created_at": self._date_string(
+                notification.mail_message_id.date
+                if notification.mail_message_id
+                else notification.create_date
+            ),
             "category": related_model or "system",
             "target_model": related_model,
             "target_id": related_id,
-            "record_name": message.record_name if message else "",
+            "target_route": payload["data"].get("target_route", ""),
+            "related_client_id": payload["data"].get("related_client_id", ""),
+            "record_name": notification.mail_message_id.record_name if notification.mail_message_id else "",
         }
 
     def _selection_label(self, record, field_name, value=None):
