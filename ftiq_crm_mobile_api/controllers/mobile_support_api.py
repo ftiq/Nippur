@@ -174,8 +174,10 @@ class FtiqCrmMobileSupportApi(FtiqCrmApiBase):
             "<table style=\"border-collapse:collapse;margin-bottom:10px;\">%s</table>"
             "%s"
             "<a href=\"%s\" target=\"_blank\" rel=\"noopener noreferrer\" "
-            "style=\"display:inline-block;padding:7px 12px;border-radius:6px;"
-            "background:#0d6efd;color:#fff;text-decoration:none;font-weight:600;\">%s</a>"
+            "style=\"display:inline-block;padding:7px 12px;border:1px solid #0d6efd;"
+            "border-radius:6px;color:#0d6efd;text-decoration:none;font-weight:700;\">%s</a>"
+            "<div style=\"margin-top:8px;font-size:12px;word-break:break-all;\">"
+            "<a href=\"%s\" target=\"_blank\" rel=\"noopener noreferrer\">%s</a></div>"
             "</div>"
             % (
                 escape(_("Collection location")),
@@ -184,6 +186,8 @@ class FtiqCrmMobileSupportApi(FtiqCrmApiBase):
                 mock_html,
                 escape(maps_url),
                 escape(_("Open location in Google Maps")),
+                escape(maps_url),
+                escape(maps_url),
             )
         )
 
@@ -589,16 +593,18 @@ class FtiqCrmMobileSupportApi(FtiqCrmApiBase):
         if not payments:
             return self._error(_("No payment was created."))
 
+        location_body = self._collection_location_chatter_body(location)
         for payment in payments:
             if cash_discount > 0 and self._payment_supports_cash_discount():
                 payment.write({"cash_discount": cash_discount})
             self._apply_mobile_location(payment, payload, partner=commercial)
-            target_record = payment.move_id or payment
-            attachment_ids = self._create_record_attachments(target_record, payload.get("attachments") or [])
-            target_record.message_post(
-                body=self._collection_location_chatter_body(location),
+            attachment_ids = self._create_record_attachments(payment, payload.get("attachments") or [])
+            payment.message_post(
+                body=location_body,
                 attachment_ids=attachment_ids,
             )
+        for invoice in invoices:
+            invoice.message_post(body=location_body)
         return self._json(
             {
                 "payment": self._serialize_collection_payment(payments[0], invoices, request_uid),
