@@ -1,7 +1,9 @@
 import base64
 import json
+import math
 from pathlib import Path
 
+from markupsafe import Markup, escape
 from odoo import _, fields, http
 from odoo.exceptions import UserError, ValidationError
 from odoo.http import request
@@ -75,11 +77,124 @@ class FtiqCrmMobileSupportApi(FtiqCrmApiBase):
         self._authenticate()
         return callback()
 
+    def _arg_float(self, key, default=None):
+        value = self._arg(key)
+        if value in (None, ""):
+            return default
+        try:
+            return float(value)
+        except Exception:
+            return default
+
+    def _nearby_filter_params(self):
+        if (self._arg("location_filter") or "").strip() != "nearby":
+            return None
+        latitude = self._arg_float("nearby_latitude")
+        longitude = self._arg_float("nearby_longitude")
+        radius_meters = self._arg_float("nearby_radius_meters")
+        if latitude is None or longitude is None or radius_meters is None:
+            return None
+        if radius_meters <= 0:
+            return None
+        return latitude, longitude, radius_meters
+
+    def _distance_meters(self, latitude_a, longitude_a, latitude_b, longitude_b):
+        earth_radius_meters = 6371000.0
+        lat_a = math.radians(latitude_a)
+        lat_b = math.radians(latitude_b)
+        delta_lat = math.radians(latitude_b - latitude_a)
+        delta_lng = math.radians(longitude_b - longitude_a)
+        haversine = (
+            math.sin(delta_lat / 2) ** 2
+            + math.cos(lat_a) * math.cos(lat_b) * math.sin(delta_lng / 2) ** 2
+        )
+        return earth_radius_meters * 2 * math.atan2(math.sqrt(haversine), math.sqrt(1 - haversine))
+
+    def _nearby_partner_rows(self, partners, latitude, longitude, radius_meters):
+        rows = []
+        for partner in partners:
+            commercial = partner.commercial_partner_id or partner
+            location = self._partner_mobile_location(commercial)
+            partner_latitude = location.get("latitude")
+            partner_longitude = location.get("longitude")
+            if partner_latitude in (None, False) or partner_longitude in (None, False):
+                continue
+            try:
+                distance = self._distance_meters(
+                    latitude,
+                    longitude,
+                    float(partner_latitude),
+                    float(partner_longitude),
+                )
+            except Exception:
+                continue
+            if distance <= radius_meters:
+                rows.append((partner, distance))
+        rows.sort(key=lambda item: (item[1], item[0].display_name or ""))
+        return rows
+
+    def _location_number_text(self, value):
+        try:
+            return ("%.6f" % float(value)).rstrip("0").rstrip(".")
+        except Exception:
+            return str(value or "")
+
+    def _collection_location_chatter_body(self, location_values):
+        latitude = self._location_number_text(location_values.get("ftiq_mobile_latitude"))
+        longitude = self._location_number_text(location_values.get("ftiq_mobile_longitude"))
+        accuracy = location_values.get("ftiq_mobile_accuracy")
+        location_at = location_values.get("ftiq_mobile_location_at")
+        location_at_text = fields.Datetime.to_string(location_at) if location_at else ""
+        maps_url = "https://www.google.com/maps/search/?api=1&query=%s,%s" % (latitude, longitude)
+        rows = [
+            (_("Latitude"), latitude),
+            (_("Longitude"), longitude),
+        ]
+        if accuracy not in (None, False):
+            rows.append((_("Accuracy"), "%s m" % self._location_number_text(accuracy)))
+        if location_at_text:
+            rows.append((_("Recorded At"), location_at_text))
+        rows_html = "".join(
+            "<tr><td style=\"padding:3px 12px 3px 0;color:#6b7280;\">%s</td>"
+            "<td style=\"padding:3px 0;font-weight:600;\">%s</td></tr>"
+            % (escape(label), escape(value))
+            for label, value in rows
+        )
+        mock_html = ""
+        if location_values.get("ftiq_mobile_is_mock"):
+            mock_html = (
+                "<div style=\"margin:8px 0;padding:6px 8px;border-radius:6px;"
+                "background:#fff3cd;color:#8a5a00;font-weight:600;\">%s</div>"
+                % escape(_("Mock location detected"))
+            )
+        return Markup(
+            "<div style=\"border:1px solid #d8dee4;border-radius:8px;padding:12px;max-width:460px;\">"
+            "<div style=\"font-weight:700;margin-bottom:8px;\">%s</div>"
+            "<div style=\"color:#374151;margin-bottom:8px;\">%s</div>"
+            "<table style=\"border-collapse:collapse;margin-bottom:10px;\">%s</table>"
+            "%s"
+            "<a href=\"%s\" target=\"_blank\" rel=\"noopener noreferrer\" "
+            "style=\"display:inline-block;padding:7px 12px;border-radius:6px;"
+            "background:#0d6efd;color:#fff;text-decoration:none;font-weight:600;\">%s</a>"
+            "</div>"
+            % (
+                escape(_("Collection location")),
+                escape(_("This location was captured by the mobile application during collection.")),
+                rows_html,
+                mock_html,
+                escape(maps_url),
+                escape(_("Open location in Google Maps")),
+            )
+        )
+
     def _client_domain(self):
         domain = [("type", "!=", "private")]
         location_filter = (self._arg("location_filter") or "").strip()
         if location_filter == "with_location":
             domain.append(("ftiq_mobile_last_location_at", "!=", False))
+        elif location_filter == "nearby":
+            domain.append(("partner_latitude", "!=", False))
+            domain.append(("partner_longitude", "!=", False))
         elif location_filter == "without_location":
             domain.append(("ftiq_mobile_last_location_at", "=", False))
         search = (self._arg("search") or "").strip()
@@ -253,8 +368,20 @@ class FtiqCrmMobileSupportApi(FtiqCrmApiBase):
         domain = self._client_domain()
         client_filter = (self._arg("filter") or "all").strip()
         sort = (self._arg("sort") or "name").strip()
-        if client_filter == "outstanding" or sort == "due_desc":
+        location_filter = (self._arg("location_filter") or "").strip()
+        nearby_params = self._nearby_filter_params()
+        use_nearby_filter = location_filter == "nearby"
+        if use_nearby_filter or client_filter == "outstanding" or sort == "due_desc":
             all_partners = Partner.search(domain, order="name, id")
+            if use_nearby_filter:
+                if nearby_params:
+                    nearby_rows = self._nearby_partner_rows(all_partners, *nearby_params)
+                else:
+                    nearby_rows = []
+                all_partners = Partner.browse([row[0].id for row in nearby_rows])
+                distance_by_partner_id = {row[0].id: row[1] for row in nearby_rows}
+            else:
+                distance_by_partner_id = {}
             all_metrics = self._invoice_metrics_by_partner(all_partners)
             partner_rows = []
             for partner in all_partners:
@@ -265,11 +392,19 @@ class FtiqCrmMobileSupportApi(FtiqCrmApiBase):
                 )
                 if client_filter == "outstanding" and metric.get("due_amount", 0.0) <= 0:
                     continue
-                partner_rows.append((partner, metric))
+                partner_rows.append((partner, metric, distance_by_partner_id.get(partner.id)))
             if sort == "due_desc":
                 partner_rows.sort(
                     key=lambda item: (item[1].get("due_amount", 0.0), item[0].display_name or ""),
                     reverse=True,
+                )
+            elif use_nearby_filter:
+                partner_rows.sort(
+                    key=lambda item: (
+                        item[2] is None,
+                        item[2] or 0.0,
+                        item[0].display_name or "",
+                    )
                 )
             count = len(partner_rows)
             paged_rows = partner_rows[offset : offset + limit]
@@ -461,7 +596,7 @@ class FtiqCrmMobileSupportApi(FtiqCrmApiBase):
             target_record = payment.move_id or payment
             attachment_ids = self._create_record_attachments(target_record, payload.get("attachments") or [])
             target_record.message_post(
-                body=_("Collection created from the mobile application."),
+                body=self._collection_location_chatter_body(location),
                 attachment_ids=attachment_ids,
             )
         return self._json(

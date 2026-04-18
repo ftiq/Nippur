@@ -308,7 +308,7 @@ class FtiqCrmApiBase(http.Controller):
             if key in getattr(record, "_fields", {})
         }
         if record_values:
-            record.write(record_values)
+            record.with_context(ftiq_mobile_location_write=True).write(record_values)
         partner = partner or (
             record.partner_id.commercial_partner_id
             if getattr(record, "_fields", {}).get("partner_id") and record.partner_id
@@ -328,7 +328,7 @@ class FtiqCrmApiBase(http.Controller):
         if "ftiq_mobile_last_location_at" in partner._fields:
             partner_values["ftiq_mobile_last_location_at"] = location_values["ftiq_mobile_location_at"]
         if partner_values:
-            partner.write(partner_values)
+            partner.with_context(ftiq_mobile_location_write=True).write(partner_values)
 
     def _record_mobile_location(self, record):
         return {
