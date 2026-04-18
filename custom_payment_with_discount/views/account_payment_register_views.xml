@@ -1,0 +1,17 @@
+<odoo>
+    <record id="view_account_payment_register_form_discount" model="ir.ui.view">
+        <field name="name">account.payment.register.form.discount</field>
+        <field name="model">account.payment.register</field>
+        <field name="inherit_id" ref="account.view_account_payment_register_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='amount_div']" position="after">
+                <field name="cash_discount"
+                       invisible="not can_edit_wizard or (can_group_payments and not group_payment)"/>
+                <field name="discount_account_id"
+                       options="{'no_create': True}"
+                       invisible="not cash_discount or not can_edit_wizard or (can_group_payments and not group_payment)"
+                       required="cash_discount &gt; 0"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

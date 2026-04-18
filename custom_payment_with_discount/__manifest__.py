@@ -10,6 +10,7 @@
     'data': [
         'security/ir.model.access.csv',         # Access rights file
         'views/account_payment_views.xml',      # View file for adding fields to the form
+        'views/account_payment_register_views.xml',
     ],
     'installable': True,
     'application': False,
