@@ -921,6 +921,72 @@ msgid "Task Type"
 msgstr "نوع المهمة"
 
 #. module: ftiq_crm_mobile_api
+#: model:ir.ui.view,arch_db:ftiq_crm_mobile_api.project_task_view_form_mobile_execution
+msgid "Client"
+msgstr "العميل"
+
+#. module: ftiq_crm_mobile_api
+#. odoo-python
+#: code:addons/ftiq_crm_mobile_api/models/project_task.py:0
+msgid "Client is required when a task type is selected."
+msgstr "العميل مطلوب عند تحديد نوع المهمة."
+
+#. module: ftiq_crm_mobile_api
+#: selection:project.task,ftiq_mobile_task_type:0
+msgid "Field Visit"
+msgstr "زيارة ميدانية"
+
+#. module: ftiq_crm_mobile_api
+#: selection:project.task,ftiq_mobile_task_type:0
+msgid "Collection"
+msgstr "تحصيل"
+
+#. module: ftiq_crm_mobile_api
+#: selection:project.task,ftiq_mobile_task_type:0
+msgid "Sales Order"
+msgstr "أمر بيع"
+
+#. module: ftiq_crm_mobile_api
+#: selection:project.task,ftiq_mobile_task_type:0
+msgid "Customer Stock Audit"
+msgstr "جرد مخزون العميل"
+
+#. module: ftiq_crm_mobile_api
+#: selection:project.task,ftiq_mobile_visit_state:0
+msgid "Visit Status"
+msgstr "حالة الزيارة"
+
+#. module: ftiq_crm_mobile_api
+#: selection:project.task,ftiq_mobile_visit_state:0
+msgid "Not Started"
+msgstr "لم تبدأ"
+
+#. module: ftiq_crm_mobile_api
+#: selection:project.task,ftiq_mobile_visit_state:0
+msgid "In Progress"
+msgstr "قيد التنفيذ"
+
+#. module: ftiq_crm_mobile_api
+#: selection:project.task,ftiq_mobile_visit_state:0
+msgid "Completed"
+msgstr "مكتملة"
+
+#. module: ftiq_crm_mobile_api
+#: selection:project.task,ftiq_mobile_visit_state:0
+msgid "Cancelled"
+msgstr "ملغاة"
+
+#. module: ftiq_crm_mobile_api
+#: model:ir.model.fields,field_description:ftiq_crm_mobile_api.field_project_task__ftiq_mobile_started_at
+msgid "Started At"
+msgstr "بدأت في"
+
+#. module: ftiq_crm_mobile_api
+#: model:ir.model.fields,field_description:ftiq_crm_mobile_api.field_project_task__ftiq_mobile_completed_at
+msgid "Completed At"
+msgstr "انتهت في"
+
+#. module: ftiq_crm_mobile_api
 #. odoo-python
 #: code:addons/ftiq_crm_mobile_api/controllers/crm_api.py:0
 msgid "Outcome"

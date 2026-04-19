@@ -1,5 +1,5 @@
 from odoo import _, api, fields, models
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, ValidationError
 
 
 _MOBILE_LOCATION_FIELDS = {
@@ -34,7 +34,7 @@ class ProjectTask(models.Model):
             ("sales_order", "Sales Order"),
             ("stock_audit", "Customer Stock Audit"),
         ],
-        string="Mobile Task Type",
+        string="Task Type",
         copy=False,
     )
     ftiq_mobile_visit_state = fields.Selection(
@@ -44,28 +44,50 @@ class ProjectTask(models.Model):
             ("completed", "Completed"),
             ("cancelled", "Cancelled"),
         ],
-        string="Mobile Visit State",
+        string="Visit Status",
         default="not_started",
         copy=False,
     )
-    ftiq_mobile_started_at = fields.Datetime(copy=False)
-    ftiq_mobile_completed_at = fields.Datetime(copy=False)
-    ftiq_mobile_start_latitude = fields.Float(digits=(16, 6), copy=False)
-    ftiq_mobile_start_longitude = fields.Float(digits=(16, 6), copy=False)
-    ftiq_mobile_start_accuracy = fields.Float(copy=False)
-    ftiq_mobile_start_is_mock = fields.Boolean(copy=False)
-    ftiq_mobile_end_latitude = fields.Float(digits=(16, 6), copy=False)
-    ftiq_mobile_end_longitude = fields.Float(digits=(16, 6), copy=False)
-    ftiq_mobile_end_accuracy = fields.Float(copy=False)
-    ftiq_mobile_end_is_mock = fields.Boolean(copy=False)
-    ftiq_mobile_execution_payload = fields.Text(copy=False)
-    ftiq_mobile_request_uid = fields.Char(copy=False, index=True)
+    ftiq_mobile_started_at = fields.Datetime(string="Started At", copy=False)
+    ftiq_mobile_completed_at = fields.Datetime(string="Completed At", copy=False)
+    ftiq_mobile_start_latitude = fields.Float(
+        string="Start Latitude",
+        digits=(16, 6),
+        copy=False,
+    )
+    ftiq_mobile_start_longitude = fields.Float(
+        string="Start Longitude",
+        digits=(16, 6),
+        copy=False,
+    )
+    ftiq_mobile_start_accuracy = fields.Float(string="Start Accuracy", copy=False)
+    ftiq_mobile_start_is_mock = fields.Boolean(string="Start Is Mock", copy=False)
+    ftiq_mobile_end_latitude = fields.Float(
+        string="End Latitude",
+        digits=(16, 6),
+        copy=False,
+    )
+    ftiq_mobile_end_longitude = fields.Float(
+        string="End Longitude",
+        digits=(16, 6),
+        copy=False,
+    )
+    ftiq_mobile_end_accuracy = fields.Float(string="End Accuracy", copy=False)
+    ftiq_mobile_end_is_mock = fields.Boolean(string="End Is Mock", copy=False)
+    ftiq_mobile_execution_payload = fields.Text(string="Execution Data", copy=False)
+    ftiq_mobile_request_uid = fields.Char(string="Request UID", copy=False, index=True)
 
-    ftiq_mobile_latitude = fields.Float(digits=(16, 6), copy=False)
-    ftiq_mobile_longitude = fields.Float(digits=(16, 6), copy=False)
-    ftiq_mobile_accuracy = fields.Float(copy=False)
-    ftiq_mobile_is_mock = fields.Boolean(copy=False)
-    ftiq_mobile_location_at = fields.Datetime(copy=False)
+    ftiq_mobile_latitude = fields.Float(string="Latitude", digits=(16, 6), copy=False)
+    ftiq_mobile_longitude = fields.Float(string="Longitude", digits=(16, 6), copy=False)
+    ftiq_mobile_accuracy = fields.Float(string="Accuracy", copy=False)
+    ftiq_mobile_is_mock = fields.Boolean(string="Is Mock", copy=False)
+    ftiq_mobile_location_at = fields.Datetime(string="Recorded At", copy=False)
+
+    @api.constrains("ftiq_mobile_task_type", "partner_id")
+    def _check_mobile_task_partner(self):
+        for task in self:
+            if task.ftiq_mobile_task_type and not task.partner_id:
+                raise ValidationError(_("Client is required when a task type is selected."))
 
     def _check_mobile_location_write(self, vals):
         if self.env.context.get("ftiq_mobile_location_write"):

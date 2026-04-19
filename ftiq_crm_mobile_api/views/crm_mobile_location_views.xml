@@ -49,23 +49,19 @@
     </record>
 
     <record id="project_task_view_form_mobile_execution" model="ir.ui.view">
-        <field name="name">project.task.form.ftiq.mobile.execution</field>
+        <field name="name">project.task.form.mobile.assignment</field>
         <field name="model">project.task</field>
         <field name="inherit_id" ref="project.view_task_form2"/>
         <field name="arch" type="xml">
-            <xpath expr="//notebook" position="inside">
-                <page string="Mobile Task" name="ftiq_mobile_task_execution">
-                    <group>
-                        <group string="Task Assignment">
-                            <field name="ftiq_mobile_task_type" required="1"/>
-                            <field name="ftiq_mobile_visit_state" readonly="1"/>
-                        </group>
-                        <group string="Mobile Execution">
-                            <field name="ftiq_mobile_started_at" readonly="1"/>
-                            <field name="ftiq_mobile_completed_at" readonly="1"/>
-                        </group>
-                    </group>
-                </page>
+            <xpath expr="//field[@name='partner_id' and contains(@class, 'o_task_customer_field')]" position="replace">
+                <field name="ftiq_mobile_task_type" required="1"/>
+                <field
+                    name="partner_id"
+                    string="Client"
+                    required="1"
+                    widget="res_partner_many2one"
+                    class="o_task_customer_field"
+                />
             </xpath>
         </field>
     </record>
