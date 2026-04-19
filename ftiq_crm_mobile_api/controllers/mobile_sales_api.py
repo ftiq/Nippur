@@ -518,25 +518,17 @@ class FtiqCrmMobileSalesApi(FtiqCrmApiBase):
         Product.check_access_rights("read")
         search = (self._arg("search") or "").strip()
         limit, offset = self._limit_offset()
-        if not search:
-            return self._json(
-                {
-                    "items": [],
-                    "count": 0,
-                    "limit": limit,
-                    "offset": offset,
-                    "next_offset": None,
-                }
-            )
-        domain = expression.AND(
-            [
+        domain = [
+            ("sale_ok", "=", True),
+            ("active", "=", True),
+        ]
+        if search:
+            domain = expression.AND(
                 [
-                    ("sale_ok", "=", True),
-                    ("active", "=", True),
-                ],
-                self._domain_for_search(["name", "default_code", "barcode"], search),
-            ]
-        )
+                    domain,
+                    self._domain_for_search(["name", "default_code", "barcode"], search),
+                ]
+            )
         draft_order = self._draft_sale_order(partner)
         count = Product.search_count(domain)
         products = Product.search(domain, order="default_code, name, id", limit=limit, offset=offset)
