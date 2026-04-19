@@ -694,3 +694,117 @@ msgstr "معرّف طلب الجوال مطلوب."
 #: code:addons/ftiq_crm_mobile_api/controllers/mobile_support_api.py:0
 msgid "m"
 msgstr "م"
+
+#. module: ftiq_crm_mobile_api
+#. odoo-python
+#: code:addons/ftiq_crm_mobile_api/controllers/mobile_sales_api.py:0
+msgid "Sales order functionality is not available on this server."
+msgstr "ميزة أوامر البيع غير متاحة على هذا الخادم."
+
+#. module: ftiq_crm_mobile_api
+#. odoo-python
+#: code:addons/ftiq_crm_mobile_api/controllers/mobile_sales_api.py:0
+msgid "You do not have permission to create sales orders."
+msgstr "ليست لديك صلاحية إنشاء أوامر البيع."
+
+#. module: ftiq_crm_mobile_api
+#. odoo-python
+#: code:addons/ftiq_crm_mobile_api/controllers/mobile_sales_api.py:0
+msgid "Order lines payload must be a list."
+msgstr "يجب أن تكون بيانات سطور الأمر قائمة."
+
+#. module: ftiq_crm_mobile_api
+#. odoo-python
+#: code:addons/ftiq_crm_mobile_api/controllers/mobile_sales_api.py:0
+msgid "Each order line must be an object."
+msgstr "يجب أن يكون كل سطر أمر كائنًا."
+
+#. module: ftiq_crm_mobile_api
+#. odoo-python
+#: code:addons/ftiq_crm_mobile_api/controllers/mobile_sales_api.py:0
+msgid "Each order line requires a product."
+msgstr "يجب أن يحتوي كل سطر أمر على صنف."
+
+#. module: ftiq_crm_mobile_api
+#. odoo-python
+#: code:addons/ftiq_crm_mobile_api/controllers/mobile_sales_api.py:0
+msgid "Each order line quantity must be greater than zero."
+msgstr "يجب أن تكون كمية كل سطر أمر أكبر من صفر."
+
+#. module: ftiq_crm_mobile_api
+#. odoo-python
+#: code:addons/ftiq_crm_mobile_api/controllers/mobile_sales_api.py:0
+msgid "At least one order line is required."
+msgstr "يجب إضافة سطر أمر واحد على الأقل."
+
+#. module: ftiq_crm_mobile_api
+#. odoo-python
+#: code:addons/ftiq_crm_mobile_api/controllers/mobile_sales_api.py:0
+msgid "One or more selected products are not available for sale."
+msgstr "صنف واحد أو أكثر من الأصناف المحددة غير متاح للبيع."
+
+#. module: ftiq_crm_mobile_api
+#. odoo-python
+#: code:addons/ftiq_crm_mobile_api/controllers/mobile_sales_api.py:0
+msgid "One or more selected products are blocked for sale."
+msgstr "صنف واحد أو أكثر من الأصناف المحددة محظور للبيع."
+
+#. module: ftiq_crm_mobile_api
+#. odoo-python
+#: code:addons/ftiq_crm_mobile_api/controllers/mobile_sales_api.py:0
+msgid "This customer is blocked for sales."
+msgstr "هذا العميل محظور عليه البيع."
+
+#. module: ftiq_crm_mobile_api
+#. odoo-python
+#: code:addons/ftiq_crm_mobile_api/controllers/mobile_sales_api.py:0
+msgid "Sales order created successfully."
+msgstr "تم إنشاء أمر البيع بنجاح."
+
+#. module: ftiq_crm_mobile_api
+#. odoo-python
+#: code:addons/ftiq_crm_mobile_api/controllers/mobile_sales_api.py:0
+msgid "Sales order not found."
+msgstr "أمر البيع غير موجود."
+
+#. module: ftiq_crm_mobile_api
+#. odoo-python
+#: code:addons/ftiq_crm_mobile_api/controllers/mobile_sales_api.py:0
+msgid "You do not have permission to update this sales order."
+msgstr "ليست لديك صلاحية تعديل أمر البيع هذا."
+
+#. module: ftiq_crm_mobile_api
+#. odoo-python
+#: code:addons/ftiq_crm_mobile_api/controllers/mobile_sales_api.py:0
+msgid "Only draft quotations can be updated."
+msgstr "يمكن تعديل عروض الأسعار المسودة فقط."
+
+#. module: ftiq_crm_mobile_api
+#. odoo-python
+#: code:addons/ftiq_crm_mobile_api/controllers/mobile_sales_api.py:0
+msgid "Sales order updated successfully."
+msgstr "تم تحديث أمر البيع بنجاح."
+
+#. module: ftiq_crm_mobile_api
+#. odoo-python
+#: code:addons/ftiq_crm_mobile_api/controllers/mobile_sales_api.py:0
+msgid "You do not have permission to confirm this sales order."
+msgstr "ليست لديك صلاحية تأكيد أمر البيع هذا."
+
+#. module: ftiq_crm_mobile_api
+#. odoo-python
+#: code:addons/ftiq_crm_mobile_api/controllers/mobile_sales_api.py:0
+msgid "Only draft quotations can be confirmed."
+msgstr "يمكن تأكيد عروض الأسعار المسودة فقط."
+
+#. module: ftiq_crm_mobile_api
+#. odoo-python
+#: code:addons/ftiq_crm_mobile_api/controllers/mobile_sales_api.py:0
+msgid "Sales order confirmed successfully."
+msgstr "تم تأكيد أمر البيع بنجاح."
+
+#. module: ftiq_crm_mobile_api
+#. odoo-python
+#: code:addons/ftiq_crm_mobile_api/controllers/mobile_sales_api.py:0
+msgid "client_id is required."
+msgstr "معرّف العميل client_id مطلوب."
