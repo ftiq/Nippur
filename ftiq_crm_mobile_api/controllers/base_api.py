@@ -468,6 +468,8 @@ class FtiqCrmApiBase(http.Controller):
             notification_type = "taskAssigned"
         elif related_model == "crm.lead":
             notification_type = "dealStageChanged"
+        elif related_model == "sale.order":
+            notification_type = "salesOrder"
         return {
             "id": str(notification.id),
             "type": notification_type,

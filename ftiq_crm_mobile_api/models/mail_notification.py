@@ -39,6 +39,8 @@ class MailNotification(models.Model):
     def _send_mobile_push_now(self):
         Device = self.env["ftiq.mobile.device"].sudo()
         for notification in self.exists():
+            if notification._ftiq_skip_mobile_push():
+                continue
             payload = notification._ftiq_mobile_payload()
             partner = notification.res_partner_id
             if not partner or not payload["title"]:
@@ -55,6 +57,30 @@ class MailNotification(models.Model):
                     "Failed to send mobile push for mail.notification %s",
                     notification.id,
                 )
+
+    def _ftiq_skip_mobile_push(self):
+        self.ensure_one()
+        message = self.mail_message_id
+        partner = self.res_partner_id
+        if not message or not partner:
+            return True
+        if message.author_id and message.author_id == partner:
+            return True
+        if message.create_uid and message.create_uid.partner_id == partner:
+            return True
+        record = self._ftiq_target_record(message)
+        if record and record.create_uid and record.create_uid.partner_id == partner:
+            return True
+        return False
+
+    def _ftiq_target_record(self, message):
+        model_name = (message.model or "").strip()
+        if not model_name or not message.res_id:
+            return self.env["ir.model"]
+        try:
+            return self.env[model_name].sudo().browse(message.res_id).exists()
+        except KeyError:
+            return self.env["ir.model"]
 
     def _ftiq_mobile_payload(self):
         self.ensure_one()
@@ -107,6 +133,11 @@ class MailNotification(models.Model):
             move = self.env["account.move"].sudo().browse(message.res_id).exists()
             if move and move.partner_id:
                 related_client_id = str(move.partner_id.commercial_partner_id.id)
+        elif target_model == "sale.order" and message.res_id:
+            target_route = "sale_order"
+            order = self.env["sale.order"].sudo().browse(message.res_id).exists()
+            if order and order.partner_id:
+                related_client_id = str(order.partner_id.commercial_partner_id.id)
 
         return {
             "target_model": target_model,

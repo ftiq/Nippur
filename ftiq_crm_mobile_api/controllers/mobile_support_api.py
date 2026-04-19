@@ -893,33 +893,43 @@ class FtiqCrmMobileSupportApi(FtiqCrmApiBase):
         )
 
     def _notification_domain(self):
+        partner_id = request.env.user.partner_id.id
         domain = [
-            ("res_partner_id", "=", request.env.user.partner_id.id),
+            ("res_partner_id", "=", partner_id),
             ("mail_message_id", "!=", False),
+            ("mail_message_id.author_id", "!=", partner_id),
+            ("mail_message_id.create_uid.partner_id", "!=", partner_id),
         ]
         if self._arg("unread_only") in {"1", "true", "True"}:
             domain.append(("is_read", "=", False))
         return domain
 
     def _notifications(self):
-        limit = self._arg_int("limit", 40)
+        limit = max(1, min(self._arg_int("limit", 40), 100))
+        search_limit = max(limit * 5, limit)
         notifications = request.env["mail.notification"].sudo().search(
             self._notification_domain(),
             order="id desc",
-            limit=limit,
-        )
-        unread_count = request.env["mail.notification"].sudo().search_count(
+            limit=search_limit,
+        ).filtered(
+            lambda notification: not notification._ftiq_skip_mobile_push()
+        )[:limit]
+        unread_notifications = request.env["mail.notification"].sudo().search(
             [
                 ("res_partner_id", "=", request.env.user.partner_id.id),
                 ("mail_message_id", "!=", False),
+                ("mail_message_id.author_id", "!=", request.env.user.partner_id.id),
+                ("mail_message_id.create_uid.partner_id", "!=", request.env.user.partner_id.id),
                 ("is_read", "=", False),
             ]
+        ).filtered(
+            lambda notification: not notification._ftiq_skip_mobile_push()
         )
         return self._json(
             {
                 "items": [self._serialize_mail_notification(notification) for notification in notifications],
                 "count": len(notifications),
-                "unread_count": unread_count,
+                "unread_count": len(unread_notifications),
             }
         )
 

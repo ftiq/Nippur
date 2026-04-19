@@ -1,9 +1,11 @@
 from collections import OrderedDict
 
+from markupsafe import Markup, escape
 from odoo import _, fields, http
 from odoo.exceptions import AccessError, ValidationError
 from odoo.http import request
 from odoo.osv import expression
+from odoo.tools import html2plaintext
 
 from .base_api import FtiqCrmApiBase
 
@@ -192,6 +194,106 @@ class FtiqCrmMobileSalesApi(FtiqCrmApiBase):
     def _has_sales_user_access(self):
         return self._sales_user_scope() != "none"
 
+    def _location_number_text(self, value):
+        try:
+            return ("%.6f" % float(value)).rstrip("0").rstrip(".")
+        except Exception:
+            return str(value or "")
+
+    def _sale_order_location_chatter_body(self, location_values):
+        latitude = self._location_number_text(
+            location_values.get("ftiq_mobile_latitude")
+        )
+        longitude = self._location_number_text(
+            location_values.get("ftiq_mobile_longitude")
+        )
+        accuracy = location_values.get("ftiq_mobile_accuracy")
+        location_at = location_values.get("ftiq_mobile_location_at")
+        location_at_text = fields.Datetime.to_string(location_at) if location_at else ""
+        maps_url = (
+            "https://www.google.com/maps/search/?api=1&query=%s,%s"
+            % (latitude, longitude)
+        )
+        rows = [
+            (_("Latitude"), latitude),
+            (_("Longitude"), longitude),
+        ]
+        if accuracy not in (None, False):
+            rows.append(
+                (
+                    _("Accuracy"),
+                    "%s %s" % (self._location_number_text(accuracy), _("m")),
+                )
+            )
+        if location_at_text:
+            rows.append((_("Recorded At"), location_at_text))
+        rows_html = "".join(
+            "<tr><td style=\"padding:3px 12px 3px 0;color:#6b7280;\">%s</td>"
+            "<td style=\"padding:3px 0;font-weight:600;\">%s</td></tr>"
+            % (escape(label), escape(value))
+            for label, value in rows
+        )
+        mock_html = ""
+        if location_values.get("ftiq_mobile_is_mock"):
+            mock_html = (
+                "<div style=\"margin:8px 0;padding:6px 8px;border-radius:6px;"
+                "background:#fff3cd;color:#8a5a00;font-weight:600;\">%s</div>"
+                % escape(_("Mock location detected"))
+            )
+        return Markup(
+            "<div style=\"border:1px solid #d8dee4;border-radius:8px;"
+            "padding:12px;max-width:460px;\">"
+            "<div style=\"font-weight:700;margin-bottom:8px;\">%s</div>"
+            "<div style=\"color:#374151;margin-bottom:8px;\">%s</div>"
+            "<table style=\"border-collapse:collapse;margin-bottom:10px;\">%s</table>"
+            "%s"
+            "<a href=\"%s\" target=\"_blank\" rel=\"noopener noreferrer\" "
+            "style=\"display:inline-block;padding:7px 12px;border:1px solid #0d6efd;"
+            "border-radius:6px;color:#0d6efd;text-decoration:none;font-weight:700;\">%s</a>"
+            "</div>"
+            % (
+                escape(_("Sales order confirmation location")),
+                escape(
+                    _(
+                        "This location was captured by the mobile application when the sales order was confirmed."
+                    )
+                ),
+                rows_html,
+                mock_html,
+                escape(maps_url),
+                escape(_("Open location in Google Maps")),
+            )
+        )
+
+    def _apply_sale_order_confirmation_location(self, order, payload):
+        location = self._location_payload(payload)
+        if not location:
+            return {}
+        values = {}
+        if "partner_latitude" in order._fields:
+            values["partner_latitude"] = self._location_number_text(
+                location["ftiq_mobile_latitude"]
+            )
+        if "partner_longitude" in order._fields:
+            values["partner_longitude"] = self._location_number_text(
+                location["ftiq_mobile_longitude"]
+            )
+        for source_field, target_field in (
+            ("ftiq_mobile_latitude", "ftiq_mobile_latitude"),
+            ("ftiq_mobile_longitude", "ftiq_mobile_longitude"),
+            ("ftiq_mobile_accuracy", "ftiq_mobile_accuracy"),
+            ("ftiq_mobile_is_mock", "ftiq_mobile_is_mock"),
+            ("ftiq_mobile_location_at", "ftiq_mobile_location_at"),
+        ):
+            if target_field in order._fields:
+                values[target_field] = location[source_field]
+        if values:
+            order.with_context(ftiq_mobile_location_write=True).write(values)
+        partner = order.partner_id.commercial_partner_id if order.partner_id else False
+        self._apply_mobile_location(order, payload, partner=partner)
+        order.message_post(body=self._sale_order_location_chatter_body(location))
+        return location
+
     def _normal_sale_order(self, order):
         if not order:
             return request.env["sale.order"]
@@ -334,7 +436,7 @@ class FtiqCrmMobileSalesApi(FtiqCrmApiBase):
             "validity_date": fields.Date.to_string(order.validity_date)
             if order.validity_date
             else "",
-            "note": order.note or "",
+            "note": html2plaintext(order.note or "").strip(),
             "client_order_ref": order.client_order_ref or "",
             "pricelist_name": order.pricelist_id.display_name if order.pricelist_id else "",
             "payment_term_name": order.payment_term_id.display_name if order.payment_term_id else "",
@@ -544,7 +646,9 @@ class FtiqCrmMobileSalesApi(FtiqCrmApiBase):
             raise AccessError(_("You do not have permission to confirm this sales order."))
         if order.state not in {"draft", "sent"}:
             return self._error(_("Only draft quotations can be confirmed."), status=400)
+        payload = self._json_body()
         order.action_confirm()
+        self._apply_sale_order_confirmation_location(order, payload)
         return self._json(
             {
                 "message": _("Sales order confirmed successfully."),

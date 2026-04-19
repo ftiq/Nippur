@@ -526,6 +526,18 @@ msgstr "فتح الموقع في خرائط Google"
 
 #. module: ftiq_crm_mobile_api
 #. odoo-python
+#: code:addons/ftiq_crm_mobile_api/controllers/mobile_sales_api.py:0
+msgid "Sales order confirmation location"
+msgstr "موقع تأكيد أمر البيع"
+
+#. module: ftiq_crm_mobile_api
+#. odoo-python
+#: code:addons/ftiq_crm_mobile_api/controllers/mobile_sales_api.py:0
+msgid "This location was captured by the mobile application when the sales order was confirmed."
+msgstr "تم التقاط هذا الموقع من تطبيق الجوال عند تأكيد أمر البيع."
+
+#. module: ftiq_crm_mobile_api
+#. odoo-python
 #: code:addons/ftiq_crm_mobile_api/controllers/crm_api.py:0
 msgid "Opportunity Created Successfully"
 msgstr "تم إنشاء الفرصة بنجاح"
