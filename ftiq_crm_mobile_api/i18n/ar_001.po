@@ -808,3 +808,33 @@ msgstr "تم تأكيد أمر البيع بنجاح."
 #: code:addons/ftiq_crm_mobile_api/controllers/mobile_sales_api.py:0
 msgid "client_id is required."
 msgstr "معرّف العميل client_id مطلوب."
+
+#. module: ftiq_crm_mobile_api
+#. odoo-python
+#: code:addons/ftiq_crm_mobile_api/controllers/mobile_sales_api.py:0
+msgid "You do not have permission to reset this sales order to draft."
+msgstr "ليست لديك صلاحية إرجاع أمر البيع هذا إلى المسودة."
+
+#. module: ftiq_crm_mobile_api
+#. odoo-python
+#: code:addons/ftiq_crm_mobile_api/controllers/mobile_sales_api.py:0
+msgid "Only confirmed sales orders can be reset to draft."
+msgstr "يمكن فقط إرجاع أوامر البيع المؤكدة إلى المسودة."
+
+#. module: ftiq_crm_mobile_api
+#. odoo-python
+#: code:addons/ftiq_crm_mobile_api/controllers/mobile_sales_api.py:0
+msgid "This sales order has invoices and cannot be reset to draft."
+msgstr "لا يمكن إرجاع أمر البيع هذا إلى المسودة لأنه مرتبط بفواتير."
+
+#. module: ftiq_crm_mobile_api
+#. odoo-python
+#: code:addons/ftiq_crm_mobile_api/controllers/mobile_sales_api.py:0
+msgid "This sales order has stock transfers and cannot be reset to draft."
+msgstr "لا يمكن إرجاع أمر البيع هذا إلى المسودة لأنه مرتبط بأوامر مخزنية."
+
+#. module: ftiq_crm_mobile_api
+#. odoo-python
+#: code:addons/ftiq_crm_mobile_api/controllers/mobile_sales_api.py:0
+msgid "Sales order returned to draft successfully."
+msgstr "تم إرجاع أمر البيع إلى المسودة بنجاح."

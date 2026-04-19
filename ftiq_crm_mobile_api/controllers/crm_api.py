@@ -92,13 +92,26 @@ class FtiqCrmMobileApi(FtiqCrmApiBase):
             source = self._source_from_value(source_value, create=False)
             if source:
                 domain.append(("source_id", "=", source.id))
-        Lead = request.env["crm.lead"].with_context(active_test=False)
         open_domain = expression.AND([domain, [("active", "=", True)]])
         close_domain = expression.AND([domain, [("active", "=", False)]])
-        open_count = Lead.search_count(open_domain)
-        close_count = Lead.search_count(close_domain)
-        open_records = Lead.search(open_domain, order="id desc", limit=limit, offset=offset)
-        close_records = Lead.search(close_domain, order="id desc", limit=limit, offset=offset)
+        open_count = self._safe_search_count("crm.lead", open_domain, active_test=False)
+        close_count = self._safe_search_count("crm.lead", close_domain, active_test=False)
+        open_records = self._safe_search(
+            "crm.lead",
+            open_domain,
+            order="id desc",
+            limit=limit,
+            offset=offset,
+            active_test=False,
+        )
+        close_records = self._safe_search(
+            "crm.lead",
+            close_domain,
+            order="id desc",
+            limit=limit,
+            offset=offset,
+            active_test=False,
+        )
         return self._json(
             {
                 "per_page": limit,
@@ -114,7 +127,12 @@ class FtiqCrmMobileApi(FtiqCrmApiBase):
                     "offset": offset + len(close_records) if offset + len(close_records) < close_count else None,
                 },
                 "contacts": [
-                    {"id": str(partner.id), "first_name": self._split_name(partner.name)[0]}
+                    {
+                        "id": str(partner.id),
+                        "first_name": self._split_name(
+                            self._field_value(partner, "name", "") or ""
+                        )[0],
+                    }
                     for partner in self._contact_records(limit=100)
                 ],
                 "status": self._lead_status_choices(),
@@ -202,9 +220,15 @@ class FtiqCrmMobileApi(FtiqCrmApiBase):
                 stage = self._stage_from_deal_code(stage_value, create=False)
                 if stage:
                     domain.append(("stage_id", "=", stage.id))
-        Lead = request.env["crm.lead"].with_context(active_test=False)
-        count = Lead.search_count(domain)
-        records = Lead.search(domain, order="id desc", limit=limit, offset=offset)
+        count = self._safe_search_count("crm.lead", domain, active_test=False)
+        records = self._safe_search(
+            "crm.lead",
+            domain,
+            order="id desc",
+            limit=limit,
+            offset=offset,
+            active_test=False,
+        )
         return self._json(
             {
                 "opportunities_count": count,
@@ -285,9 +309,14 @@ class FtiqCrmMobileApi(FtiqCrmApiBase):
                 domain.append(("state", "=", state))
         else:
             domain = expression.AND([domain, self._mobile_open_task_domain()])
-        Task = request.env["project.task"]
-        count = Task.search_count(domain)
-        records = Task.search(domain, order="id desc", limit=limit, offset=offset)
+        count = self._safe_search_count("project.task", domain)
+        records = self._safe_search(
+            "project.task",
+            domain,
+            order="id desc",
+            limit=limit,
+            offset=offset,
+        )
         return self._json(
             {
                 "tasks_count": count,
@@ -385,9 +414,14 @@ class FtiqCrmMobileApi(FtiqCrmApiBase):
             return self._json({"invoices": [], "invoices_count": 0})
         limit, offset = self._limit_offset()
         domain = [("move_type", "in", ("out_invoice", "out_refund"))]
-        Move = request.env["account.move"]
-        count = Move.search_count(domain)
-        records = Move.search(domain, order="invoice_date desc, id desc", limit=limit, offset=offset)
+        count = self._safe_search_count("account.move", domain)
+        records = self._safe_search(
+            "account.move",
+            domain,
+            order="invoice_date desc, id desc",
+            limit=limit,
+            offset=offset,
+        )
         return self._json(
             {
                 "invoices_count": count,
@@ -399,48 +433,93 @@ class FtiqCrmMobileApi(FtiqCrmApiBase):
         today = fields.Date.context_today(request.env.user)
         accounts = self._account_records(limit=20)
         contacts = self._contact_records(limit=20)
-        Lead = request.env["crm.lead"]
-        leads = Lead.search([("type", "=", "lead")], limit=20, order="id desc")
-        opportunities = Lead.search([("type", "=", "opportunity")], limit=20, order="id desc")
-        all_opportunities = Lead.search([("type", "=", "opportunity")])
-        Task = request.env["project.task"]
+        leads = self._safe_search(
+            "crm.lead",
+            [("type", "=", "lead")],
+            limit=20,
+            order="id desc",
+            active_test=False,
+        )
+        opportunities = self._safe_search(
+            "crm.lead",
+            [("type", "=", "opportunity")],
+            limit=20,
+            order="id desc",
+            active_test=False,
+        )
+        all_opportunities = self._safe_search(
+            "crm.lead",
+            [("type", "=", "opportunity")],
+            active_test=False,
+        )
         task_domain = expression.AND([
             self._mobile_task_visibility_domain(),
             self._mobile_open_task_domain(),
         ])
-        tasks = Task.search(task_domain, limit=10, order="date_deadline asc, id desc")
-        overdue_tasks = Task.search_count(expression.AND([task_domain, [("date_deadline", "<", today)]]))
-        due_today = Task.search_count(expression.AND([task_domain, [("date_deadline", "=", today)]]))
+        tasks = self._safe_search(
+            "project.task",
+            task_domain,
+            limit=10,
+            order="date_deadline asc, id desc",
+        )
+        overdue_tasks = self._safe_search_count(
+            "project.task",
+            expression.AND([task_domain, [("date_deadline", "<", today)]]),
+        )
+        due_today = self._safe_search_count(
+            "project.task",
+            expression.AND([task_domain, [("date_deadline", "=", today)]]),
+        )
         followups_today = 0
+        Lead = request.env["crm.lead"]
         if "activity_date_deadline" in Lead._fields:
-            followups_today = Lead.search_count([("type", "=", "lead"), ("activity_date_deadline", "=", today)])
-        hot_leads_count = Lead.search_count([("type", "=", "lead"), ("priority", "in", ("2", "3"))])
+            followups_today = self._safe_search_count(
+                "crm.lead",
+                [("type", "=", "lead"), ("activity_date_deadline", "=", today)],
+                active_test=False,
+            )
+        hot_leads_count = self._safe_search_count(
+            "crm.lead",
+            [("type", "=", "lead"), ("priority", "in", ("2", "3"))],
+            active_test=False,
+        )
         pipeline = self._pipeline_by_stage(all_opportunities)
         pipeline_value = sum(item["value"] for item in pipeline.values() if item)
         weighted_pipeline = sum(
-            (lead.expected_revenue or 0.0) * ((lead.probability or 0.0) / 100.0)
+            (self._field_value(lead, "expected_revenue", 0.0) or 0.0)
+            * ((self._field_value(lead, "probability", 0.0) or 0.0) / 100.0)
             for lead in all_opportunities
             if self._deal_stage_value(lead) not in {"CLOSED_WON", "CLOSED_LOST"}
         )
         won_this_month = sum(
-            lead.expected_revenue or 0.0
+            self._field_value(lead, "expected_revenue", 0.0) or 0.0
             for lead in all_opportunities
             if self._deal_stage_value(lead) == "CLOSED_WON"
         )
-        total_leads = Lead.search_count([("type", "=", "lead")])
-        converted_count = Lead.search_count([("type", "=", "opportunity")])
+        total_leads = self._safe_search_count(
+            "crm.lead",
+            [("type", "=", "lead")],
+            active_test=False,
+        )
+        converted_count = self._safe_search_count(
+            "crm.lead",
+            [("type", "=", "opportunity")],
+            active_test=False,
+        )
         conversion_rate = (converted_count / total_leads * 100.0) if total_leads else 0.0
-        hot_leads = Lead.search(
+        hot_leads = self._safe_search(
+            "crm.lead",
             [("type", "=", "lead"), ("priority", "in", ("2", "3"))],
             order="id desc",
             limit=10,
+            active_test=False,
         )
         return self._json(
             {
                 "accounts_count": self._safe_search_count("res.partner", [("parent_id", "=", False)]),
                 "contacts_count": self._safe_search_count("res.partner", []),
                 "leads_count": total_leads,
-                "opportunities_count": Lead.search_count([("type", "=", "opportunity")]),
+                "opportunities_count": converted_count,
                 "accounts": [self._serialize_partner_account(partner) for partner in accounts],
                 "contacts": [self._serialize_partner_contact(partner) for partner in contacts],
                 "leads": [self._serialize_lead(lead) for lead in leads],
@@ -452,14 +531,17 @@ class FtiqCrmMobileApi(FtiqCrmApiBase):
                     "hot_leads": hot_leads_count,
                 },
                 "pipeline_by_stage": pipeline,
-                "revenue_metrics": {
-                    "pipeline_value": pipeline_value,
-                    "weighted_pipeline": weighted_pipeline,
-                    "won_this_month": won_this_month,
-                    "conversion_rate": round(conversion_rate, 1),
-                    "currency": request.env.company.currency_id.name,
-                    "other_currency_count": 0,
-                },
+            "revenue_metrics": {
+                "pipeline_value": pipeline_value,
+                "weighted_pipeline": weighted_pipeline,
+                "won_this_month": won_this_month,
+                "conversion_rate": round(conversion_rate, 1),
+                "currency": self._record_name(
+                    self._field_value(request.env.company, "currency_id"),
+                    "",
+                ),
+                "other_currency_count": 0,
+            },
                 "hot_leads": [self._dashboard_hot_lead(lead) for lead in hot_leads],
                 "tasks": [self._serialize_task(task) for task in tasks],
                 "activities": [],
@@ -780,12 +862,12 @@ class FtiqCrmMobileApi(FtiqCrmApiBase):
         return tags
 
     def _crm_tags(self):
-        return request.env["crm.tag"].search([], order="name")
+        return self._safe_search("crm.tag", order="name")
 
     def _project_task_tags(self):
         if not self._has_model("project.tags"):
             return request.env["project.tags"]
-        return request.env["project.tags"].search([], order="name")
+        return self._safe_search("project.tags", order="name")
 
     def _project_task_tags_from_payload(self, value):
         if not self._has_model("project.tags"):
@@ -840,7 +922,10 @@ class FtiqCrmMobileApi(FtiqCrmApiBase):
             result[code] = {
                 "label": self._stage_label(code),
                 "count": len(records),
-                "value": sum(records.mapped("expected_revenue")),
+                "value": sum(
+                    self._field_value(record, "expected_revenue", 0.0) or 0.0
+                    for record in records
+                ),
             }
         return result
 
@@ -857,19 +942,24 @@ class FtiqCrmMobileApi(FtiqCrmApiBase):
         }
 
     def _serialize_invoice(self, move):
+        partner = self._field_value(move, "partner_id")
+        commercial_partner = (
+            self._field_value(partner, "commercial_partner_id") if partner else False
+        )
+        currency = self._field_value(move, "currency_id")
         return {
             "id": str(move.id),
-            "name": move.name or move.display_name,
-            "number": move.name or "",
-            "partner": self._serialize_partner_account(move.partner_id.commercial_partner_id) if move.partner_id else None,
-            "amount_total": move.amount_total,
-            "amount_residual": move.amount_residual,
-            "currency": move.currency_id.name,
-            "state": move.state,
-            "payment_state": move.payment_state,
-            "invoice_date": self._date_string(move.invoice_date),
-            "due_date": self._date_string(move.invoice_date_due),
-            "created_at": self._date_string(move.create_date),
+            "name": self._record_name(move),
+            "number": self._field_value(move, "name", "") or "",
+            "partner": self._serialize_partner_account(commercial_partner) if commercial_partner else None,
+            "amount_total": self._field_value(move, "amount_total", 0.0) or 0.0,
+            "amount_residual": self._field_value(move, "amount_residual", 0.0) or 0.0,
+            "currency": self._record_name(currency),
+            "state": self._field_value(move, "state", "") or "",
+            "payment_state": self._field_value(move, "payment_state", "") or "",
+            "invoice_date": self._date_string(self._field_value(move, "invoice_date")),
+            "due_date": self._date_string(self._field_value(move, "invoice_date_due")),
+            "created_at": self._date_string(self._field_value(move, "create_date")),
         }
 
     def _lead_status_choices(self):
@@ -941,7 +1031,13 @@ class FtiqCrmMobileApi(FtiqCrmApiBase):
         return [("Low", "Low"), ("Medium", "Medium"), ("High", "High"), ("Urgent", "Urgent")]
 
     def _currency_choices(self):
-        return [(currency.name, currency.name) for currency in request.env["res.currency"].search([("active", "=", True)])]
+        return [
+            (currency.name, currency.name)
+            for currency in self._safe_search("res.currency", [("active", "=", True)])
+        ]
 
     def _country_choices(self):
-        return [(country.code or str(country.id), country.name) for country in request.env["res.country"].search([], order="name")]
+        return [
+            (country.code or str(country.id), country.name)
+            for country in self._safe_search("res.country", order="name")
+        ]

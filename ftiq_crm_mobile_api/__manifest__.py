@@ -20,6 +20,7 @@ screens or adding parallel CRM tables.
         "contacts",
         "base_geolocalize",
         "crm",
+        "sale",
         "sales_team",
         "project",
         "account",

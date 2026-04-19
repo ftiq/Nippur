@@ -246,20 +246,35 @@ class FtiqCrmApiBase(http.Controller):
             return default
         return bool(value)
 
-    def _safe_search(self, model_name, domain=None, *, limit=None, offset=0, order=None):
+    def _safe_search(
+        self,
+        model_name,
+        domain=None,
+        *,
+        limit=None,
+        offset=0,
+        order=None,
+        active_test=None,
+    ):
+        model = request.env[model_name]
+        if active_test is not None:
+            model = model.with_context(active_test=active_test)
         try:
-            return request.env[model_name].search(
+            return model.search(
                 domain or [],
                 limit=limit,
                 offset=offset,
                 order=order,
             )
         except AccessError:
-            return request.env[model_name]
+            return model.browse()
 
-    def _safe_search_count(self, model_name, domain=None):
+    def _safe_search_count(self, model_name, domain=None, *, active_test=None):
+        model = request.env[model_name]
+        if active_test is not None:
+            model = model.with_context(active_test=active_test)
         try:
-            return request.env[model_name].search_count(domain or [])
+            return model.search_count(domain or [])
         except AccessError:
             return 0
 
@@ -361,17 +376,22 @@ class FtiqCrmApiBase(http.Controller):
     def _invoice_metrics_by_partner(self, partners):
         commercial_partner_ids = list(
             {
-                partner.commercial_partner_id.id
+                commercial.id
                 for partner in partners
-                if partner and partner.commercial_partner_id
+                for commercial in [self._field_value(partner, "commercial_partner_id")]
+                if partner and commercial
             }
         )
         if not commercial_partner_ids or not self._has_model("account.move"):
             return {}
-        moves = request.env["account.move"].search(
-            self._open_invoice_domain(commercial_partner_ids)
+        moves = self._safe_search(
+            "account.move",
+            self._open_invoice_domain(commercial_partner_ids),
         )
-        company_currency = request.env.company.currency_id.name
+        company_currency = self._record_name(
+            self._field_value(request.env.company, "currency_id"),
+            "",
+        )
         metrics = {
             partner_id: {
                 "due_amount": 0.0,
@@ -384,7 +404,8 @@ class FtiqCrmApiBase(http.Controller):
             for partner_id in commercial_partner_ids
         }
         for move in moves:
-            partner = move.partner_id.commercial_partner_id
+            move_partner = self._field_value(move, "partner_id")
+            partner = self._field_value(move_partner, "commercial_partner_id") if move_partner else False
             if not partner:
                 continue
             values = metrics.setdefault(
@@ -398,11 +419,14 @@ class FtiqCrmApiBase(http.Controller):
                     "currency_count": 0,
                 },
             )
-            values["due_amount"] += move.amount_residual
-            values["due_amount_company"] += abs(getattr(move, "amount_residual_signed", 0.0) or 0.0)
+            values["due_amount"] += self._field_value(move, "amount_residual", 0.0) or 0.0
+            values["due_amount_company"] += abs(
+                self._field_value(move, "amount_residual_signed", 0.0) or 0.0
+            )
             values["open_invoice_count"] += 1
+            currency = self._field_value(move, "currency_id")
             values["_currencies"].add(
-                move.currency_id.name if move.currency_id else company_currency
+                self._record_name(currency, company_currency) if currency else company_currency
             )
         for values in metrics.values():
             currencies = sorted(values.pop("_currencies", set()))
@@ -416,16 +440,23 @@ class FtiqCrmApiBase(http.Controller):
         return metrics
 
     def _serialize_invoice_summary(self, move):
+        currency = self._field_value(move, "currency_id")
         return {
             "id": move.id,
-            "name": move.name or move.display_name,
-            "number": move.name or "",
-            "amount_total": move.amount_total,
-            "amount_residual": move.amount_residual,
-            "currency": move.currency_id.name if move.currency_id else request.env.company.currency_id.name,
-            "invoice_date": self._date_string(move.invoice_date),
-            "due_date": self._date_string(move.invoice_date_due),
-            "payment_state": move.payment_state,
+            "name": self._record_name(move),
+            "number": self._field_value(move, "name", "") or "",
+            "amount_total": self._field_value(move, "amount_total", 0.0) or 0.0,
+            "amount_residual": self._field_value(move, "amount_residual", 0.0) or 0.0,
+            "currency": self._record_name(
+                currency,
+                self._record_name(
+                    self._field_value(request.env.company, "currency_id"),
+                    "",
+                ),
+            ),
+            "invoice_date": self._date_string(self._field_value(move, "invoice_date")),
+            "due_date": self._date_string(self._field_value(move, "invoice_date_due")),
+            "payment_state": self._field_value(move, "payment_state", "") or "",
         }
 
     def _serialize_mail_notification(self, notification):
@@ -589,13 +620,13 @@ class FtiqCrmApiBase(http.Controller):
     def _lead_source_value(self, lead):
         source = self._field_value(lead, "source_id")
         if source:
-            return (source.name or "").strip().lower() or "other"
+            return (self._record_name(source) or "").strip().lower() or "other"
         return ""
 
     def _lead_status_value(self, lead):
-        if not getattr(lead, "active", True):
+        if not self._record_flag(lead, "active", True):
             return "closed"
-        if getattr(lead, "type", "") == "opportunity":
+        if self._field_value(lead, "type", "") == "opportunity":
             return "converted"
         stage = self._field_value(lead, "stage_id")
         stage_name = (self._field_value(stage, "name", "") or "").strip().lower() if stage else ""
@@ -604,7 +635,7 @@ class FtiqCrmApiBase(http.Controller):
         return "assigned"
 
     def _deal_stage_value(self, lead):
-        if not getattr(lead, "active", True):
+        if not self._record_flag(lead, "active", True):
             return "CLOSED_LOST"
         stage = self._field_value(lead, "stage_id")
         stage_name = (self._field_value(stage, "name", "") or "").strip().lower() if stage else ""
@@ -650,9 +681,18 @@ class FtiqCrmApiBase(http.Controller):
             "industry": "",
             "number_of_employees": 0,
             "annual_revenue": 0,
-            "currency": company_currency.name
+            "currency": self._record_name(
+                company_currency,
+                self._record_name(
+                    self._field_value(request.env.company, "currency_id"),
+                    "",
+                ),
+            )
             if company_currency
-            else request.env.company.currency_id.name,
+            else self._record_name(
+                self._field_value(request.env.company, "currency_id"),
+                "",
+            ),
             "address_line": self._field_value(commercial, "street", "") or "",
             "city": self._field_value(commercial, "city", "") or "",
             "state": self._record_name(state) if state else "",
@@ -740,7 +780,7 @@ class FtiqCrmApiBase(http.Controller):
         tags = self._field_value(lead, "tag_ids") or request.env["crm.tag"]
         return {
             "id": str(lead.id),
-            "title": lead.name or "",
+            "title": self._field_value(lead, "name", "") or "",
             "salutation": "",
             "first_name": first_name,
             "last_name": last_name,
@@ -755,7 +795,13 @@ class FtiqCrmApiBase(http.Controller):
             "rating": self._rating_from_priority(self._field_value(lead, "priority", "")),
             "industry": "",
             "opportunity_amount": self._field_value(lead, "expected_revenue", 0.0) or 0.0,
-            "currency": self._record_name(currency, request.env.company.currency_id.name),
+            "currency": self._record_name(
+                currency,
+                self._record_name(
+                    self._field_value(request.env.company, "currency_id"),
+                    "",
+                ),
+            ),
             "probability": int(self._field_value(lead, "probability", 0) or 0),
             "close_date": self._display_date(lead, "date_deadline"),
             "address_line": self._field_value(lead, "street", "") or "",
@@ -772,7 +818,7 @@ class FtiqCrmApiBase(http.Controller):
             "created_by": self._serialize_user(self._field_value(lead, "create_uid")),
             "created_at": self._date_string(self._field_value(lead, "create_date")),
             "updated_at": self._date_string(self._field_value(lead, "write_date")),
-            "is_active": bool(getattr(lead, "active", True)),
+            "is_active": self._record_flag(lead, "active", True),
             **self._record_mobile_location(lead),
         }
 
@@ -790,11 +836,17 @@ class FtiqCrmApiBase(http.Controller):
         team = self._field_value(lead, "team_id")
         return {
             "id": str(lead.id),
-            "name": lead.name or "",
+            "name": self._field_value(lead, "name", "") or "",
             "account": self._serialize_partner_account(partner) if partner else None,
             "stage": self._deal_stage_value(lead),
             "opportunity_type": "NEW_BUSINESS",
-            "currency": self._record_name(currency, request.env.company.currency_id.name),
+            "currency": self._record_name(
+                currency,
+                self._record_name(
+                    self._field_value(request.env.company, "currency_id"),
+                    "",
+                ),
+            ),
             "amount": self._field_value(lead, "expected_revenue", 0.0) or 0.0,
             "amount_source": "manual",
             "probability": int(self._field_value(lead, "probability", 0) or 0),
@@ -810,8 +862,8 @@ class FtiqCrmApiBase(http.Controller):
             "created_by": self._serialize_user(self._field_value(lead, "create_uid")),
             "created_at": self._date_string(self._field_value(lead, "create_date")),
             "updated_at": self._date_string(self._field_value(lead, "write_date")),
-            "is_active": bool(getattr(lead, "active", True)),
-            "org": {"id": str(request.env.company.id), "name": request.env.company.name},
+            "is_active": self._record_flag(lead, "active", True),
+            "org": {"id": str(request.env.company.id), "name": self._record_name(request.env.company)},
             "teams": [self._serialize_team(team)] if team else [],
             **self._record_mobile_location(lead),
         }
@@ -878,7 +930,7 @@ class FtiqCrmApiBase(http.Controller):
         state_value = self._task_state_code(task)
         return {
             "id": str(task.id),
-            "title": task.name or "",
+            "title": self._field_value(task, "name", "") or "",
             "status": self._task_status_value(task, state_value=state_value),
             "status_code": state_value,
             "status_options": self._task_state_options(task),

@@ -74,6 +74,21 @@ class FtiqCrmMobileSalesApi(FtiqCrmApiBase):
         )
 
     @http.route(
+        "/api/sale-orders/<int:order_id>/reset-to-draft/",
+        type="http",
+        auth="none",
+        methods=["POST"],
+        cors="*",
+        csrf=False,
+    )
+    def sale_order_reset_to_draft(self, order_id, **kwargs):
+        return self._dispatch(
+            lambda: self._with_auth(
+                lambda: self._sale_order_reset_to_draft(order_id)
+            )
+        )
+
+    @http.route(
         "/api/sales/products/",
         type="http",
         auth="none",
@@ -174,19 +189,60 @@ class FtiqCrmMobileSalesApi(FtiqCrmApiBase):
             return "own"
         return "none"
 
+    def _has_sales_user_access(self):
+        return self._sales_user_scope() != "none"
+
+    def _normal_sale_order(self, order):
+        if not order:
+            return request.env["sale.order"]
+        return request.env["sale.order"].browse(order.id).exists()
+
+    def _normal_can_access_sale_order(self, order, mode="read"):
+        normal_order = self._normal_sale_order(order)
+        if not normal_order:
+            return False
+        try:
+            normal_order.check_access_rights(mode)
+            normal_order.check_access_rule(mode)
+            return True
+        except AccessError:
+            return False
+
+    def _mobile_can_access_sale_order(self, order, mode="read"):
+        if not order:
+            return False
+        if self._normal_can_access_sale_order(order, mode=mode):
+            return True
+
+        scope = self._sales_user_scope()
+        if scope in {"admin", "all"}:
+            return True
+        if scope == "own":
+            user_id = request.env.user.id
+            return (
+                not order.user_id
+                or order.user_id.id == user_id
+                or order.create_uid.id == user_id
+            )
+        return False
+
+    def _accessible_sale_orders(self, orders, mode="read"):
+        return orders.filtered(
+            lambda order: self._mobile_can_access_sale_order(order, mode=mode)
+        )
+
     def _can_record_write(self, record):
         if not record:
             return False
-        try:
-            record.check_access_rule("write")
-        except AccessError:
-            return False
-        return record.check_access_rights("write", raise_exception=False)
+        return self._mobile_can_access_sale_order(record, mode="write")
 
     def _serialize_sales_order_options(self, partner):
         SaleOrder = request.env["sale.order"]
         can_create = SaleOrder.check_access_rights("create", raise_exception=False)
         can_write = SaleOrder.check_access_rights("write", raise_exception=False)
+        if not self._has_sales_user_access():
+            can_create = False
+            can_write = False
         order = self._draft_sale_order(partner)
         partner_warning = self._partner_sale_warning(self._sales_partner_for_client(partner))
         blocking_message = ""
@@ -250,6 +306,8 @@ class FtiqCrmMobileSalesApi(FtiqCrmApiBase):
         }
 
     def _serialize_sales_order(self, order):
+        invoice_count = self._sale_order_invoice_count(order)
+        transfer_count = self._sale_order_transfer_count(order)
         can_confirm = (
             order.state in {"draft", "sent"}
             and bool(order.order_line.filtered(lambda line: not line.display_type))
@@ -285,7 +343,14 @@ class FtiqCrmMobileSalesApi(FtiqCrmApiBase):
             "team_name": order.team_id.display_name if order.team_id else "",
             "can_confirm": can_confirm,
             "can_update": order.state in {"draft", "sent"} and self._can_record_write(order),
+            "can_reset_to_draft": self._can_reset_sale_order_to_draft(
+                order,
+                invoice_count=invoice_count,
+                transfer_count=transfer_count,
+            ),
             "can_send": False,
+            "invoice_count": invoice_count,
+            "transfer_count": transfer_count,
             "lines": [
                 self._serialize_sales_order_line(line)
                 for line in order.order_line.sorted(lambda item: (item.sequence, item.id))
@@ -297,12 +362,15 @@ class FtiqCrmMobileSalesApi(FtiqCrmApiBase):
         partner = self._client_record(partner_id)
         if not partner:
             return self._error(_("Client not found."), status=404)
-        SaleOrder = request.env["sale.order"]
-        SaleOrder.check_access_rights("read")
+        if not self._has_sales_user_access() and not request.env["sale.order"].check_access_rights("read", raise_exception=False):
+            raise AccessError(_("You do not have permission to access this data."))
         limit, offset = self._limit_offset()
         domain = self._order_domain_for_client(partner)
-        orders = SaleOrder.search(domain, order="create_date desc, id desc", limit=limit, offset=offset)
-        count = SaleOrder.search_count(domain)
+        SaleOrder = request.env["sale.order"].sudo().with_context(active_test=False)
+        matched_orders = SaleOrder.search(domain, order="date_order desc, id desc")
+        accessible_orders = self._accessible_sale_orders(matched_orders)
+        count = len(accessible_orders)
+        orders = accessible_orders[offset : offset + limit]
         next_offset = offset + len(orders)
         return self._json(
             {
@@ -347,7 +415,7 @@ class FtiqCrmMobileSalesApi(FtiqCrmApiBase):
         Product = request.env["product.product"]
         Product.check_access_rights("read")
         product_ids = [line["product_id"] for line in line_values]
-        products = Product.search(
+        products = Product.sudo().search(
             [
                 ("id", "in", product_ids),
                 ("sale_ok", "=", True),
@@ -413,6 +481,8 @@ class FtiqCrmMobileSalesApi(FtiqCrmApiBase):
             return self._error(partner_warning["message"] or _("This customer is blocked for sales."))
         SaleOrder = request.env["sale.order"]
         SaleOrder.check_access_rights("create")
+        if not self._has_sales_user_access():
+            raise AccessError(_("You do not have permission to create sales orders."))
         line_values = self._validated_order_lines(payload)
         order = SaleOrder.with_context(
             default_partner_id=self._sales_partner_for_client(partner).id,
@@ -430,9 +500,11 @@ class FtiqCrmMobileSalesApi(FtiqCrmApiBase):
 
     def _sale_order_record(self, order_id):
         self._ensure_sales_models()
-        SaleOrder = request.env["sale.order"]
-        SaleOrder.check_access_rights("read")
-        return SaleOrder.search([("id", "=", order_id)], limit=1)
+        SaleOrder = request.env["sale.order"].sudo().with_context(active_test=False)
+        order = SaleOrder.browse(order_id).exists()
+        if order and not self._mobile_can_access_sale_order(order):
+            raise AccessError(_("You do not have permission to access this data."))
+        return order
 
     def _sale_order_detail(self, order_id):
         order = self._sale_order_record(order_id)
@@ -476,6 +548,65 @@ class FtiqCrmMobileSalesApi(FtiqCrmApiBase):
         return self._json(
             {
                 "message": _("Sales order confirmed successfully."),
+                "order": self._serialize_sales_order(order),
+            }
+        )
+
+    def _sale_order_invoice_count(self, order):
+        if "invoice_ids" not in order._fields:
+            return 0
+        return len(order.invoice_ids.filtered(lambda invoice: invoice.state != "cancel"))
+
+    def _sale_order_transfer_count(self, order):
+        if "picking_ids" not in order._fields:
+            return 0
+        return len(order.picking_ids.filtered(lambda picking: picking.state != "cancel"))
+
+    def _can_reset_sale_order_to_draft(self, order, invoice_count=None, transfer_count=None):
+        if not order or order.state != "sale" or not self._can_record_write(order):
+            return False
+        active_invoice_count = (
+            self._sale_order_invoice_count(order)
+            if invoice_count is None
+            else invoice_count
+        )
+        active_transfer_count = (
+            self._sale_order_transfer_count(order)
+            if transfer_count is None
+            else transfer_count
+        )
+        return active_invoice_count == 0 and active_transfer_count == 0
+
+    def _sale_order_reset_to_draft(self, order_id):
+        order = self._sale_order_record(order_id)
+        if not order:
+            return self._error(_("Sales order not found."), status=404)
+        if not self._can_record_write(order):
+            raise AccessError(
+                _("You do not have permission to reset this sales order to draft.")
+            )
+        if order.state != "sale":
+            return self._error(
+                _("Only confirmed sales orders can be reset to draft."),
+                status=400,
+            )
+        invoice_count = self._sale_order_invoice_count(order)
+        if invoice_count:
+            return self._error(
+                _("This sales order has invoices and cannot be reset to draft."),
+                status=400,
+            )
+        transfer_count = self._sale_order_transfer_count(order)
+        if transfer_count:
+            return self._error(
+                _("This sales order has stock transfers and cannot be reset to draft."),
+                status=400,
+            )
+        order.action_cancel()
+        order.action_draft()
+        return self._json(
+            {
+                "message": _("Sales order returned to draft successfully."),
                 "order": self._serialize_sales_order(order),
             }
         )
@@ -530,8 +661,9 @@ class FtiqCrmMobileSalesApi(FtiqCrmApiBase):
                 ]
             )
         draft_order = self._draft_sale_order(partner)
-        count = Product.search_count(domain)
-        products = Product.search(domain, order="default_code, name, id", limit=limit, offset=offset)
+        ProductSudo = Product.sudo()
+        count = ProductSudo.search_count(domain)
+        products = ProductSudo.search(domain, order="default_code, name, id", limit=limit, offset=offset)
         next_offset = offset + len(products)
         return self._json(
             {
