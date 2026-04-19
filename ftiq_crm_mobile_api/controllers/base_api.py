@@ -930,6 +930,17 @@ class FtiqCrmApiBase(http.Controller):
         tags = self._field_value(task, "tag_ids") or request.env["project.tags"]
         description = html2plaintext(self._field_value(task, "description", "") or "").strip()
         state_value = self._task_state_code(task)
+        task_type = self._field_value(task, "ftiq_mobile_task_type", "") or ""
+        visit_state = self._field_value(task, "ftiq_mobile_visit_state", "") or ""
+        execution_payload = {}
+        raw_execution_payload = self._field_value(task, "ftiq_mobile_execution_payload", "") or ""
+        if raw_execution_payload:
+            try:
+                parsed_execution_payload = json.loads(raw_execution_payload)
+                if isinstance(parsed_execution_payload, dict):
+                    execution_payload = parsed_execution_payload
+            except Exception:
+                execution_payload = {}
         return {
             "id": str(task.id),
             "title": self._field_value(task, "name", "") or "",
@@ -941,6 +952,13 @@ class FtiqCrmApiBase(http.Controller):
             "priority": self._task_priority_value(task),
             "due_date": self._display_date(task, "date_deadline"),
             "description": description,
+            "task_type": task_type,
+            "task_type_label": self._selection_label(task, "ftiq_mobile_task_type", task_type),
+            "visit_state": visit_state,
+            "visit_state_label": self._selection_label(task, "ftiq_mobile_visit_state", visit_state),
+            "visit_started_at": self._display_date(task, "ftiq_mobile_started_at"),
+            "visit_completed_at": self._display_date(task, "ftiq_mobile_completed_at"),
+            "execution_payload": execution_payload,
             "account": self._serialize_partner_account(partner) if partner else None,
             "opportunity": None,
             "case": None,

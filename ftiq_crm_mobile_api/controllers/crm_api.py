@@ -1,9 +1,11 @@
+import json
 from datetime import date
 
 from odoo import _, fields, http
 from odoo.fields import Command
 from odoo.http import request
 from odoo.osv import expression
+from markupsafe import Markup, escape
 
 from .base_api import FtiqCrmApiBase
 
@@ -40,6 +42,26 @@ class FtiqCrmMobileApi(FtiqCrmApiBase):
     @http.route("/api/tasks/<int:task_id>/", type="http", auth="none", methods=["GET", "POST", "PUT", "PATCH", "DELETE"], cors="*", csrf=False)
     def task_detail(self, task_id, **kwargs):
         return self._dispatch(lambda: self._with_auth(lambda: self._task_detail(task_id)))
+
+    @http.route("/api/tasks/<int:task_id>/execution/", type="http", auth="none", methods=["GET"], cors="*", csrf=False)
+    def task_execution(self, task_id, **kwargs):
+        return self._dispatch(lambda: self._with_auth(lambda: self._task_execution(task_id)))
+
+    @http.route("/api/tasks/<int:task_id>/visit/start/", type="http", auth="none", methods=["POST"], cors="*", csrf=False)
+    def task_visit_start(self, task_id, **kwargs):
+        return self._dispatch(lambda: self._with_auth(lambda: self._task_visit_start(task_id)))
+
+    @http.route("/api/tasks/<int:task_id>/visit/draft/", type="http", auth="none", methods=["POST", "PATCH"], cors="*", csrf=False)
+    def task_visit_draft(self, task_id, **kwargs):
+        return self._dispatch(lambda: self._with_auth(lambda: self._task_visit_draft(task_id)))
+
+    @http.route("/api/tasks/<int:task_id>/visit/complete/", type="http", auth="none", methods=["POST"], cors="*", csrf=False)
+    def task_visit_complete(self, task_id, **kwargs):
+        return self._dispatch(lambda: self._with_auth(lambda: self._task_visit_complete(task_id)))
+
+    @http.route("/api/tasks/<int:task_id>/visit/cancel/", type="http", auth="none", methods=["POST"], cors="*", csrf=False)
+    def task_visit_cancel(self, task_id, **kwargs):
+        return self._dispatch(lambda: self._with_auth(lambda: self._task_visit_cancel(task_id)))
 
     @http.route("/api/accounts/", type="http", auth="none", methods=["GET", "POST"], cors="*", csrf=False)
     def accounts(self, **kwargs):
@@ -324,6 +346,7 @@ class FtiqCrmMobileApi(FtiqCrmApiBase):
                 "tasks": [self._serialize_task(task) for task in records],
                 "status": self._task_status_choices(),
                 "priority": self._task_priority_choices(),
+                "task_types": self._task_type_choices(),
                 "accounts_list": [self._serialize_partner_account(partner) for partner in self._account_records(limit=100)],
                 "contacts_list": [self._serialize_partner_contact(partner) for partner in self._contact_records(limit=100)],
             }
@@ -372,7 +395,302 @@ class FtiqCrmMobileApi(FtiqCrmApiBase):
             "users_excluding_team": [self._serialize_profile(user) for user in users],
             "teams": [self._serialize_team(team) for team in teams],
             "available_tags": [self._serialize_tag(tag) for tag in self._project_task_tags()],
+            "task_types": self._task_type_choices(),
+            "visit_states": self._task_visit_state_choices(),
+            "execution": self._task_execution_payload(task),
         }
+
+    def _task_execution(self, task_id):
+        task = self._task_record_for_mobile(task_id)
+        if not task:
+            return self._error(_("Task not found."), status=404)
+        return self._json(self._task_execution_response(task))
+
+    def _task_visit_start(self, task_id):
+        task = self._task_record_for_mobile(task_id)
+        if not task:
+            return self._error(_("Task not found."), status=404)
+        if not self._field_value(task, "partner_id"):
+            return self._error(_("This task is not linked to a client."), status=400)
+        payload = self._json_body()
+        now = fields.Datetime.now()
+        values = {
+            "ftiq_mobile_task_type": self._field_value(task, "ftiq_mobile_task_type") or "field_visit",
+            "ftiq_mobile_visit_state": "in_progress",
+            "ftiq_mobile_started_at": now,
+        }
+        values.update(self._task_location_values(payload, "start"))
+        state = self._task_state_from_status("01_in_progress")
+        if state:
+            values["state"] = state
+        self._write_mobile_task_values(task, values)
+        self._apply_mobile_location(task, payload)
+        task.message_post(body=self._task_visit_message_body(task, _("Visit started"), payload=payload))
+        return self._json(self._task_execution_response(task))
+
+    def _task_visit_draft(self, task_id):
+        task = self._task_record_for_mobile(task_id)
+        if not task:
+            return self._error(_("Task not found."), status=404)
+        payload = self._json_body()
+        draft = payload.get("draft")
+        if not isinstance(draft, dict):
+            draft = payload.get("execution")
+        if not isinstance(draft, dict):
+            draft = payload
+        values = {
+            "ftiq_mobile_execution_payload": json.dumps(draft or {}, ensure_ascii=False),
+        }
+        if self._field_value(task, "ftiq_mobile_visit_state") in (False, "", "not_started"):
+            values["ftiq_mobile_visit_state"] = "in_progress"
+            values["ftiq_mobile_started_at"] = fields.Datetime.now()
+        self._write_mobile_task_values(task, values)
+        return self._json(self._task_execution_response(task))
+
+    def _task_visit_complete(self, task_id):
+        task = self._task_record_for_mobile(task_id)
+        if not task:
+            return self._error(_("Task not found."), status=404)
+        payload = self._json_body()
+        request_uid = (payload.get("mobile_request_uid") or payload.get("request_uid") or "").strip()
+        if request_uid and self._field_value(task, "ftiq_mobile_request_uid") == request_uid:
+            return self._json(self._task_execution_response(task))
+        report = payload.get("report")
+        if not isinstance(report, dict):
+            report = payload.get("execution")
+        if not isinstance(report, dict):
+            report = payload
+        now = fields.Datetime.now()
+        values = {
+            "ftiq_mobile_execution_payload": json.dumps(report or {}, ensure_ascii=False),
+            "ftiq_mobile_visit_state": "completed",
+            "ftiq_mobile_completed_at": now,
+        }
+        if request_uid:
+            values["ftiq_mobile_request_uid"] = request_uid
+        if not self._field_value(task, "ftiq_mobile_started_at"):
+            values["ftiq_mobile_started_at"] = now
+        values.update(self._task_location_values(payload, "end"))
+        done_state = self._task_state_from_status("1_done")
+        if done_state:
+            values["state"] = done_state
+        self._write_mobile_task_values(task, values)
+        self._apply_mobile_location(task, payload)
+        task.message_post(
+            body=self._task_visit_message_body(
+                task,
+                _("Visit completed"),
+                payload=payload,
+                report=report,
+            )
+        )
+        return self._json(self._task_execution_response(task))
+
+    def _task_visit_cancel(self, task_id):
+        task = self._task_record_for_mobile(task_id)
+        if not task:
+            return self._error(_("Task not found."), status=404)
+        payload = self._json_body()
+        reason = (payload.get("reason") or "").strip()
+        values = {
+            "ftiq_mobile_visit_state": "cancelled",
+            "ftiq_mobile_completed_at": fields.Datetime.now(),
+        }
+        values.update(self._task_location_values(payload, "end"))
+        state = self._task_state_from_status("1_canceled")
+        if state:
+            values["state"] = state
+        self._write_mobile_task_values(task, values)
+        self._apply_mobile_location(task, payload)
+        task.message_post(
+            body=self._task_visit_message_body(
+                task,
+                _("Visit cancelled"),
+                payload=payload,
+                report={"reason": reason} if reason else {},
+            )
+        )
+        return self._json(self._task_execution_response(task))
+
+    def _task_record_for_mobile(self, task_id):
+        return request.env["project.task"].search(
+            expression.AND([
+                [("id", "=", task_id)],
+                self._mobile_task_visibility_domain(),
+            ]),
+            limit=1,
+        )
+
+    def _task_selection_options(self, field_name):
+        Task = request.env["project.task"]
+        if field_name not in Task._fields:
+            return []
+        field = Task._fields[field_name]
+        selection = (
+            field._description_selection(request.env)
+            if hasattr(field, "_description_selection")
+            else field.selection
+        )
+        return [
+            {"value": value, "label": label, "sequence": index}
+            for index, (value, label) in enumerate(selection or [])
+        ]
+
+    def _task_type_choices(self):
+        choices = self._task_selection_options("ftiq_mobile_task_type")
+        if choices:
+            return choices
+        return [
+            {"value": "field_visit", "label": "Field Visit", "sequence": 0},
+            {"value": "collection", "label": "Collection", "sequence": 1},
+            {"value": "sales_order", "label": "Sales Order", "sequence": 2},
+            {"value": "stock_audit", "label": "Customer Stock Audit", "sequence": 3},
+        ]
+
+    def _task_visit_state_choices(self):
+        choices = self._task_selection_options("ftiq_mobile_visit_state")
+        if choices:
+            return choices
+        return [
+            {"value": "not_started", "label": "Not Started", "sequence": 0},
+            {"value": "in_progress", "label": "In Progress", "sequence": 1},
+            {"value": "completed", "label": "Completed", "sequence": 2},
+            {"value": "cancelled", "label": "Cancelled", "sequence": 3},
+        ]
+
+    def _task_execution_payload(self, task):
+        raw = self._field_value(task, "ftiq_mobile_execution_payload", "") or ""
+        if not raw:
+            return {}
+        try:
+            parsed = json.loads(raw)
+        except Exception:
+            return {}
+        return parsed if isinstance(parsed, dict) else {}
+
+    def _task_execution_response(self, task):
+        partner = self._field_value(task, "partner_id")
+        return {
+            "task_obj": self._serialize_task(task),
+            "task": self._serialize_task(task),
+            "client": self._serialize_partner_account(partner) if partner else None,
+            "task_types": self._task_type_choices(),
+            "visit_states": self._task_visit_state_choices(),
+            "execution": self._task_execution_payload(task),
+        }
+
+    def _write_mobile_task_values(self, task, values):
+        filtered = {
+            key: value
+            for key, value in (values or {}).items()
+            if key in task._fields
+        }
+        if filtered:
+            task.with_context(ftiq_mobile_location_write=True).write(filtered)
+
+    def _task_location_values(self, payload, prefix):
+        location_values = self._location_payload(payload)
+        if not location_values:
+            return {}
+        mapping = {
+            "ftiq_mobile_latitude": "ftiq_mobile_%s_latitude" % prefix,
+            "ftiq_mobile_longitude": "ftiq_mobile_%s_longitude" % prefix,
+            "ftiq_mobile_accuracy": "ftiq_mobile_%s_accuracy" % prefix,
+            "ftiq_mobile_is_mock": "ftiq_mobile_%s_is_mock" % prefix,
+        }
+        Task = request.env["project.task"]
+        return {
+            target: location_values[source]
+            for source, target in mapping.items()
+            if source in location_values and target in Task._fields
+        }
+
+    def _task_visit_message_body(self, task, title, payload=None, report=None):
+        payload = payload or {}
+        report = report or {}
+        location = self._location_payload(payload)
+        latitude = location.get("ftiq_mobile_latitude") or self._field_value(task, "ftiq_mobile_latitude")
+        longitude = location.get("ftiq_mobile_longitude") or self._field_value(task, "ftiq_mobile_longitude")
+        accuracy = location.get("ftiq_mobile_accuracy") or self._field_value(task, "ftiq_mobile_accuracy")
+        partner = self._field_value(task, "partner_id")
+        task_type = self._field_value(task, "ftiq_mobile_task_type") or "field_visit"
+        task_type_labels = {item["value"]: item["label"] for item in self._task_type_choices()}
+        outcome = report.get("outcome") or report.get("customer_interest") or ""
+        summary = report.get("summary") or report.get("notes") or ""
+        products = report.get("products") if isinstance(report.get("products"), list) else []
+        product_rows = ""
+        for product in products:
+            if not isinstance(product, dict):
+                continue
+            product_rows += (
+                "<tr>"
+                "<td>%s</td>"
+                "<td>%s</td>"
+                "<td>%s</td>"
+                "</tr>"
+            ) % (
+                escape(product.get("name") or product.get("product_name") or ""),
+                escape(product.get("interest") or ""),
+                escape(product.get("notes") or ""),
+            )
+        products_table = ""
+        if product_rows:
+            products_table = (
+                "<h4>%s</h4>"
+                "<table class='table table-sm table-bordered'>"
+                "<thead><tr><th>%s</th><th>%s</th><th>%s</th></tr></thead>"
+                "<tbody>%s</tbody></table>"
+            ) % (
+                escape(_("Products shown")),
+                escape(_("Product")),
+                escape(_("Interest")),
+                escape(_("Notes")),
+                product_rows,
+            )
+        map_button = ""
+        if latitude and longitude:
+            maps_url = "https://www.google.com/maps/search/?api=1&query=%s,%s" % (latitude, longitude)
+            map_button = (
+                "<p><a class='btn btn-primary' href='%s' target='_blank' rel='noopener'>%s</a></p>"
+            ) % (
+                escape(maps_url),
+                escape(_("Open location in Google Maps")),
+            )
+        return Markup(
+            "<div class='o_mail_notification'>"
+            "<h3>%s</h3>"
+            "<p>%s</p>"
+            "<table class='table table-sm'>"
+            "<tbody>"
+            "<tr><th>%s</th><td>%s</td></tr>"
+            "<tr><th>%s</th><td>%s</td></tr>"
+            "<tr><th>%s</th><td>%s</td></tr>"
+            "<tr><th>%s</th><td>%s</td></tr>"
+            "<tr><th>%s</th><td>%s</td></tr>"
+            "</tbody>"
+            "</table>"
+            "%s"
+            "%s"
+            "%s"
+            "</div>"
+            % (
+                escape(title),
+                escape(_("This task update was recorded from the mobile application.")),
+                escape(_("Task")),
+                escape(self._record_name(task)),
+                escape(_("Client")),
+                escape(self._record_name(partner, "-") if partner else "-"),
+                escape(_("Task Type")),
+                escape(task_type_labels.get(task_type, task_type)),
+                escape(_("Outcome")),
+                escape(outcome or "-"),
+                escape(_("Accuracy")),
+                escape("%s m" % accuracy if accuracy not in (None, False, "") else "-"),
+                ("<p><strong>%s</strong><br/>%s</p>" % (escape(_("Summary")), escape(summary))) if summary else "",
+                products_table,
+                map_button,
+            )
+        )
 
     def _accounts(self):
         if request.httprequest.method == "POST":
@@ -462,6 +780,16 @@ class FtiqCrmMobileApi(FtiqCrmApiBase):
             limit=10,
             order="date_deadline asc, id desc",
         )
+        in_progress_domain = expression.AND([
+            task_domain,
+            [("ftiq_mobile_visit_state", "=", "in_progress")],
+        ]) if "ftiq_mobile_visit_state" in request.env["project.task"]._fields else []
+        in_progress_tasks = self._safe_search(
+            "project.task",
+            in_progress_domain,
+            limit=5,
+            order="ftiq_mobile_started_at desc, id desc",
+        ) if in_progress_domain else request.env["project.task"]
         overdue_tasks = self._safe_search_count(
             "project.task",
             expression.AND([task_domain, [("date_deadline", "<", today)]]),
@@ -543,6 +871,7 @@ class FtiqCrmMobileApi(FtiqCrmApiBase):
                 "other_currency_count": 0,
             },
                 "hot_leads": [self._dashboard_hot_lead(lead) for lead in hot_leads],
+                "in_progress_tasks": [self._serialize_task(task) for task in in_progress_tasks],
                 "tasks": [self._serialize_task(task) for task in tasks],
                 "activities": [],
             }
@@ -689,6 +1018,17 @@ class FtiqCrmMobileApi(FtiqCrmApiBase):
         if "tag_ids" in request.env["project.task"]._fields and (not partial or "tags" in payload):
             tags = self._project_task_tags_from_payload(payload.get("tags"))
             values["tag_ids"] = [Command.set(tags.ids)]
+        if "ftiq_mobile_task_type" in request.env["project.task"]._fields and (
+            not partial or "task_type" in payload or "ftiq_mobile_task_type" in payload
+        ):
+            task_type = (
+                payload.get("task_type")
+                or payload.get("ftiq_mobile_task_type")
+                or ("" if existing else "field_visit")
+            )
+            allowed_types = {item["value"] for item in self._task_type_choices()}
+            if task_type in allowed_types:
+                values["ftiq_mobile_task_type"] = task_type
         partner = self._partner_from_id(payload.get("account"))
         if partner:
             values["partner_id"] = partner.id

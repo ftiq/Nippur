@@ -647,6 +647,8 @@ class FtiqCrmMobileSalesApi(FtiqCrmApiBase):
         if order.state not in {"draft", "sent"}:
             return self._error(_("Only draft quotations can be confirmed."), status=400)
         payload = self._json_body()
+        if not self._location_payload(payload):
+            return self._error(_("Latitude and longitude are required."), status=400)
         order.action_confirm()
         self._apply_sale_order_confirmation_location(order, payload)
         return self._json(
