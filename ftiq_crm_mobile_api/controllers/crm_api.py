@@ -642,6 +642,18 @@ class FtiqCrmMobileApi(FtiqCrmApiBase):
                     continue
         product_records = request.env["product.product"].sudo().browse(product_ids).exists()
         products_by_id = {str(product.id): product for product in product_records}
+        stock_product_ids = []
+        for line in stock_lines:
+            if not isinstance(line, dict):
+                continue
+            try:
+                product_id = int(line.get("product_id") or 0)
+                if product_id:
+                    stock_product_ids.append(product_id)
+            except Exception:
+                continue
+        stock_product_records = request.env["product.product"].sudo().browse(stock_product_ids).exists()
+        stock_products_by_id = {str(product.id): product for product in stock_product_records}
 
         product_rows = ""
         for product in products:
@@ -674,9 +686,9 @@ class FtiqCrmMobileApi(FtiqCrmApiBase):
                 "<tr style='background:#ffffff;'>"
                 "<td style='padding:10px;border-bottom:1px solid #e5e7eb;width:58px;'>%s</td>"
                 "<td style='padding:10px;border-bottom:1px solid #e5e7eb;font-weight:700;color:#111827;'>%s"
-                "<div style='font-weight:400;color:#6b7280;font-size:12px;margin-top:2px;'>%s</div></td>"
-                "<td style='padding:10px;border-bottom:1px solid #e5e7eb;color:#0f766e;font-weight:600;'>%s</td>"
-                "<td style='padding:10px;border-bottom:1px solid #e5e7eb;color:#374151;'>%s</td>"
+                "<div style='font-weight:400;color:#111827;font-size:12px;margin-top:2px;'>%s</div></td>"
+                "<td style='padding:10px;border-bottom:1px solid #e5e7eb;color:#111827;font-weight:600;'>%s</td>"
+                "<td style='padding:10px;border-bottom:1px solid #e5e7eb;color:#111827;'>%s</td>"
                 "</tr>"
             ) % (
                 product_image,
@@ -689,9 +701,9 @@ class FtiqCrmMobileApi(FtiqCrmApiBase):
         if product_rows:
             products_table = (
                 "<div style='margin-top:14px;border:1px solid #bbf7d0;border-radius:12px;overflow:hidden;background:#f0fdf4;'>"
-                "<div style='padding:10px 12px;background:#16a34a;color:white;font-weight:800;'>%s</div>"
+                "<div style='padding:10px 12px;background:#dcfce7;color:#111827;font-weight:800;'>%s</div>"
                 "<table style='width:100%%;border-collapse:collapse;background:white;'>"
-                "<thead><tr style='background:#ecfdf5;color:#166534;'>"
+                "<thead><tr style='background:#ecfdf5;color:#111827;'>"
                 "<th style='padding:8px 10px;text-align:right;width:58px;'>%s</th>"
                 "<th style='padding:8px 10px;text-align:right;'>%s</th>"
                 "<th style='padding:8px 10px;text-align:right;'>%s</th>"
@@ -709,6 +721,13 @@ class FtiqCrmMobileApi(FtiqCrmApiBase):
         for line in stock_lines:
             if not isinstance(line, dict):
                 continue
+            product_id = str(line.get("product_id") or "")
+            product_record = stock_products_by_id.get(product_id)
+            default_code = line.get("default_code") or (product_record.default_code if product_record else "")
+            product_name = line.get("name") or line.get("product_name") or (
+                product_record.display_name if product_record else ""
+            )
+            product_label = "[%s] %s" % (default_code, product_name) if default_code else product_name
             shelf_photo_src = ""
             if line.get("shelf_photo"):
                 shelf_photo_src = "data:image/png;base64,%s" % line.get("shelf_photo")
@@ -726,15 +745,15 @@ class FtiqCrmMobileApi(FtiqCrmApiBase):
             competitor_details = escape(line.get("competitor_product") or "-")
             if line.get("competitor_qty") not in (None, False, ""):
                 competitor_details += (
-                    "<div style='color:#6b7280;font-size:12px;margin-top:2px;'>%s: %s</div>"
+                    "<div style='color:#111827;font-size:12px;margin-top:2px;'>%s: %s</div>"
                     % (escape(_("Competitor quantity")), escape(line.get("competitor_qty")))
                 )
             product_details = (
                 "<div style='font-weight:700;color:#111827;'>%s</div>"
-                "<div style='color:#6b7280;font-size:12px;margin-top:2px;'>%s: %s</div>"
-                "<div style='color:#6b7280;font-size:12px;margin-top:2px;'>%s: %s</div>"
+                "<div style='color:#111827;font-size:12px;margin-top:2px;'>%s: %s</div>"
+                "<div style='color:#111827;font-size:12px;margin-top:2px;'>%s: %s</div>"
             ) % (
-                escape(line.get("name") or "-"),
+                escape(product_label or "-"),
                 escape(_("Batch number")),
                 escape(line.get("batch_number") or "-"),
                 escape(_("Shelf position")),
@@ -744,9 +763,9 @@ class FtiqCrmMobileApi(FtiqCrmApiBase):
                 "<tr style='background:#ffffff;'>"
                 "<td style='padding:10px;border-bottom:1px solid #e5e7eb;width:62px;'>%s</td>"
                 "<td style='padding:10px;border-bottom:1px solid #e5e7eb;'>%s</td>"
-                "<td style='padding:10px;border-bottom:1px solid #e5e7eb;color:#0f766e;font-weight:700;'>%s</td>"
-                "<td style='padding:10px;border-bottom:1px solid #e5e7eb;color:#374151;'>%s</td>"
-                "<td style='padding:10px;border-bottom:1px solid #e5e7eb;color:#374151;'>%s</td>"
+                "<td style='padding:10px;border-bottom:1px solid #e5e7eb;color:#111827;font-weight:700;'>%s</td>"
+                "<td style='padding:10px;border-bottom:1px solid #e5e7eb;color:#111827;'>%s</td>"
+                "<td style='padding:10px;border-bottom:1px solid #e5e7eb;color:#111827;'>%s</td>"
                 "</tr>"
             ) % (
                 shelf_photo,
@@ -759,9 +778,9 @@ class FtiqCrmMobileApi(FtiqCrmApiBase):
         if stock_line_rows:
             stock_lines_table = (
                 "<div style='margin-top:14px;border:1px solid #bfdbfe;border-radius:12px;overflow:hidden;background:#eff6ff;'>"
-                "<div style='padding:10px 12px;background:#2563eb;color:white;font-weight:800;'>%s</div>"
+                "<div style='padding:10px 12px;background:#dbeafe;color:#111827;font-weight:800;'>%s</div>"
                 "<table style='width:100%%;border-collapse:collapse;background:white;'>"
-                "<thead><tr style='background:#dbeafe;color:#1d4ed8;'>"
+                "<thead><tr style='background:#dbeafe;color:#111827;'>"
                 "<th style='padding:8px 10px;text-align:right;width:62px;'>%s</th>"
                 "<th style='padding:8px 10px;text-align:right;'>%s</th>"
                 "<th style='padding:8px 10px;text-align:right;'>%s</th>"
@@ -799,7 +818,7 @@ class FtiqCrmMobileApi(FtiqCrmApiBase):
         ]:
             if value not in (None, False, ""):
                 location_rows += (
-                    "<tr><td style='padding:5px 0;color:#92400e;width:38%%;'>%s</td>"
+                    "<tr><td style='padding:5px 0;color:#111827;width:38%%;'>%s</td>"
                     "<td style='padding:5px 0;color:#111827;font-weight:700;'>%s</td></tr>"
                     % (escape(label), escape(value))
                 )
@@ -809,7 +828,7 @@ class FtiqCrmMobileApi(FtiqCrmApiBase):
             map_button = (
                 "<a href='%s' target='_blank' rel='noopener noreferrer' "
                 "style='display:inline-block;margin-top:10px;padding:8px 12px;border-radius:8px;"
-                "background:#2563eb;color:#ffffff;text-decoration:none;font-weight:800;'>%s</a>"
+                "background:#f8fafc;border:1px solid #cbd5e1;color:#111827;text-decoration:none;font-weight:800;'>%s</a>"
             ) % (
                 escape(maps_url),
                 escape(_("Open location in Google Maps")),
@@ -824,14 +843,14 @@ class FtiqCrmMobileApi(FtiqCrmApiBase):
             )
             location_section = (
                 "<div style='margin-top:14px;border:1px solid #fde68a;border-radius:12px;padding:12px;background:#fffbeb;'>"
-                "<div style='font-weight:800;color:#92400e;margin-bottom:6px;'>%s</div>"
+                "<div style='font-weight:800;color:#111827;margin-bottom:6px;'>%s</div>"
                 "<table style='width:100%%;border-collapse:collapse;'>%s</table>%s%s</div>"
                 % (escape(_("Location")), location_rows, mock_html, map_button)
             )
         summary_html = (
             "<div style='margin-top:14px;border:1px solid #dbeafe;border-radius:12px;padding:12px;background:#eff6ff;'>"
-            "<div style='font-weight:800;color:#1e40af;margin-bottom:6px;'>%s</div>"
-            "<div style='white-space:pre-wrap;color:#1f2937;'>%s</div></div>"
+            "<div style='font-weight:800;color:#111827;margin-bottom:6px;'>%s</div>"
+            "<div style='white-space:pre-wrap;color:#111827;'>%s</div></div>"
             % (escape(_("Summary")), escape(summary))
             if summary
             else ""
@@ -839,9 +858,9 @@ class FtiqCrmMobileApi(FtiqCrmApiBase):
         return Markup(
             "<div style='max-width:760px;border:1px solid #d8dee4;border-radius:14px;overflow:hidden;"
             "background:#ffffff;direction:rtl;text-align:right;font-size:13px;'>"
-            "<div style='padding:12px 14px;background:#1f4e79;color:#ffffff;'>"
+            "<div style='padding:12px 14px;background:#f8fafc;color:#111827;border-bottom:1px solid #e5e7eb;'>"
             "<div style='font-size:15px;font-weight:900;'>%s</div>"
-            "<div style='margin-top:4px;color:#dbeafe;'>%s</div></div>"
+            "<div style='margin-top:4px;color:#111827;'>%s</div></div>"
             "<div style='padding:12px 14px;'>"
             "<div style='border:1px solid #e5e7eb;border-radius:12px;padding:10px;background:#f8fafc;'>"
             "<table style='width:100%%;border-collapse:collapse;'>%s</table></div>"
