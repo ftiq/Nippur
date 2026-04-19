@@ -612,86 +612,167 @@ class FtiqCrmMobileApi(FtiqCrmApiBase):
         latitude = location.get("ftiq_mobile_latitude") or self._field_value(task, "ftiq_mobile_latitude")
         longitude = location.get("ftiq_mobile_longitude") or self._field_value(task, "ftiq_mobile_longitude")
         accuracy = location.get("ftiq_mobile_accuracy") or self._field_value(task, "ftiq_mobile_accuracy")
+        is_mock = location.get("ftiq_mobile_is_mock") or self._field_value(task, "ftiq_mobile_is_mock")
+        recorded_at = location.get("ftiq_mobile_location_at") or self._field_value(task, "ftiq_mobile_location_at")
         partner = self._field_value(task, "partner_id")
         task_type = self._field_value(task, "ftiq_mobile_task_type") or "field_visit"
         task_type_labels = {item["value"]: item["label"] for item in self._task_type_choices()}
         outcome = report.get("outcome") or report.get("customer_interest") or ""
         summary = report.get("summary") or report.get("notes") or ""
         products = report.get("products") if isinstance(report.get("products"), list) else []
+        product_ids = []
+        for product in products:
+            if isinstance(product, dict):
+                try:
+                    product_id = int(product.get("product_id") or product.get("id") or 0)
+                    if product_id:
+                        product_ids.append(product_id)
+                except Exception:
+                    continue
+        product_records = request.env["product.product"].sudo().browse(product_ids).exists()
+        products_by_id = {str(product.id): product for product in product_records}
+
         product_rows = ""
         for product in products:
             if not isinstance(product, dict):
                 continue
-            default_code = product.get("default_code") or ""
-            product_name = product.get("name") or product.get("product_name") or ""
+            product_id = str(product.get("product_id") or product.get("id") or "")
+            product_record = products_by_id.get(product_id)
+            default_code = product.get("default_code") or (product_record.default_code if product_record else "")
+            product_name = product.get("name") or product.get("product_name") or (
+                product_record.display_name if product_record else ""
+            )
             product_label = "[%s] %s" % (default_code, product_name) if default_code else product_name
+            product_image_src = ""
+            if product_record:
+                product_image_src = "/web/image/product.product/%s/image_128" % product_record.id
+            elif product.get("image_base64"):
+                product_image_src = "data:image/png;base64,%s" % product.get("image_base64")
+            product_image = (
+                "<img src='%s' alt='%s' style='width:48px;height:48px;object-fit:cover;"
+                "border-radius:8px;border:1px solid #dbe3ef;background:#f8fafc;'/>"
+                % (escape(product_image_src), escape(product_label or _("Product")))
+                if product_image_src
+                else (
+                    "<div style='width:48px;height:48px;border-radius:8px;background:#e8f1ff;"
+                    "border:1px solid #cfe0ff;color:#1d4ed8;display:flex;align-items:center;"
+                    "justify-content:center;font-weight:700;'>%s</div>" % escape(_("Product"))
+                )
+            )
             product_rows += (
-                "<tr>"
-                "<td>%s</td>"
-                "<td>%s</td>"
-                "<td>%s</td>"
+                "<tr style='background:#ffffff;'>"
+                "<td style='padding:10px;border-bottom:1px solid #e5e7eb;width:58px;'>%s</td>"
+                "<td style='padding:10px;border-bottom:1px solid #e5e7eb;font-weight:700;color:#111827;'>%s"
+                "<div style='font-weight:400;color:#6b7280;font-size:12px;margin-top:2px;'>%s</div></td>"
+                "<td style='padding:10px;border-bottom:1px solid #e5e7eb;color:#0f766e;font-weight:600;'>%s</td>"
+                "<td style='padding:10px;border-bottom:1px solid #e5e7eb;color:#374151;'>%s</td>"
                 "</tr>"
             ) % (
+                product_image,
                 escape(product_label),
+                escape(product.get("uom_name") or ""),
                 escape(product.get("interest") or ""),
                 escape(product.get("notes") or ""),
             )
         products_table = ""
         if product_rows:
             products_table = (
-                "<h4>%s</h4>"
-                "<table class='table table-sm table-bordered'>"
-                "<thead><tr><th>%s</th><th>%s</th><th>%s</th></tr></thead>"
-                "<tbody>%s</tbody></table>"
+                "<div style='margin-top:14px;border:1px solid #bbf7d0;border-radius:12px;overflow:hidden;background:#f0fdf4;'>"
+                "<div style='padding:10px 12px;background:#16a34a;color:white;font-weight:800;'>%s</div>"
+                "<table style='width:100%%;border-collapse:collapse;background:white;'>"
+                "<thead><tr style='background:#ecfdf5;color:#166534;'>"
+                "<th style='padding:8px 10px;text-align:right;width:58px;'>%s</th>"
+                "<th style='padding:8px 10px;text-align:right;'>%s</th>"
+                "<th style='padding:8px 10px;text-align:right;'>%s</th>"
+                "<th style='padding:8px 10px;text-align:right;'>%s</th>"
+                "</tr></thead><tbody>%s</tbody></table></div>"
             ) % (
                 escape(_("Products shown")),
+                escape(_("Image")),
                 escape(_("Product")),
                 escape(_("Interest")),
                 escape(_("Notes")),
                 product_rows,
             )
+        info_rows = "".join(
+            "<tr><td style='padding:6px 0;color:#64748b;width:38%%;'>%s</td>"
+            "<td style='padding:6px 0;color:#111827;font-weight:700;'>%s</td></tr>" % (
+                escape(label),
+                escape(value or "-"),
+            )
+            for label, value in [
+                (_("Task"), self._record_name(task)),
+                (_("Client"), self._record_name(partner, "-") if partner else "-"),
+                (_("Task Type"), task_type_labels.get(task_type, task_type)),
+                (_("Outcome"), outcome or "-"),
+            ]
+        )
+        location_rows = ""
+        for label, value in [
+            (_("Latitude"), latitude),
+            (_("Longitude"), longitude),
+            (_("Accuracy"), "%s m" % accuracy if accuracy not in (None, False, "") else ""),
+            (_("Recorded At"), fields.Datetime.to_string(recorded_at) if recorded_at else ""),
+        ]:
+            if value not in (None, False, ""):
+                location_rows += (
+                    "<tr><td style='padding:5px 0;color:#92400e;width:38%%;'>%s</td>"
+                    "<td style='padding:5px 0;color:#111827;font-weight:700;'>%s</td></tr>"
+                    % (escape(label), escape(value))
+                )
         map_button = ""
         if latitude and longitude:
             maps_url = "https://www.google.com/maps/search/?api=1&query=%s,%s" % (latitude, longitude)
             map_button = (
-                "<p><a class='btn btn-primary' href='%s' target='_blank' rel='noopener'>%s</a></p>"
+                "<a href='%s' target='_blank' rel='noopener noreferrer' "
+                "style='display:inline-block;margin-top:10px;padding:8px 12px;border-radius:8px;"
+                "background:#2563eb;color:#ffffff;text-decoration:none;font-weight:800;'>%s</a>"
             ) % (
                 escape(maps_url),
                 escape(_("Open location in Google Maps")),
             )
+        location_section = ""
+        if location_rows or map_button:
+            mock_html = (
+                "<div style='margin-top:8px;padding:7px 9px;border-radius:8px;background:#fee2e2;"
+                "color:#991b1b;font-weight:700;'>%s</div>" % escape(_("Mock location detected"))
+                if is_mock
+                else ""
+            )
+            location_section = (
+                "<div style='margin-top:14px;border:1px solid #fde68a;border-radius:12px;padding:12px;background:#fffbeb;'>"
+                "<div style='font-weight:800;color:#92400e;margin-bottom:6px;'>%s</div>"
+                "<table style='width:100%%;border-collapse:collapse;'>%s</table>%s%s</div>"
+                % (escape(_("Location")), location_rows, mock_html, map_button)
+            )
+        summary_html = (
+            "<div style='margin-top:14px;border:1px solid #dbeafe;border-radius:12px;padding:12px;background:#eff6ff;'>"
+            "<div style='font-weight:800;color:#1e40af;margin-bottom:6px;'>%s</div>"
+            "<div style='white-space:pre-wrap;color:#1f2937;'>%s</div></div>"
+            % (escape(_("Summary")), escape(summary))
+            if summary
+            else ""
+        )
         return Markup(
-            "<div class='o_mail_notification'>"
-            "<h3>%s</h3>"
-            "<p>%s</p>"
-            "<table class='table table-sm'>"
-            "<tbody>"
-            "<tr><th>%s</th><td>%s</td></tr>"
-            "<tr><th>%s</th><td>%s</td></tr>"
-            "<tr><th>%s</th><td>%s</td></tr>"
-            "<tr><th>%s</th><td>%s</td></tr>"
-            "<tr><th>%s</th><td>%s</td></tr>"
-            "</tbody>"
-            "</table>"
+            "<div style='max-width:760px;border:1px solid #d8dee4;border-radius:14px;overflow:hidden;"
+            "background:#ffffff;direction:rtl;text-align:right;font-size:13px;'>"
+            "<div style='padding:12px 14px;background:#1f4e79;color:#ffffff;'>"
+            "<div style='font-size:15px;font-weight:900;'>%s</div>"
+            "<div style='margin-top:4px;color:#dbeafe;'>%s</div></div>"
+            "<div style='padding:12px 14px;'>"
+            "<div style='border:1px solid #e5e7eb;border-radius:12px;padding:10px;background:#f8fafc;'>"
+            "<table style='width:100%%;border-collapse:collapse;'>%s</table></div>"
             "%s"
             "%s"
             "%s"
-            "</div>"
+            "</div></div>"
             % (
                 escape(title),
                 escape(_("This task update was recorded from the mobile application.")),
-                escape(_("Task")),
-                escape(self._record_name(task)),
-                escape(_("Client")),
-                escape(self._record_name(partner, "-") if partner else "-"),
-                escape(_("Task Type")),
-                escape(task_type_labels.get(task_type, task_type)),
-                escape(_("Outcome")),
-                escape(outcome or "-"),
-                escape(_("Accuracy")),
-                escape("%s m" % accuracy if accuracy not in (None, False, "") else "-"),
-                ("<p><strong>%s</strong><br/>%s</p>" % (escape(_("Summary")), escape(summary))) if summary else "",
+                info_rows,
+                summary_html,
                 products_table,
-                map_button,
+                location_section,
             )
         )
 

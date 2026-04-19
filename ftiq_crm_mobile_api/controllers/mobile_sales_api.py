@@ -398,6 +398,7 @@ class FtiqCrmMobileSalesApi(FtiqCrmApiBase):
             "product_name": product.display_name if product else "",
             "default_code": product.default_code or "" if product else "",
             "barcode": product.barcode or "" if product else "",
+            "image_base64": self._product_image_base64(product) if product else "",
             "description": line.name or "",
             "quantity": line.product_uom_qty or 0.0,
             "uom_name": line.product_uom.name if line.product_uom else "",
@@ -522,6 +523,7 @@ class FtiqCrmMobileSalesApi(FtiqCrmApiBase):
                 ("id", "in", product_ids),
                 ("sale_ok", "=", True),
                 ("active", "=", True),
+                ("type", "!=", "service"),
             ]
         )
         if len(products) != len(set(product_ids)):
@@ -737,6 +739,8 @@ class FtiqCrmMobileSalesApi(FtiqCrmApiBase):
             "name": product.display_name or "",
             "default_code": product.default_code or "",
             "barcode": product.barcode or "",
+            "product_type": product.type or "",
+            "image_base64": self._product_image_base64(product),
             "uom_name": product.uom_id.name if product.uom_id else "",
             "price": price,
             "currency": currency,
@@ -758,6 +762,7 @@ class FtiqCrmMobileSalesApi(FtiqCrmApiBase):
         domain = [
             ("sale_ok", "=", True),
             ("active", "=", True),
+            ("type", "!=", "service"),
         ]
         if search:
             domain = expression.AND(
@@ -783,3 +788,11 @@ class FtiqCrmMobileSalesApi(FtiqCrmApiBase):
                 "next_offset": next_offset if next_offset < count else None,
             }
         )
+
+    def _product_image_base64(self, product):
+        image = product.image_128 or product.image_1920
+        if not image:
+            return ""
+        if isinstance(image, bytes):
+            return image.decode("utf-8")
+        return image

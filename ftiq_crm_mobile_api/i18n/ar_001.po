@@ -541,6 +541,18 @@ msgstr "تنفيذ الجوال"
 
 #. module: ftiq_crm_mobile_api
 #. odoo-python
+#: code:addons/ftiq_crm_mobile_api/controllers/crm_api.py:0
+msgid "Image"
+msgstr "الصورة"
+
+#. module: ftiq_crm_mobile_api
+#. odoo-python
+#: code:addons/ftiq_crm_mobile_api/controllers/crm_api.py:0
+msgid "Location"
+msgstr "الموقع"
+
+#. module: ftiq_crm_mobile_api
+#. odoo-python
 #: code:addons/ftiq_crm_mobile_api/controllers/mobile_sales_api.py:0
 msgid "Sales order confirmation location"
 msgstr "موقع تأكيد أمر البيع"
