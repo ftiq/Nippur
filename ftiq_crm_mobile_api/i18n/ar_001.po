@@ -525,6 +525,66 @@ msgid "Open location in Google Maps"
 msgstr "فتح الموقع في خرائط Google"
 
 #. module: ftiq_crm_mobile_api
+#. odoo-python
+#: code:addons/ftiq_crm_mobile_api/controllers/crm_api.py:0
+msgid "Stock audit started"
+msgstr "تم بدء الجرد"
+
+#. module: ftiq_crm_mobile_api
+#. odoo-python
+#: code:addons/ftiq_crm_mobile_api/controllers/crm_api.py:0
+msgid "Stock audit completed"
+msgstr "تم إنهاء الجرد"
+
+#. module: ftiq_crm_mobile_api
+#. odoo-python
+#: code:addons/ftiq_crm_mobile_api/controllers/crm_api.py:0
+msgid "Stock audit cancelled"
+msgstr "تم إلغاء الجرد"
+
+#. module: ftiq_crm_mobile_api
+#. odoo-python
+#: code:addons/ftiq_crm_mobile_api/controllers/crm_api.py:0
+msgid "Stock lines"
+msgstr "بنود الجرد"
+
+#. module: ftiq_crm_mobile_api
+#. odoo-python
+#: code:addons/ftiq_crm_mobile_api/controllers/crm_api.py:0
+msgid "Stock on hand"
+msgstr "الرصيد المخزني"
+
+#. module: ftiq_crm_mobile_api
+#. odoo-python
+#: code:addons/ftiq_crm_mobile_api/controllers/crm_api.py:0
+msgid "Batch number"
+msgstr "رقم الدفعة"
+
+#. module: ftiq_crm_mobile_api
+#. odoo-python
+#: code:addons/ftiq_crm_mobile_api/controllers/crm_api.py:0
+msgid "Shelf position"
+msgstr "موضع الرف"
+
+#. module: ftiq_crm_mobile_api
+#. odoo-python
+#: code:addons/ftiq_crm_mobile_api/controllers/crm_api.py:0
+msgid "Shelf photo"
+msgstr "صورة الرف"
+
+#. module: ftiq_crm_mobile_api
+#. odoo-python
+#: code:addons/ftiq_crm_mobile_api/controllers/crm_api.py:0
+msgid "Competitor product"
+msgstr "منتج منافس"
+
+#. module: ftiq_crm_mobile_api
+#. odoo-python
+#: code:addons/ftiq_crm_mobile_api/controllers/crm_api.py:0
+msgid "Competitor quantity"
+msgstr "كمية المنافس"
+
+#. module: ftiq_crm_mobile_api
 #: model_terms:ir.ui.view,arch_db:ftiq_crm_mobile_api.project_task_view_form_mobile_execution
 msgid "Mobile Task"
 msgstr "مهمة الجوال"

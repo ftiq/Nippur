@@ -425,7 +425,13 @@ class FtiqCrmMobileApi(FtiqCrmApiBase):
             values["state"] = state
         self._write_mobile_task_values(task, values)
         self._apply_mobile_location(task, payload)
-        task.message_post(body=self._task_visit_message_body(task, _("Visit started"), payload=payload))
+        task.message_post(
+            body=self._task_visit_message_body(
+                task,
+                self._task_execution_event_title(task, _("Visit started"), _("Stock audit started")),
+                payload=payload,
+            )
+        )
         return self._json(self._task_execution_response(task))
 
     def _task_visit_draft(self, task_id):
@@ -479,7 +485,7 @@ class FtiqCrmMobileApi(FtiqCrmApiBase):
         task.message_post(
             body=self._task_visit_message_body(
                 task,
-                _("Visit completed"),
+                self._task_execution_event_title(task, _("Visit completed"), _("Stock audit completed")),
                 payload=payload,
                 report=report,
             )
@@ -505,7 +511,7 @@ class FtiqCrmMobileApi(FtiqCrmApiBase):
         task.message_post(
             body=self._task_visit_message_body(
                 task,
-                _("Visit cancelled"),
+                self._task_execution_event_title(task, _("Visit cancelled"), _("Stock audit cancelled")),
                 payload=payload,
                 report={"reason": reason} if reason else {},
             )
@@ -579,6 +585,10 @@ class FtiqCrmMobileApi(FtiqCrmApiBase):
             "execution": self._task_execution_payload(task),
         }
 
+    def _task_execution_event_title(self, task, visit_title, stock_audit_title):
+        task_type = self._field_value(task, "ftiq_mobile_task_type") or ""
+        return stock_audit_title if task_type == "stock_audit" else visit_title
+
     def _write_mobile_task_values(self, task, values):
         filtered = {
             key: value
@@ -620,6 +630,7 @@ class FtiqCrmMobileApi(FtiqCrmApiBase):
         outcome = report.get("outcome") or report.get("customer_interest") or ""
         summary = report.get("summary") or report.get("notes") or ""
         products = report.get("products") if isinstance(report.get("products"), list) else []
+        stock_lines = report.get("stock_lines") if isinstance(report.get("stock_lines"), list) else []
         product_ids = []
         for product in products:
             if isinstance(product, dict):
@@ -694,6 +705,78 @@ class FtiqCrmMobileApi(FtiqCrmApiBase):
                 escape(_("Notes")),
                 product_rows,
             )
+        stock_line_rows = ""
+        for line in stock_lines:
+            if not isinstance(line, dict):
+                continue
+            shelf_photo_src = ""
+            if line.get("shelf_photo"):
+                shelf_photo_src = "data:image/png;base64,%s" % line.get("shelf_photo")
+            shelf_photo = (
+                "<img src='%s' alt='%s' style='width:52px;height:52px;object-fit:cover;"
+                "border-radius:8px;border:1px solid #dbe3ef;background:#f8fafc;'/>"
+                % (escape(shelf_photo_src), escape(line.get("name") or _("Shelf photo")))
+                if shelf_photo_src
+                else (
+                    "<div style='width:52px;height:52px;border-radius:8px;background:#e8f1ff;"
+                    "border:1px solid #cfe0ff;color:#1d4ed8;display:flex;align-items:center;"
+                    "justify-content:center;font-weight:700;'>%s</div>" % escape(_("Shelf photo"))
+                )
+            )
+            competitor_details = escape(line.get("competitor_product") or "-")
+            if line.get("competitor_qty") not in (None, False, ""):
+                competitor_details += (
+                    "<div style='color:#6b7280;font-size:12px;margin-top:2px;'>%s: %s</div>"
+                    % (escape(_("Competitor quantity")), escape(line.get("competitor_qty")))
+                )
+            product_details = (
+                "<div style='font-weight:700;color:#111827;'>%s</div>"
+                "<div style='color:#6b7280;font-size:12px;margin-top:2px;'>%s: %s</div>"
+                "<div style='color:#6b7280;font-size:12px;margin-top:2px;'>%s: %s</div>"
+            ) % (
+                escape(line.get("name") or "-"),
+                escape(_("Batch number")),
+                escape(line.get("batch_number") or "-"),
+                escape(_("Shelf position")),
+                escape(line.get("shelf_position") or "-"),
+            )
+            stock_line_rows += (
+                "<tr style='background:#ffffff;'>"
+                "<td style='padding:10px;border-bottom:1px solid #e5e7eb;width:62px;'>%s</td>"
+                "<td style='padding:10px;border-bottom:1px solid #e5e7eb;'>%s</td>"
+                "<td style='padding:10px;border-bottom:1px solid #e5e7eb;color:#0f766e;font-weight:700;'>%s</td>"
+                "<td style='padding:10px;border-bottom:1px solid #e5e7eb;color:#374151;'>%s</td>"
+                "<td style='padding:10px;border-bottom:1px solid #e5e7eb;color:#374151;'>%s</td>"
+                "</tr>"
+            ) % (
+                shelf_photo,
+                product_details,
+                escape(line.get("stock_qty") or "-"),
+                competitor_details,
+                escape(line.get("notes") or line.get("note") or "-"),
+            )
+        stock_lines_table = ""
+        if stock_line_rows:
+            stock_lines_table = (
+                "<div style='margin-top:14px;border:1px solid #bfdbfe;border-radius:12px;overflow:hidden;background:#eff6ff;'>"
+                "<div style='padding:10px 12px;background:#2563eb;color:white;font-weight:800;'>%s</div>"
+                "<table style='width:100%%;border-collapse:collapse;background:white;'>"
+                "<thead><tr style='background:#dbeafe;color:#1d4ed8;'>"
+                "<th style='padding:8px 10px;text-align:right;width:62px;'>%s</th>"
+                "<th style='padding:8px 10px;text-align:right;'>%s</th>"
+                "<th style='padding:8px 10px;text-align:right;'>%s</th>"
+                "<th style='padding:8px 10px;text-align:right;'>%s</th>"
+                "<th style='padding:8px 10px;text-align:right;'>%s</th>"
+                "</tr></thead><tbody>%s</tbody></table></div>"
+            ) % (
+                escape(_("Stock lines")),
+                escape(_("Shelf photo")),
+                escape(_("Product")),
+                escape(_("Stock on hand")),
+                escape(_("Competitor product")),
+                escape(_("Notes")),
+                stock_line_rows,
+            )
         info_rows = "".join(
             "<tr><td style='padding:6px 0;color:#64748b;width:38%%;'>%s</td>"
             "<td style='padding:6px 0;color:#111827;font-weight:700;'>%s</td></tr>" % (
@@ -704,7 +787,7 @@ class FtiqCrmMobileApi(FtiqCrmApiBase):
                 (_("Task"), self._record_name(task)),
                 (_("Client"), self._record_name(partner, "-") if partner else "-"),
                 (_("Task Type"), task_type_labels.get(task_type, task_type)),
-                (_("Outcome"), outcome or "-"),
+                (_("Outcome"), outcome or "-") if task_type != "stock_audit" else (_("Stock lines"), str(len(stock_lines or []))),
             ]
         )
         location_rows = ""
@@ -771,7 +854,7 @@ class FtiqCrmMobileApi(FtiqCrmApiBase):
                 escape(_("This task update was recorded from the mobile application.")),
                 info_rows,
                 summary_html,
-                products_table,
+                stock_lines_table if task_type == "stock_audit" else products_table,
                 location_section,
             )
         )
