@@ -590,7 +590,7 @@ class FtiqCrmApiBase(http.Controller):
         return (value or "").strip().lower().replace(" ", "-")
 
     def _serialize_tag(self, tag):
-        color = getattr(tag, "color", False)
+        color = self._field_value(tag, "color", False)
         name = self._record_name(tag)
         return {
             "id": str(tag.id),
