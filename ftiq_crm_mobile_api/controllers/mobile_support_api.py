@@ -151,7 +151,7 @@ class FtiqCrmMobileSupportApi(FtiqCrmApiBase):
             (_("Longitude"), longitude),
         ]
         if accuracy not in (None, False):
-            rows.append((_("Accuracy"), "%s m" % self._location_number_text(accuracy)))
+            rows.append((_("Accuracy"), "%s %s" % (self._location_number_text(accuracy), _("m"))))
         if location_at_text:
             rows.append((_("Recorded At"), location_at_text))
         rows_html = "".join(
@@ -176,8 +176,6 @@ class FtiqCrmMobileSupportApi(FtiqCrmApiBase):
             "<a href=\"%s\" target=\"_blank\" rel=\"noopener noreferrer\" "
             "style=\"display:inline-block;padding:7px 12px;border:1px solid #0d6efd;"
             "border-radius:6px;color:#0d6efd;text-decoration:none;font-weight:700;\">%s</a>"
-            "<div style=\"margin-top:8px;font-size:12px;word-break:break-all;\">"
-            "<a href=\"%s\" target=\"_blank\" rel=\"noopener noreferrer\">%s</a></div>"
             "</div>"
             % (
                 escape(_("Collection location")),
@@ -186,8 +184,6 @@ class FtiqCrmMobileSupportApi(FtiqCrmApiBase):
                 mock_html,
                 escape(maps_url),
                 escape(_("Open location in Google Maps")),
-                escape(maps_url),
-                escape(maps_url),
             )
         )
 
