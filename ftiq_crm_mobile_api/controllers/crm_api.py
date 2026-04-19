@@ -622,6 +622,9 @@ class FtiqCrmMobileApi(FtiqCrmApiBase):
         for product in products:
             if not isinstance(product, dict):
                 continue
+            default_code = product.get("default_code") or ""
+            product_name = product.get("name") or product.get("product_name") or ""
+            product_label = "[%s] %s" % (default_code, product_name) if default_code else product_name
             product_rows += (
                 "<tr>"
                 "<td>%s</td>"
@@ -629,7 +632,7 @@ class FtiqCrmMobileApi(FtiqCrmApiBase):
                 "<td>%s</td>"
                 "</tr>"
             ) % (
-                escape(product.get("name") or product.get("product_name") or ""),
+                escape(product_label),
                 escape(product.get("interest") or ""),
                 escape(product.get("notes") or ""),
             )

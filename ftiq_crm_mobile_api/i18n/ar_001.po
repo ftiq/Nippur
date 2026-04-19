@@ -525,6 +525,21 @@ msgid "Open location in Google Maps"
 msgstr "فتح الموقع في خرائط Google"
 
 #. module: ftiq_crm_mobile_api
+#: model_terms:ir.ui.view,arch_db:ftiq_crm_mobile_api.project_task_view_form_mobile_execution
+msgid "Mobile Task"
+msgstr "مهمة الجوال"
+
+#. module: ftiq_crm_mobile_api
+#: model_terms:ir.ui.view,arch_db:ftiq_crm_mobile_api.project_task_view_form_mobile_execution
+msgid "Task Assignment"
+msgstr "تصنيف المهمة"
+
+#. module: ftiq_crm_mobile_api
+#: model_terms:ir.ui.view,arch_db:ftiq_crm_mobile_api.project_task_view_form_mobile_execution
+msgid "Mobile Execution"
+msgstr "تنفيذ الجوال"
+
+#. module: ftiq_crm_mobile_api
 #. odoo-python
 #: code:addons/ftiq_crm_mobile_api/controllers/mobile_sales_api.py:0
 msgid "Sales order confirmation location"
@@ -850,3 +865,93 @@ msgstr "لا يمكن إرجاع أمر البيع هذا إلى المسودة 
 #: code:addons/ftiq_crm_mobile_api/controllers/mobile_sales_api.py:0
 msgid "Sales order returned to draft successfully."
 msgstr "تم إرجاع أمر البيع إلى المسودة بنجاح."
+
+#. module: ftiq_crm_mobile_api
+#. odoo-python
+#: code:addons/ftiq_crm_mobile_api/controllers/crm_api.py:0
+msgid "This task is not linked to a client."
+msgstr "هذه المهمة غير مرتبطة بعميل."
+
+#. module: ftiq_crm_mobile_api
+#. odoo-python
+#: code:addons/ftiq_crm_mobile_api/controllers/crm_api.py:0
+msgid "Visit started"
+msgstr "تم بدء الزيارة"
+
+#. module: ftiq_crm_mobile_api
+#. odoo-python
+#: code:addons/ftiq_crm_mobile_api/controllers/crm_api.py:0
+msgid "Visit completed"
+msgstr "تم إنهاء الزيارة"
+
+#. module: ftiq_crm_mobile_api
+#. odoo-python
+#: code:addons/ftiq_crm_mobile_api/controllers/crm_api.py:0
+msgid "Visit cancelled"
+msgstr "تم إلغاء الزيارة"
+
+#. module: ftiq_crm_mobile_api
+#. odoo-python
+#: code:addons/ftiq_crm_mobile_api/controllers/crm_api.py:0
+msgid "This task update was recorded from the mobile application."
+msgstr "تم تسجيل هذا التحديث من تطبيق الجوال."
+
+#. module: ftiq_crm_mobile_api
+#. odoo-python
+#: code:addons/ftiq_crm_mobile_api/controllers/crm_api.py:0
+msgid "Task"
+msgstr "المهمة"
+
+#. module: ftiq_crm_mobile_api
+#. odoo-python
+#: code:addons/ftiq_crm_mobile_api/controllers/crm_api.py:0
+msgid "Task Type"
+msgstr "نوع المهمة"
+
+#. module: ftiq_crm_mobile_api
+#. odoo-python
+#: code:addons/ftiq_crm_mobile_api/controllers/crm_api.py:0
+msgid "Outcome"
+msgstr "النتيجة"
+
+#. module: ftiq_crm_mobile_api
+#. odoo-python
+#: code:addons/ftiq_crm_mobile_api/controllers/crm_api.py:0
+msgid "Accuracy"
+msgstr "الدقة"
+
+#. module: ftiq_crm_mobile_api
+#. odoo-python
+#: code:addons/ftiq_crm_mobile_api/controllers/crm_api.py:0
+msgid "Summary"
+msgstr "الملخص"
+
+#. module: ftiq_crm_mobile_api
+#. odoo-python
+#: code:addons/ftiq_crm_mobile_api/controllers/crm_api.py:0
+msgid "Products shown"
+msgstr "المنتجات المعروضة"
+
+#. module: ftiq_crm_mobile_api
+#. odoo-python
+#: code:addons/ftiq_crm_mobile_api/controllers/crm_api.py:0
+msgid "Product"
+msgstr "المنتج"
+
+#. module: ftiq_crm_mobile_api
+#. odoo-python
+#: code:addons/ftiq_crm_mobile_api/controllers/crm_api.py:0
+msgid "Interest"
+msgstr "الاهتمام"
+
+#. module: ftiq_crm_mobile_api
+#. odoo-python
+#: code:addons/ftiq_crm_mobile_api/controllers/crm_api.py:0
+msgid "Notes"
+msgstr "ملاحظات"
+
+#. module: ftiq_crm_mobile_api
+#. odoo-python
+#: code:addons/ftiq_crm_mobile_api/controllers/crm_api.py:0
+msgid "Open location in Google Maps"
+msgstr "فتح الموقع في خرائط Google"
