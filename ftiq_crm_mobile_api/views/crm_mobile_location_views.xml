@@ -56,12 +56,19 @@
             <xpath expr="//field[@name='partner_id'][1]" position="before">
                 <field name="ftiq_mobile_task_type" required="1"/>
             </xpath>
+            <xpath expr="//field[@name='ftiq_mobile_task_type']" position="after">
+                <field
+                    name="partner_id"
+                    string="Client"
+                    widget="res_partner_many2one"
+                    class="o_task_customer_field"
+                    required="ftiq_mobile_task_type"
+                    options="{'no_open': False}"
+                />
+            </xpath>
             <xpath expr="//field[@name='partner_id'][1]" position="attributes">
-                <attribute name="string">Client</attribute>
-                <attribute name="required">1</attribute>
-                <attribute name="widget">res_partner_many2one</attribute>
-                <attribute name="class">o_task_customer_field</attribute>
-                <attribute name="invisible">False</attribute>
+                <attribute name="invisible">1</attribute>
+                <attribute name="required">0</attribute>
             </xpath>
         </field>
     </record>

@@ -19,6 +19,11 @@
         "account",
         "mail",
     ],
+    "assets": {
+        "web.assets_backend": [
+            "ftiq_crm_mobile_api/static/src/css/chatter_overrides.css",
+        ],
+    },
     "data": [
         "security/ir.model.access.csv",
         "data/firebase_config_data.xml",

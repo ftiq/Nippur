@@ -1,0 +1,34 @@
+.o-mail-Chatter h1,
+.o-mail-Chatter h2,
+.o-mail-Chatter h3,
+.o-mail-Chatter h4,
+.o-mail-Chatter h5,
+.o-mail-Chatter h6,
+.o-mail-Chatter strong,
+.o-mail-Chatter .fw-bold,
+.o-mail-Chatter .o-mail-Composer-coreHeader,
+.o-mail-Chatter .o-mail-Message-authorName,
+.o-mail-Chatter .o-mail-Activity-summary,
+.o-mail-Chatter .o-mail-Activity-note,
+.o-mail-Chatter .o-mail-Chatter-top {
+    color: #000 !important;
+}
+
+.o-mail-Chatter .o-mail-Chatter-topbar .btn,
+.o-mail-Chatter .o-mail-Composer-actions .btn,
+.o-mail-Chatter .o-mail-Chatter-attachFiles,
+.o-mail-Chatter .o-mail-Chatter-follow,
+.o-mail-Chatter .o-mail-Composer-send,
+.o-mail-Chatter .o-mail-Composer-fullComposer,
+.o-mail-Chatter .o-mail-Chatter-close {
+    color: #000 !important;
+    border-color: #000 !important;
+}
+
+.o-mail-Chatter .o-mail-Chatter-topbar .btn.btn-primary,
+.o-mail-Chatter .o-mail-Composer-send.btn-primary,
+.o-mail-Chatter .btn.btn-primary {
+    background-color: #000 !important;
+    border-color: #000 !important;
+    color: #fff !important;
+}
