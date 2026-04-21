@@ -61,6 +61,7 @@
                 <attribute name="required">1</attribute>
                 <attribute name="widget">res_partner_many2one</attribute>
                 <attribute name="class">o_task_customer_field</attribute>
+                <attribute name="invisible">False</attribute>
             </xpath>
         </field>
     </record>
