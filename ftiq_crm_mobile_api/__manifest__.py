@@ -16,6 +16,7 @@
         "sale",
         "sales_team",
         "project",
+        "industry_fsm",
         "account",
         "mail",
     ],

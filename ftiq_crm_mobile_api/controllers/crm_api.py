@@ -2,6 +2,7 @@ import json
 from datetime import date
 
 from odoo import _, fields, http
+from odoo.exceptions import UserError
 from odoo.fields import Command
 from odoo.http import request
 from odoo.osv import expression
@@ -313,7 +314,10 @@ class FtiqCrmMobileApi(FtiqCrmApiBase):
     def _tasks(self):
         if request.httprequest.method == "POST":
             payload = self._json_body()
-            task = request.env["project.task"].create(self._task_values(payload))
+            task_values = self._task_values(payload)
+            task = self._mobile_task_model(
+                default_project_id=task_values.get("project_id"),
+            ).create(task_values)
             self._apply_mobile_location(task, payload)
             return self._ok_message(_("Task Created Successfully"))
         limit, offset = self._limit_offset()
@@ -353,7 +357,7 @@ class FtiqCrmMobileApi(FtiqCrmApiBase):
         )
 
     def _task_detail(self, task_id):
-        task = request.env["project.task"].search(
+        task = self._mobile_task_model().search(
             expression.AND([
                 [("id", "=", task_id)],
                 self._mobile_task_visibility_domain(),
@@ -423,6 +427,7 @@ class FtiqCrmMobileApi(FtiqCrmApiBase):
         state = self._task_state_from_status("01_in_progress")
         if state:
             values["state"] = state
+        task._ftiq_mobile_start_standard_timer()
         self._write_mobile_task_values(task, values)
         self._apply_mobile_location(task, payload)
         task.message_post(
@@ -480,6 +485,8 @@ class FtiqCrmMobileApi(FtiqCrmApiBase):
         done_state = self._task_state_from_status("1_done")
         if done_state:
             values["state"] = done_state
+        timesheet_description = (report.get("summary") or report.get("notes") or self._record_name(task)).strip()
+        task._ftiq_mobile_stop_standard_timer(description=timesheet_description)
         self._write_mobile_task_values(task, values)
         self._apply_mobile_location(task, payload)
         task.message_post(
@@ -506,6 +513,9 @@ class FtiqCrmMobileApi(FtiqCrmApiBase):
         state = self._task_state_from_status("1_canceled")
         if state:
             values["state"] = state
+        task._ftiq_mobile_stop_standard_timer(
+            description=(reason or self._record_name(task) or _("Task cancelled")).strip()
+        )
         self._write_mobile_task_values(task, values)
         self._apply_mobile_location(task, payload)
         task.message_post(
@@ -519,7 +529,7 @@ class FtiqCrmMobileApi(FtiqCrmApiBase):
         return self._json(self._task_execution_response(task))
 
     def _task_record_for_mobile(self, task_id):
-        return request.env["project.task"].search(
+        return self._mobile_task_model().search(
             expression.AND([
                 [("id", "=", task_id)],
                 self._mobile_task_visibility_domain(),
@@ -528,7 +538,7 @@ class FtiqCrmMobileApi(FtiqCrmApiBase):
         )
 
     def _task_selection_options(self, field_name):
-        Task = request.env["project.task"]
+        Task = self._mobile_task_model()
         if field_name not in Task._fields:
             return []
         field = Task._fields[field_name]
@@ -608,7 +618,7 @@ class FtiqCrmMobileApi(FtiqCrmApiBase):
             "ftiq_mobile_accuracy": "ftiq_mobile_%s_accuracy" % prefix,
             "ftiq_mobile_is_mock": "ftiq_mobile_%s_is_mock" % prefix,
         }
-        Task = request.env["project.task"]
+        Task = self._mobile_task_model()
         return {
             target: location_values[source]
             for source, target in mapping.items()
@@ -969,13 +979,13 @@ class FtiqCrmMobileApi(FtiqCrmApiBase):
         in_progress_domain = expression.AND([
             task_domain,
             [("ftiq_mobile_visit_state", "=", "in_progress")],
-        ]) if "ftiq_mobile_visit_state" in request.env["project.task"]._fields else []
+        ]) if "ftiq_mobile_visit_state" in self._mobile_task_model()._fields else []
         in_progress_tasks = self._safe_search(
             "project.task",
             in_progress_domain,
             limit=5,
             order="ftiq_mobile_started_at desc, id desc",
-        ) if in_progress_domain else request.env["project.task"]
+        ) if in_progress_domain else self._mobile_task_model().browse()
         overdue_tasks = self._safe_search_count(
             "project.task",
             expression.AND([task_domain, [("date_deadline", "<", today)]]),
@@ -1065,16 +1075,41 @@ class FtiqCrmMobileApi(FtiqCrmApiBase):
 
     def _mobile_task_visibility_domain(self):
         user_id = request.env.user.id
-        return expression.OR([
+        visibility_domain = expression.OR([
             [("user_ids", "in", [user_id])],
             [("user_ids", "=", False), ("create_uid", "=", user_id)],
         ])
+        return expression.AND([self._mobile_fsm_task_domain(), visibility_domain])
+
+    def _mobile_task_model(self, **extra_context):
+        context = {"fsm_mode": True}
+        context.update({
+            key: value
+            for key, value in extra_context.items()
+            if value not in (None, False, "")
+        })
+        return request.env["project.task"].with_context(**context)
+
+    def _mobile_project_model(self, **extra_context):
+        context = {"fsm_mode": True, "default_is_fsm": True}
+        context.update({
+            key: value
+            for key, value in extra_context.items()
+            if value not in (None, False, "")
+        })
+        return request.env["project.project"].with_context(**context)
 
     def _mobile_open_task_domain(self):
-        Task = request.env["project.task"]
+        Task = self._mobile_task_model()
         if "state" not in Task._fields:
             return []
         return [("state", "not in", ("1_done", "1_canceled"))]
+
+    def _mobile_fsm_task_domain(self):
+        Task = self._mobile_task_model()
+        if "is_fsm" not in Task._fields:
+            return [("id", "=", 0)]
+        return [("is_fsm", "=", True)]
 
     def _delete_message(self, message_id):
         message = request.env["mail.message"].browse(message_id).exists()
@@ -1184,6 +1219,7 @@ class FtiqCrmMobileApi(FtiqCrmApiBase):
         return values
 
     def _task_values(self, payload, existing=False, partial=False):
+        Task = self._mobile_task_model()
         values = {}
         if not partial or "title" in payload:
             values["name"] = payload.get("title") or payload.get("name") or (existing.name if existing else _("New Task"))
@@ -1201,10 +1237,10 @@ class FtiqCrmMobileApi(FtiqCrmApiBase):
         if not partial or "assigned_to" in payload:
             users = self._users_from_payload(payload.get("assigned_to"))
             values["user_ids"] = [Command.set(users.ids)]
-        if "tag_ids" in request.env["project.task"]._fields and (not partial or "tags" in payload):
+        if "tag_ids" in Task._fields and (not partial or "tags" in payload):
             tags = self._project_task_tags_from_payload(payload.get("tags"))
             values["tag_ids"] = [Command.set(tags.ids)]
-        if "ftiq_mobile_task_type" in request.env["project.task"]._fields and (
+        if "ftiq_mobile_task_type" in Task._fields and (
             not partial or "task_type" in payload or "ftiq_mobile_task_type" in payload
         ):
             task_type = (
@@ -1218,8 +1254,22 @@ class FtiqCrmMobileApi(FtiqCrmApiBase):
         partner = self._partner_from_id(payload.get("account"))
         if partner:
             values["partner_id"] = partner.id
-        if not existing and "project_id" in request.env["project.task"]._fields:
-            values.setdefault("project_id", self._default_project().id)
+        if "project_id" in Task._fields:
+            project = False
+            if payload.get("project_id") not in (None, False, ""):
+                try:
+                    candidate = self._mobile_project_model().browse(
+                        int(payload.get("project_id"))
+                    ).exists()
+                except Exception:
+                    raise UserError(_("Invalid field service project."))
+                if not candidate or "is_fsm" not in candidate._fields or not candidate.is_fsm:
+                    raise UserError(_("Selected project is not a field service project."))
+                project = candidate
+            if not project and (not existing or not self._field_value(existing, "project_id")):
+                project = self._default_project()
+            if project:
+                values["project_id"] = project.id
         return values
 
     def _partner_values(self, payload, is_company):
@@ -1300,7 +1350,7 @@ class FtiqCrmMobileApi(FtiqCrmApiBase):
 
     def _task_state_from_status(self, status_value):
         raw_value = (status_value or "").strip()
-        Task = request.env["project.task"]
+        Task = self._mobile_task_model()
         if "state" not in Task._fields:
             return ""
         selection = Task._fields["state"]._description_selection(request.env)
@@ -1326,11 +1376,7 @@ class FtiqCrmMobileApi(FtiqCrmApiBase):
 
     def _priority_to_odoo(self, priority):
         normalized = (priority or "").strip().lower()
-        if normalized == "urgent":
-            return "3"
-        if normalized == "high":
-            return "2"
-        if normalized == "medium":
+        if normalized in {"urgent", "high", "1"}:
             return "1"
         return "0"
 
@@ -1435,10 +1481,21 @@ class FtiqCrmMobileApi(FtiqCrmApiBase):
         return self._safe_search("res.partner", domain, order="name", limit=limit)
 
     def _default_project(self):
-        Project = request.env["project.project"].sudo()
-        project = Project.search([("name", "=", "Mobile CRM Tasks")], limit=1)
+        Project = self._mobile_project_model()
+        if "is_fsm" not in Project._fields:
+            raise UserError(_("Field Service must be installed to use mobile tasks."))
+        project = Project.search(
+            [
+                ("is_fsm", "=", True),
+                "|",
+                ("company_id", "=", request.env.company.id),
+                ("company_id", "=", False),
+            ],
+            order="company_id desc, id",
+            limit=1,
+        )
         if not project:
-            project = Project.create({"name": "Mobile CRM Tasks", "company_id": request.env.company.id})
+            raise UserError(_("No field service project is configured for mobile tasks."))
         return project
 
     def _pipeline_by_stage(self, opportunities):
@@ -1533,7 +1590,7 @@ class FtiqCrmMobileApi(FtiqCrmApiBase):
         ]
 
     def _task_status_choices(self):
-        Task = request.env["project.task"]
+        Task = self._mobile_task_model()
         if "state" not in Task._fields:
             return [
                 {"value": "New", "label": "New"},

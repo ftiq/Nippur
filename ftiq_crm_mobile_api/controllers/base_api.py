@@ -958,6 +958,8 @@ class FtiqCrmApiBase(http.Controller):
             "visit_state_label": self._selection_label(task, "ftiq_mobile_visit_state", visit_state),
             "visit_started_at": self._display_date(task, "ftiq_mobile_started_at"),
             "visit_completed_at": self._display_date(task, "ftiq_mobile_completed_at"),
+            "timer_running": self._record_flag(task, "is_timer_running"),
+            "worked_hours": self._field_value(task, "effective_hours", 0.0) or 0.0,
             "execution_payload": execution_payload,
             "account": self._serialize_partner_account(partner) if partner else None,
             "opportunity": None,
