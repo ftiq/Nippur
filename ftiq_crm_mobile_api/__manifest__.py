@@ -21,7 +21,7 @@
     ],
     "assets": {
         "web.assets_backend": [
-            "ftiq_crm_mobile_api/static/src/css/chatter_overrides.css",
+            #"ftiq_crm_mobile_api/static/src/css/chatter_overrides.css",
         ],
     },
     "data": [

@@ -228,26 +228,26 @@ class FtiqCrmMobileSalesApi(FtiqCrmApiBase):
         if location_at_text:
             rows.append((_("Recorded At"), location_at_text))
         rows_html = "".join(
-            "<tr><td style=\"padding:3px 12px 3px 0;color:#6b7280;\">%s</td>"
-            "<td style=\"padding:3px 0;font-weight:600;\">%s</td></tr>"
+            "<tr><td class=\"ftiq-mobile-note__muted\" style=\"padding:3px 12px 3px 0;color:#6b7280;\">%s</td>"
+            "<td style=\"padding:3px 0;font-weight:600;color:#111827;\">%s</td></tr>"
             % (escape(label), escape(value))
             for label, value in rows
         )
         mock_html = ""
         if location_values.get("ftiq_mobile_is_mock"):
             mock_html = (
-                "<div style=\"margin:8px 0;padding:6px 8px;border-radius:6px;"
+                "<div class=\"ftiq-mobile-note__alert\" style=\"margin:8px 0;padding:6px 8px;border-radius:6px;"
                 "background:#fff3cd;color:#8a5a00;font-weight:600;\">%s</div>"
                 % escape(_("Mock location detected"))
             )
         return Markup(
-            "<div style=\"border:1px solid #d8dee4;border-radius:8px;"
-            "padding:12px;max-width:460px;\">"
-            "<div style=\"font-weight:700;margin-bottom:8px;\">%s</div>"
-            "<div style=\"color:#374151;margin-bottom:8px;\">%s</div>"
-            "<table style=\"border-collapse:collapse;margin-bottom:10px;\">%s</table>"
+            "<div class=\"ftiq-mobile-note\" style=\"border:1px solid #d8dee4;border-radius:8px;"
+            "padding:12px;max-width:460px;background:#ffffff;color:#111827;\">"
+            "<div class=\"ftiq-mobile-note__title\" style=\"font-weight:700;margin-bottom:8px;color:#111827;\">%s</div>"
+            "<div class=\"ftiq-mobile-note__subtitle\" style=\"color:#374151;margin-bottom:8px;\">%s</div>"
+            "<table class=\"ftiq-mobile-note__table\" style=\"border-collapse:collapse;margin-bottom:10px;\">%s</table>"
             "%s"
-            "<a href=\"%s\" target=\"_blank\" rel=\"noopener noreferrer\" "
+            "<a href=\"%s\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"ftiq-mobile-note__action\" "
             "style=\"display:inline-block;padding:7px 12px;border:1px solid #0d6efd;"
             "border-radius:6px;color:#0d6efd;text-decoration:none;font-weight:700;\">%s</a>"
             "</div>"

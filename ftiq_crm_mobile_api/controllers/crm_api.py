@@ -700,9 +700,9 @@ class FtiqCrmMobileApi(FtiqCrmApiBase):
         products_table = ""
         if product_rows:
             products_table = (
-                "<div style='margin-top:14px;border:1px solid #bbf7d0;border-radius:12px;overflow:hidden;background:#f0fdf4;'>"
-                "<div style='padding:10px 12px;background:#dcfce7;color:#111827;font-weight:800;'>%s</div>"
-                "<table style='width:100%%;border-collapse:collapse;background:white;'>"
+                "<div class='ftiq-mobile-note__section ftiq-mobile-note__section--success' style='margin-top:14px;border:1px solid #bbf7d0;border-radius:12px;overflow:hidden;background:#f0fdf4;'>"
+                "<div class='ftiq-mobile-note__title' style='padding:10px 12px;background:#dcfce7;color:#111827;font-weight:800;'>%s</div>"
+                "<table class='ftiq-mobile-note__table' style='width:100%%;border-collapse:collapse;background:white;'>"
                 "<thead><tr style='background:#ecfdf5;color:#111827;'>"
                 "<th style='padding:8px 10px;text-align:right;width:58px;'>%s</th>"
                 "<th style='padding:8px 10px;text-align:right;'>%s</th>"
@@ -777,9 +777,9 @@ class FtiqCrmMobileApi(FtiqCrmApiBase):
         stock_lines_table = ""
         if stock_line_rows:
             stock_lines_table = (
-                "<div style='margin-top:14px;border:1px solid #bfdbfe;border-radius:12px;overflow:hidden;background:#eff6ff;'>"
-                "<div style='padding:10px 12px;background:#dbeafe;color:#111827;font-weight:800;'>%s</div>"
-                "<table style='width:100%%;border-collapse:collapse;background:white;'>"
+                "<div class='ftiq-mobile-note__section ftiq-mobile-note__section--info' style='margin-top:14px;border:1px solid #bfdbfe;border-radius:12px;overflow:hidden;background:#eff6ff;'>"
+                "<div class='ftiq-mobile-note__title' style='padding:10px 12px;background:#dbeafe;color:#111827;font-weight:800;'>%s</div>"
+                "<table class='ftiq-mobile-note__table' style='width:100%%;border-collapse:collapse;background:white;'>"
                 "<thead><tr style='background:#dbeafe;color:#111827;'>"
                 "<th style='padding:8px 10px;text-align:right;width:62px;'>%s</th>"
                 "<th style='padding:8px 10px;text-align:right;'>%s</th>"
@@ -797,7 +797,7 @@ class FtiqCrmMobileApi(FtiqCrmApiBase):
                 stock_line_rows,
             )
         info_rows = "".join(
-            "<tr><td style='padding:6px 0;color:#64748b;width:38%%;'>%s</td>"
+            "<tr><td class='ftiq-mobile-note__muted' style='padding:6px 0;color:#64748b;width:38%%;'>%s</td>"
             "<td style='padding:6px 0;color:#111827;font-weight:700;'>%s</td></tr>" % (
                 escape(label),
                 escape(value or "-"),
@@ -826,7 +826,7 @@ class FtiqCrmMobileApi(FtiqCrmApiBase):
         if latitude and longitude:
             maps_url = "https://www.google.com/maps/search/?api=1&query=%s,%s" % (latitude, longitude)
             map_button = (
-                "<a href='%s' target='_blank' rel='noopener noreferrer' "
+                "<a href='%s' target='_blank' rel='noopener noreferrer' class='ftiq-mobile-note__action' "
                 "style='display:inline-block;margin-top:10px;padding:8px 12px;border-radius:8px;"
                 "background:#f8fafc;border:1px solid #cbd5e1;color:#111827;text-decoration:none;font-weight:800;'>%s</a>"
             ) % (
@@ -836,34 +836,34 @@ class FtiqCrmMobileApi(FtiqCrmApiBase):
         location_section = ""
         if location_rows or map_button:
             mock_html = (
-                "<div style='margin-top:8px;padding:7px 9px;border-radius:8px;background:#fee2e2;"
+                "<div class='ftiq-mobile-note__alert' style='margin-top:8px;padding:7px 9px;border-radius:8px;background:#fee2e2;"
                 "color:#991b1b;font-weight:700;'>%s</div>" % escape(_("Mock location detected"))
                 if is_mock
                 else ""
             )
             location_section = (
-                "<div style='margin-top:14px;border:1px solid #fde68a;border-radius:12px;padding:12px;background:#fffbeb;'>"
-                "<div style='font-weight:800;color:#111827;margin-bottom:6px;'>%s</div>"
-                "<table style='width:100%%;border-collapse:collapse;'>%s</table>%s%s</div>"
+                "<div class='ftiq-mobile-note__section ftiq-mobile-note__section--warning' style='margin-top:14px;border:1px solid #fde68a;border-radius:12px;padding:12px;background:#fffbeb;'>"
+                "<div class='ftiq-mobile-note__title' style='font-weight:800;color:#111827;margin-bottom:6px;'>%s</div>"
+                "<table class='ftiq-mobile-note__table' style='width:100%%;border-collapse:collapse;'>%s</table>%s%s</div>"
                 % (escape(_("Location")), location_rows, mock_html, map_button)
             )
         summary_html = (
-            "<div style='margin-top:14px;border:1px solid #dbeafe;border-radius:12px;padding:12px;background:#eff6ff;'>"
-            "<div style='font-weight:800;color:#111827;margin-bottom:6px;'>%s</div>"
+            "<div class='ftiq-mobile-note__section ftiq-mobile-note__section--info' style='margin-top:14px;border:1px solid #dbeafe;border-radius:12px;padding:12px;background:#eff6ff;'>"
+            "<div class='ftiq-mobile-note__title' style='font-weight:800;color:#111827;margin-bottom:6px;'>%s</div>"
             "<div style='white-space:pre-wrap;color:#111827;'>%s</div></div>"
             % (escape(_("Summary")), escape(summary))
             if summary
             else ""
         )
         return Markup(
-            "<div style='max-width:760px;border:1px solid #d8dee4;border-radius:14px;overflow:hidden;"
+            "<div class='ftiq-mobile-note' style='max-width:760px;border:1px solid #d8dee4;border-radius:14px;overflow:hidden;"
             "background:#ffffff;direction:rtl;text-align:right;font-size:13px;'>"
-            "<div style='padding:12px 14px;background:#f8fafc;color:#111827;border-bottom:1px solid #e5e7eb;'>"
-            "<div style='font-size:15px;font-weight:900;'>%s</div>"
-            "<div style='margin-top:4px;color:#111827;'>%s</div></div>"
+            "<div class='ftiq-mobile-note__header' style='padding:12px 14px;background:#f8fafc;color:#111827;border-bottom:1px solid #e5e7eb;'>"
+            "<div class='ftiq-mobile-note__title' style='font-size:15px;font-weight:900;'>%s</div>"
+            "<div class='ftiq-mobile-note__subtitle' style='margin-top:4px;color:#111827;'>%s</div></div>"
             "<div style='padding:12px 14px;'>"
-            "<div style='border:1px solid #e5e7eb;border-radius:12px;padding:10px;background:#f8fafc;'>"
-            "<table style='width:100%%;border-collapse:collapse;'>%s</table></div>"
+            "<div class='ftiq-mobile-note__section' style='border:1px solid #e5e7eb;border-radius:12px;padding:10px;background:#f8fafc;'>"
+            "<table class='ftiq-mobile-note__table' style='width:100%%;border-collapse:collapse;'>%s</table></div>"
             "%s"
             "%s"
             "%s"
