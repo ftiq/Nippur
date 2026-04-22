@@ -51,6 +51,15 @@ class MailNotification(models.Model):
             partner = notification.res_partner_id
             if not partner or not payload["title"]:
                 continue
+            if notification._ftiq_recipient_is_task_assignee():
+                _logger.info(
+                    "FTIQ mobile task chatter mail.notification push skipped duplicate_assignee notification=%s partner=%s task=%s type=%s",
+                    notification.id,
+                    partner.id,
+                    notification.mail_message_id.sudo().res_id or "",
+                    notification.notification_type or "",
+                )
+                continue
             try:
                 sent = Device.push_to_partners(
                     partner,
@@ -91,6 +100,17 @@ class MailNotification(models.Model):
         if not self._ftiq_is_task_chatter_message(message_sudo):
             return True
         return False
+
+    def _ftiq_recipient_is_task_assignee(self):
+        self.ensure_one()
+        message = self.mail_message_id.sudo()
+        partner = self.res_partner_id
+        if not partner or (message.model or "").strip() != "project.task" or not message.res_id:
+            return False
+        task = self.env["project.task"].sudo().browse(message.res_id).exists()
+        if not task:
+            return False
+        return partner.id in task.user_ids.mapped("partner_id").ids
 
     def _ftiq_is_task_chatter_message(self, message):
         message = message.sudo()

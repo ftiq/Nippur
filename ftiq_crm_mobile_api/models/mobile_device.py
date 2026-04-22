@@ -114,6 +114,8 @@ class FtiqMobileDevice(models.Model):
             for key, value in (data or {}).items()
             if value not in (None, "")
         }
+        payload_data.setdefault("title", title or "FTIQ")
+        payload_data.setdefault("body", body or title or "")
         sent = 0
         for token in sorted(set(tokens)):
             message = {
@@ -150,6 +152,17 @@ class FtiqMobileDevice(models.Model):
                 )
                 if 200 <= response.status_code < 300:
                     sent += 1
+                    try:
+                        response_name = (response.json() or {}).get("name", "")
+                    except Exception:
+                        response_name = ""
+                    _logger.info(
+                        "Firebase push accepted token=%s name=%s route=%s target_id=%s",
+                        token[-8:],
+                        response_name,
+                        payload_data.get("target_route", ""),
+                        payload_data.get("target_id", ""),
+                    )
                 else:
                     _logger.warning(
                         "Firebase push failed for token %s: %s %s",
@@ -183,6 +196,22 @@ class FtiqMobileDevice(models.Model):
                 ("fcm_token", "!=", False),
             ]
         )
+        if devices:
+            _logger.info(
+                "FTIQ mobile push target devices partners=%s devices=%s title=%s",
+                partner_ids,
+                [
+                    {
+                        "device": device.id,
+                        "user": device.user_id.id,
+                        "partner": device.partner_id.id,
+                        "platform": device.platform or "",
+                        "token_tail": (device.fcm_token or "")[-8:],
+                    }
+                    for device in devices
+                ],
+                title or "",
+            )
         tokens = [device.fcm_token for device in devices if device.fcm_token]
         if not tokens:
             _logger.info(
