@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="crm_lead_view_form_mobile_location" model="ir.ui.view">
+        <field name="name">crm.lead.form.ftiq.mobile.location</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="crm.crm_lead_view_form"/>
+        <field name="active" eval="False"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="Mobile Location" name="ftiq_mobile_location">
+                    <group>
+                        <group>
+                            <field name="ftiq_mobile_location_at"/>
+                            <field name="ftiq_mobile_accuracy"/>
+                            <field name="ftiq_mobile_is_mock"/>
+                        </group>
+                        <group>
+                            <field name="ftiq_mobile_latitude"/>
+                            <field name="ftiq_mobile_longitude"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="project_task_view_form_mobile_location" model="ir.ui.view">
+        <field name="name">project.task.form.ftiq.mobile.location</field>
+        <field name="model">project.task</field>
+        <field name="inherit_id" ref="project.view_task_form2"/>
+        <field name="active" eval="False"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="Mobile Location" name="ftiq_mobile_location">
+                    <group>
+                        <group>
+                            <field name="ftiq_mobile_location_at"/>
+                            <field name="ftiq_mobile_accuracy"/>
+                            <field name="ftiq_mobile_is_mock"/>
+                        </group>
+                        <group>
+                            <field name="ftiq_mobile_latitude"/>
+                            <field name="ftiq_mobile_longitude"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="project_task_view_form_mobile_execution" model="ir.ui.view">
+        <field name="name">project.task.form.mobile.assignment</field>
+        <field name="model">project.task</field>
+        <field name="inherit_id" ref="project.view_task_form2"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='partner_id' and hasclass('o_task_customer_field')]" position="before">
+                <field name="ftiq_mobile_task_type" required="1"/>
+            </xpath>
+            <xpath expr="//field[@name='partner_id' and hasclass('o_task_customer_field')]" position="attributes">
+                <attribute name="string">Client</attribute>
+                <attribute name="required">ftiq_mobile_task_type</attribute>
+                <attribute name="options">{'no_open': False}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='child_ids']" position="attributes">
+                <attribute name="context">{
+                    'default_project_id': project_id,
+                    'default_display_in_project': False,
+                    'default_user_ids': [(6, 0, [uid])],
+                    'default_parent_id': id,
+                    'default_partner_id': partner_id,
+                    'default_milestone_id': allow_milestones and milestone_id,
+                    'kanban_view_ref': 'project.project_sub_task_view_kanban_mobile',
+                    'closed_X2M_count': closed_subtask_count,
+                }</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="project_task_view_form_fsm_assignee_client_domain" model="ir.ui.view">
+        <field name="name">project.task.form.fsm.assignee.client.domain</field>
+        <field name="model">project.task</field>
+        <field name="inherit_id" ref="industry_fsm.view_task_form2_inherit"/>
+        <field name="priority">1001</field>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_ftiq_view_collection_payments"
+                        type="object"
+                        class="oe_stat_button"
+                        icon="fa-money"
+                        invisible="not is_fsm or ftiq_collection_payment_count == 0">
+                    <field name="ftiq_collection_payment_count" widget="statinfo" string="Collections"/>
+                </button>
+            </xpath>
+            <xpath expr="//field[@name='partner_id' and hasclass('o_task_customer_field')]" position="before">
+                <field name="ftiq_fsm_allowed_partner_ids" invisible="1"/>
+            </xpath>
+            <xpath expr="//field[@name='partner_id' and hasclass('o_task_customer_field')]" position="attributes">
+                <attribute name="readonly">is_fsm and not user_ids</attribute>
+                <attribute name="domain">[('customer_rank', '&gt;', 0), '|', ('company_id', '=', False), ('company_id', '=', company_id), ('id', 'in', ftiq_fsm_allowed_partner_ids)]</attribute>
+                <attribute name="options">{'no_open': False, 'no_create': True, 'no_quick_create': True}</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="account_payment_view_form_mobile_location" model="ir.ui.view">
+        <field name="name">account.payment.form.ftiq.mobile.location</field>
+        <field name="model">account.payment</field>
+        <field name="inherit_id" ref="account.view_account_payment_form"/>
+        <field name="active" eval="False"/>
+        <field name="arch" type="xml">
+            <xpath expr="//sheet/group[@name='main_group']" position="after">
+                <group string="Mobile Location" name="ftiq_mobile_location">
+                    <group>
+                        <field name="ftiq_mobile_location_at"/>
+                        <field name="ftiq_mobile_accuracy"/>
+                        <field name="ftiq_mobile_is_mock"/>
+                    </group>
+                    <group>
+                        <field name="ftiq_mobile_latitude"/>
+                        <field name="ftiq_mobile_longitude"/>
+                    </group>
+                </group>
+            </xpath>
+        </field>
+    </record>
+</odoo>

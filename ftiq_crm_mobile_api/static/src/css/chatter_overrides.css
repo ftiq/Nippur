@@ -1,0 +1,91 @@
+.o-mail-Chatter .ftiq-mobile-note,
+.o-mail-Message .ftiq-mobile-note {
+    background: #ffffff !important;
+    color: #111827 !important;
+    border: 1px solid #d8dee4 !important;
+    border-radius: 14px;
+    overflow: hidden;
+}
+
+.o-mail-Chatter .ftiq-mobile-note *,
+.o-mail-Message .ftiq-mobile-note * {
+    color: #111827 !important;
+}
+
+.o-mail-Chatter .ftiq-mobile-note__header,
+.o-mail-Message .ftiq-mobile-note__header {
+    background: #f8fafc !important;
+    border-bottom: 1px solid #e5e7eb !important;
+}
+
+.o-mail-Chatter .ftiq-mobile-note__title,
+.o-mail-Message .ftiq-mobile-note__title {
+    color: #111827 !important;
+    font-weight: 800 !important;
+}
+
+.o-mail-Chatter .ftiq-mobile-note__subtitle,
+.o-mail-Message .ftiq-mobile-note__subtitle,
+.o-mail-Chatter .ftiq-mobile-note__muted,
+.o-mail-Message .ftiq-mobile-note__muted {
+    color: #475569 !important;
+}
+
+.o-mail-Chatter .ftiq-mobile-note__section,
+.o-mail-Message .ftiq-mobile-note__section {
+    background: #f8fafc !important;
+    border: 1px solid #e5e7eb !important;
+    border-radius: 12px;
+}
+
+.o-mail-Chatter .ftiq-mobile-note__section--success,
+.o-mail-Message .ftiq-mobile-note__section--success {
+    background: #f0fdf4 !important;
+    border-color: #bbf7d0 !important;
+}
+
+.o-mail-Chatter .ftiq-mobile-note__section--info,
+.o-mail-Message .ftiq-mobile-note__section--info {
+    background: #eff6ff !important;
+    border-color: #bfdbfe !important;
+}
+
+.o-mail-Chatter .ftiq-mobile-note__section--warning,
+.o-mail-Message .ftiq-mobile-note__section--warning {
+    background: #fffbeb !important;
+    border-color: #fde68a !important;
+}
+
+.o-mail-Chatter .ftiq-mobile-note__table,
+.o-mail-Message .ftiq-mobile-note__table,
+.o-mail-Chatter .ftiq-mobile-note__table th,
+.o-mail-Message .ftiq-mobile-note__table th,
+.o-mail-Chatter .ftiq-mobile-note__table td,
+.o-mail-Message .ftiq-mobile-note__table td {
+    color: #111827 !important;
+    background: transparent !important;
+}
+
+.o-mail-Chatter a.ftiq-mobile-note__action,
+.o-mail-Message a.ftiq-mobile-note__action {
+    display: inline-block;
+    background: #ffffff !important;
+    color: #111827 !important;
+    border: 1px solid #94a3b8 !important;
+    border-radius: 8px;
+    text-decoration: none !important;
+    font-weight: 700 !important;
+}
+
+.o-mail-Chatter .ftiq-mobile-note__alert,
+.o-mail-Message .ftiq-mobile-note__alert {
+    background: #fee2e2 !important;
+    color: #991b1b !important;
+    border-radius: 8px;
+    font-weight: 700 !important;
+}
+
+.o-mail-Chatter .ftiq-mobile-note__alert *,
+.o-mail-Message .ftiq-mobile-note__alert * {
+    color: #991b1b !important;
+}

@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <delete model="ir.rule" search="[('name', '=', 'Internal user contacts for chatter'), ('model_id.model', '=', 'res.partner')]"/>
+</odoo>
