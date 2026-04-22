@@ -97,9 +97,11 @@ class FtiqMobileDevice(models.Model):
     def _send_fcm_messages(self, tokens, title, body, data=None):
         tokens = [token.strip() for token in (tokens or []) if (token or "").strip()]
         if not tokens:
+            _logger.info("FTIQ mobile push skipped: no FCM tokens title=%s", title or "")
             return 0
         access_token, project_id = self._firebase_access_token()
         if not access_token or not project_id:
+            _logger.warning("FTIQ mobile push skipped: Firebase credentials unavailable")
             return 0
 
         endpoint = f"https://fcm.googleapis.com/v1/projects/{project_id}/messages:send"
@@ -157,12 +159,21 @@ class FtiqMobileDevice(models.Model):
                     )
             except Exception:
                 _logger.exception("Unexpected Firebase push failure")
+        _logger.info(
+            "FTIQ mobile push sent=%s target_tokens=%s title=%s route=%s target_id=%s",
+            sent,
+            len(set(tokens)),
+            title or "",
+            payload_data.get("target_route", ""),
+            payload_data.get("target_id", ""),
+        )
         return sent
 
     @api.model
     def push_to_partners(self, partners, title, body, data=None):
         partner_ids = [partner.id for partner in partners.exists()]
         if not partner_ids:
+            _logger.info("FTIQ mobile push skipped: no partner recipients title=%s", title or "")
             return 0
         devices = self.sudo().search(
             [
@@ -173,4 +184,10 @@ class FtiqMobileDevice(models.Model):
             ]
         )
         tokens = [device.fcm_token for device in devices if device.fcm_token]
+        if not tokens:
+            _logger.info(
+                "FTIQ mobile push skipped: no active FCM devices partners=%s title=%s",
+                partner_ids,
+                title or "",
+            )
         return self._send_fcm_messages(tokens, title, body, data=data)

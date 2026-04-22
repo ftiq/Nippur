@@ -1030,16 +1030,18 @@ class FtiqCrmApiBase(http.Controller):
         messages = self._field_value(record, "message_ids", request.env["mail.message"])
         if not messages:
             return []
+        def is_visible_chatter_message(msg):
+            if (self._field_value(msg, "message_type", "") or "") != "comment":
+                return False
+            if "tracking_value_ids" not in msg._fields:
+                return True
+            try:
+                return not bool(msg.sudo().tracking_value_ids)
+            except AccessError:
+                return True
+
         try:
-            messages = messages.filtered(
-                lambda msg: (
-                    (self._field_value(msg, "message_type", "") or "") == "comment"
-                    and not (
-                        "tracking_value_ids" in msg._fields
-                        and msg.tracking_value_ids
-                    )
-                )
-            ).sorted(
+            messages = messages.filtered(is_visible_chatter_message).sorted(
                 key=lambda msg: self._field_value(msg, "date")
                 or self._field_value(msg, "create_date")
                 or datetime.min,

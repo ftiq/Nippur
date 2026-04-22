@@ -1,5 +1,6 @@
 import base64
 import json
+import logging
 import math
 from pathlib import Path
 
@@ -10,6 +11,9 @@ from odoo.http import request
 from odoo.osv import expression
 
 from .base_api import FtiqCrmApiBase
+
+
+_logger = logging.getLogger(__name__)
 
 
 class FtiqCrmMobileSupportApi(FtiqCrmApiBase):
@@ -1346,6 +1350,16 @@ class FtiqCrmMobileSupportApi(FtiqCrmApiBase):
             device.write(values)
         else:
             device = Device.create(values)
+        _logger.info(
+            "FTIQ mobile device registered user=%s partner=%s device=%s platform=%s notifications=%s has_fcm=%s token_tail=%s",
+            request.env.user.id,
+            request.env.user.partner_id.id,
+            device.id,
+            device.platform or "",
+            bool(device.notification_enabled),
+            bool(device.fcm_token),
+            (device.fcm_token or "")[-8:],
+        )
         return self._json(
             {
                 "error": False,

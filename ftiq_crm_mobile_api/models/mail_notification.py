@@ -10,6 +10,7 @@ _logger = logging.getLogger(__name__)
 class MailNotification(models.Model):
     _inherit = "mail.notification"
 
+    _FTIQ_PUSH_NOTIFICATION_TYPES = {"inbox", "email"}
     _FTIQ_TASK_CHATTER_SUBTYPES = {
         "mail.mt_comment",
         "mail.mt_note",
@@ -51,11 +52,20 @@ class MailNotification(models.Model):
             if not partner or not payload["title"]:
                 continue
             try:
-                Device.push_to_partners(
+                sent = Device.push_to_partners(
                     partner,
                     payload["title"],
                     payload["body"],
                     data=payload["data"],
+                )
+                _logger.info(
+                    "FTIQ mobile task chatter push notification=%s partner=%s sent=%s target=%s:%s type=%s",
+                    notification.id,
+                    partner.id,
+                    sent,
+                    payload["data"].get("target_model", ""),
+                    payload["data"].get("target_id", ""),
+                    notification.notification_type or "",
                 )
             except Exception:
                 _logger.exception(
@@ -69,19 +79,21 @@ class MailNotification(models.Model):
         partner = self.res_partner_id
         if not message or not partner:
             return True
-        if self.notification_type != "inbox":
+        if (self.notification_type or "") not in self._FTIQ_PUSH_NOTIFICATION_TYPES:
             return True
-        if (message.model or "").strip() != "project.task" or not message.res_id:
+        message_sudo = message.sudo()
+        if (message_sudo.model or "").strip() != "project.task" or not message_sudo.res_id:
             return True
-        if message.author_id and message.author_id == partner:
+        if message_sudo.author_id and message_sudo.author_id.id == partner.id:
             return True
-        if message.create_uid and message.create_uid.partner_id == partner:
+        if message_sudo.create_uid and message_sudo.create_uid.partner_id.id == partner.id:
             return True
-        if not self._ftiq_is_task_chatter_message(message):
+        if not self._ftiq_is_task_chatter_message(message_sudo):
             return True
         return False
 
     def _ftiq_is_task_chatter_message(self, message):
+        message = message.sudo()
         if not message or (message.message_type or "") != "comment":
             return False
         if "tracking_value_ids" in message._fields and message.tracking_value_ids:
@@ -104,7 +116,7 @@ class MailNotification(models.Model):
 
     def _ftiq_mobile_payload(self):
         self.ensure_one()
-        message = self.mail_message_id
+        message = self.mail_message_id.sudo()
         title = self._ftiq_mobile_title(message)
         body = html2plaintext(message.body or "").strip() if message else ""
         if not body:
@@ -129,6 +141,7 @@ class MailNotification(models.Model):
     def _ftiq_mobile_title(self, message):
         if not message:
             return "Notification"
+        message = message.sudo()
         subject = (message.subject or "").strip()
         if subject:
             return subject
@@ -144,6 +157,7 @@ class MailNotification(models.Model):
 
     def _ftiq_notification_target_data(self, message):
         self.ensure_one()
+        message = message.sudo()
         target_model = (message.model or "").strip()
         target_id = str(message.res_id or "")
         target_route = ""
