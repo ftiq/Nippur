@@ -44,6 +44,7 @@ class MailNotification(models.Model):
 
     def _send_mobile_push_now(self):
         Device = self.env["ftiq.mobile.device"].sudo()
+        pushed_message_ids = set()
         for notification in self.exists():
             if notification._ftiq_skip_mobile_push():
                 continue
@@ -51,12 +52,18 @@ class MailNotification(models.Model):
             partner = notification.res_partner_id
             if not partner or not payload["title"]:
                 continue
-            if notification._ftiq_recipient_is_task_assignee():
+
+            message = notification.mail_message_id.sudo()
+            if message.id and message.id not in pushed_message_ids:
+                notification._ftiq_send_task_assignee_push(payload)
+                pushed_message_ids.add(message.id)
+
+            if (message.model or "").strip() == "project.task":
                 _logger.info(
-                    "FTIQ mobile task chatter mail.notification push skipped duplicate_assignee notification=%s partner=%s task=%s type=%s",
+                    "FTIQ mobile task chatter mail.notification recipient push skipped notification=%s partner=%s task=%s type=%s reason=assignee_push_is_authoritative",
                     notification.id,
                     partner.id,
-                    notification.mail_message_id.sudo().res_id or "",
+                    message.res_id or "",
                     notification.notification_type or "",
                 )
                 continue
@@ -111,6 +118,61 @@ class MailNotification(models.Model):
         if not task:
             return False
         return partner.id in task.user_ids.mapped("partner_id").ids
+
+    def _ftiq_send_task_assignee_push(self, payload):
+        self.ensure_one()
+        message = self.mail_message_id.sudo()
+        if (message.model or "").strip() != "project.task" or not message.res_id:
+            return 0
+        task = self.env["project.task"].sudo().browse(message.res_id).exists()
+        if not task:
+            _logger.info(
+                "FTIQ mobile task chatter assignee push skipped notification=%s message=%s task=%s reason=missing_task",
+                self.id,
+                message.id,
+                message.res_id or "",
+            )
+            return 0
+        excluded_partner_ids = {
+            partner_id
+            for partner_id in (
+                message.author_id.id if message.author_id else 0,
+                message.create_uid.partner_id.id
+                if message.create_uid and message.create_uid.partner_id
+                else 0,
+            )
+            if partner_id
+        }
+        users = task.user_ids.filtered(lambda user: user.active and not user.share)
+        partners = users.mapped("partner_id").exists().filtered(
+            lambda partner: partner.id not in excluded_partner_ids
+        )
+        if not partners:
+            _logger.info(
+                "FTIQ mobile task chatter assignee push skipped notification=%s message=%s task=%s reason=no_assignee_recipients assignee_users=%s excluded_partners=%s",
+                self.id,
+                message.id,
+                task.id,
+                users.ids,
+                sorted(excluded_partner_ids),
+            )
+            return 0
+        sent = self.env["ftiq.mobile.device"].sudo().push_to_partners(
+            partners,
+            payload["title"],
+            payload["body"],
+            data=payload["data"],
+        )
+        _logger.info(
+            "FTIQ mobile task chatter assignee push notification=%s message=%s task=%s assignee_users=%s recipient_partners=%s sent=%s",
+            self.id,
+            message.id,
+            task.id,
+            users.ids,
+            partners.ids,
+            sent,
+        )
+        return sent
 
     def _ftiq_is_task_chatter_message(self, message):
         message = message.sudo()
