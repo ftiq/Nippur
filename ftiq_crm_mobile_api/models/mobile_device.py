@@ -127,9 +127,13 @@ class FtiqMobileDevice(models.Model):
                     },
                     "data": payload_data,
                     "android": {
-                        "priority": "high",
+                        "priority": "HIGH",
                         "notification": {
                             "channel_id": "ftiq_mobile_alerts_v2",
+                            "notification_priority": "PRIORITY_HIGH",
+                            "visibility": "PUBLIC",
+                            "icon": "ic_stat_ftiq",
+                            "color": "#2563EB",
                             "sound": "default",
                             "click_action": "FLUTTER_NOTIFICATION_CLICK",
                         },

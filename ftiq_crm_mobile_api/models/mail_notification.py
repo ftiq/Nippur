@@ -244,12 +244,17 @@ class MailNotification(models.Model):
         target_id = str(message.res_id or "")
         target_route = ""
         related_client_id = ""
+        task_type = ""
+        task_type_label = ""
 
         if target_model == "project.task" and message.res_id:
             target_route = "task"
             task = self.env["project.task"].sudo().browse(message.res_id).exists()
-            if task and "partner_id" in task._fields and task.partner_id:
-                related_client_id = str(task.partner_id.commercial_partner_id.id)
+            if task:
+                task_type = task.ftiq_mobile_task_type or ""
+                task_type_label = task._ftiq_mobile_task_type_label() or ""
+                if "partner_id" in task._fields and task.partner_id:
+                    related_client_id = str(task.partner_id.commercial_partner_id.id)
         elif target_model == "crm.lead" and message.res_id:
             lead = self.env["crm.lead"].sudo().browse(message.res_id).exists()
             if lead:
@@ -274,4 +279,6 @@ class MailNotification(models.Model):
             "target_id": target_id,
             "target_route": target_route,
             "related_client_id": related_client_id,
+            "task_type": task_type,
+            "task_type_label": task_type_label,
         }

@@ -505,6 +505,8 @@ class FtiqCrmApiBase(http.Controller):
             "target_id": related_id,
             "target_route": payload["data"].get("target_route", ""),
             "related_client_id": payload["data"].get("related_client_id", ""),
+            "task_type": payload["data"].get("task_type", ""),
+            "task_type_label": payload["data"].get("task_type_label", ""),
             "record_name": notification.mail_message_id.record_name if notification.mail_message_id else "",
         }
 

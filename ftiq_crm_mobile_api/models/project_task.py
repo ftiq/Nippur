@@ -263,9 +263,8 @@ class ProjectTask(models.Model):
             return
         Device = self.env["ftiq.mobile.device"].sudo()
         for task in self:
-            if not task.ftiq_mobile_task_type and not task.is_fsm:
-                continue
-            partners = users.mapped("partner_id").exists()
+            internal_users = users.filtered(lambda user: user.active and not user.share)
+            partners = internal_users.mapped("partner_id").exists()
             if not partners:
                 continue
             client_name = task.partner_id.display_name if task.partner_id else ""
@@ -274,7 +273,7 @@ class ProjectTask(models.Model):
                 body_parts.append(client_name)
             Device.push_to_partners(
                 partners,
-                _("New field service task assigned"),
+                _("New task assigned"),
                 " - ".join(body_parts),
                 data={
                     "notification_type": "task_assigned",
